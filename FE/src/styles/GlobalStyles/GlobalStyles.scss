@@ -1,3 +1,4 @@
+@import url("https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;500;700&family=Noto+Sans+Display:wght@300;400;500;700&family=Nunito:wght@300;400;500;700&display=swap");
 .textColor {
     color: #495057 !important;
 }
@@ -5,4 +6,22 @@
     color: #fff;
 }
 .primaryColor {
+}
+.useFont-Noto {
+    font-family: "Noto Sans Display", sans-serif !important;
+}
+.useFont-Baloo {
+    font-family: "Baloo 2", cursive !important;
+}
+.useFont-Nunito {
+    font-family: "Nunito", sans-serif !important;
+}
+.linkNoneUnderline {
+    text-decoration: none;
+}
+.linkUnderlineHover {
+    text-decoration: none;
+    &:hover {
+        text-decoration: underline;
+    }
 }

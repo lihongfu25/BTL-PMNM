@@ -1,6 +1,7 @@
 import React from "react";
-import { Box, Typography } from "@mui/material";
-import { Input } from "../../components/Input";
+import { Box } from "@mui/material";
+import logo from "../../assets/img/logo.png";
+import bg from "../../assets/img/bg-loginlogout.jpg";
 const LoginLogoutLayout = ({ children }) => {
     return (
         <Box
@@ -11,47 +12,36 @@ const LoginLogoutLayout = ({ children }) => {
                 right: 0,
                 bottom: 0,
                 display: "flex",
-                background: "linear-gradient(to right, #eacda3, #d6ae7b)",
+                backgroundImage: `linear-gradient(to right, rgba(0, 0, 0, 0.3), rgba(0, 0, 0, 0.3)), url(${bg})`,
+                backgroundRepeat: "no-repeat",
+                backgroundSize: "cover",
             }}
         >
             <Box
                 sx={{
                     alignSelf: "center",
-                    width: "70%",
-                    height: "80%",
+                    width: "30rem",
                     mx: "auto",
+                    px: "6rem",
+                    pt: "3rem",
+                    pb: "4rem",
                     borderRadius: "0.4rem",
-                    backgroundColor: "#fff",
+                    backgroundColor: "rgba(0, 0, 0, 0.15)",
+                    boxShadow: "0 0 10px 1px #888",
                     display: "flex",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    position: "relative",
                 }}
             >
                 <img
-                    src=''
                     alt=''
+                    src={logo}
                     style={{
-                        width: "70%",
+                        width: "10rem",
                     }}
                 />
-                <Box
-                    sx={{
-                        flexGrow: 1,
-                        p: "1.5rem",
-                        display: "flex",
-                        alignItems: "center",
-                        flexDirection: "column",
-                    }}
-                >
-                    <Typography
-                        variant='h6'
-                        className='textColor'
-                        sx={{
-                            fontSize: "1.25rem",
-                        }}
-                    >
-                        Đăng nhập
-                    </Typography>
-                    <Input label='Tài khoản' />
-                </Box>
+                {children}
             </Box>
         </Box>
     );
