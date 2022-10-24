@@ -1,7 +1,11 @@
 import { LoginLogoutLayout } from "../layout/LoginLogoutLayout";
+import { HeaderFooterLayout } from "../layout/HeaderFooterLayout";
+import { AccountLayout } from "../layout/AccountLayout";
 import { Login } from "../screen/Login";
 import { Register } from "../screen/Register";
 import { ForgotPassword } from "../screen/ForgotPassword";
+import { Home, Contact, Profile, Purchase } from "../pages";
+
 
 export const routes = [
     {
@@ -27,5 +31,39 @@ export const routes = [
                 <ForgotPassword />
             </LoginLogoutLayout>
         ),
+    },
+    {
+        path: "/",
+        element: (
+            <HeaderFooterLayout>
+                <Home />
+            </HeaderFooterLayout>
+        ),
+    },
+    {
+        path: "/contact",
+        element: (
+            <HeaderFooterLayout>
+                <Contact />
+            </HeaderFooterLayout>
+        ),
+    },
+    {
+        path: "/account",
+        element: (
+            <HeaderFooterLayout>
+                <AccountLayout></AccountLayout>
+            </HeaderFooterLayout>
+        ),
+        children: [
+            {
+                path: "profile",
+                element: <Profile />,
+            },
+            {
+                path: "purchase",
+                element: <Purchase />,
+            },
+        ],
     },
 ];

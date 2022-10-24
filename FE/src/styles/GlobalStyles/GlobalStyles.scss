@@ -25,3 +25,21 @@
         text-decoration: underline;
     }
 }
+.hiddenScrollBar::-webkit-scrollbar {
+    display: none;
+}
+.grid-wide {
+    width: 1200px;
+    box-sizing: border-box;
+    margin: auto;
+}
+@media (min-width: 740px) and (max-width: 1023px) {
+    .grid-wide {
+        width: 644px;
+    }
+}
+@media (min-width: 1024px) and (max-width: 1239px) {
+    .grid-wide {
+        width: 964px;
+    }
+}

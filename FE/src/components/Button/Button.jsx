@@ -2,9 +2,10 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { Button as MuiBtn } from "@mui/material";
 const StyledButton = styled(MuiBtn)({
+    zIndex: 10,
+    color: "#fff",
     fontSize: "1.6rem",
     background: "#29323c",
-    color: "#fff",
     transition: "0.6s all ease",
     "::before": {
         background: "linear-gradient(to right, #859398, #283048)",
