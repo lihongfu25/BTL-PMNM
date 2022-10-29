@@ -9,7 +9,6 @@ const Input = ({ startIcon, sx, ...props }) => {
             <InputBase
                 {...props}
                 sx={{
-                    ...sx,
                     border: "1px solid #ccc",
                     borderRadius: 1,
                     fontSize: "1.6rem",
@@ -17,6 +16,7 @@ const Input = ({ startIcon, sx, ...props }) => {
                         px: "1.2rem",
                         py: "0.8rem",
                     },
+                    ...sx,
                 }}
             />
         );

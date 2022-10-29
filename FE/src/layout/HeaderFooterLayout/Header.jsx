@@ -85,7 +85,6 @@ const Header = () => {
                         minWidth: "14rem",
                         fontWeight: 700,
                         fontSize: "1.8rem",
-                        fontFamily: "Nunito",
                         textAlign: "center",
                         textDecoration: "none",
                         boxSizing: "border-box",
@@ -98,9 +97,9 @@ const Header = () => {
                 }}
             >
                 <Link href='/'>Trang chủ</Link>
-                <Link href='/search/men'>Nam</Link>
-                <Link href='/search/women'>Nữ</Link>
-                <Link href='/search/accessory'>Phụ Kiện</Link>
+                <Link href='/men'>Nam</Link>
+                <Link href='/women'>Nữ</Link>
+                <Link href='/accessory'>Phụ Kiện</Link>
                 <Link href='/contact'>Liên Hệ</Link>
             </Box>
             <Box
