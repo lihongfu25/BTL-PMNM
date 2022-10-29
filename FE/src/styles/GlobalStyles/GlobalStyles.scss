@@ -3,9 +3,10 @@
     color: #495057 !important;
 }
 .whiteTextColor {
-    color: #fff;
+    color: #fff !important;
 }
-.primaryColor {
+.grayTextColor {
+    color: #b2b2b2 !important;
 }
 .useFont-Noto {
     font-family: "Noto Sans Display", sans-serif !important;
@@ -24,6 +25,9 @@
     &:hover {
         text-decoration: underline;
     }
+}
+img {
+    vertical-align: middle;
 }
 .hiddenScrollBar::-webkit-scrollbar {
     display: none;

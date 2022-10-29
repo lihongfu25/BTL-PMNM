@@ -4,8 +4,7 @@ import { AccountLayout } from "../layout/AccountLayout";
 import { Login } from "../screen/Login";
 import { Register } from "../screen/Register";
 import { ForgotPassword } from "../screen/ForgotPassword";
-import { Home, Contact, Profile, Purchase } from "../pages";
-
+import { Home, Contact, Profile, Purchase, Search } from "../pages";
 
 export const routes = [
     {
@@ -37,6 +36,14 @@ export const routes = [
         element: (
             <HeaderFooterLayout>
                 <Home />
+            </HeaderFooterLayout>
+        ),
+    },
+    {
+        path: "/men",
+        element: (
+            <HeaderFooterLayout>
+                <Search />
             </HeaderFooterLayout>
         ),
     },
