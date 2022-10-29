@@ -63,7 +63,6 @@ const Contact = () => {
                             outline: "none",
                             color: "#495057",
                             fontSize: "1.6rem",
-                            fontFamily: "Nunito",
                             borderRadius: "0.4rem",
                             boxSizing: "border-box",
                         },

@@ -1,6 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { PurchaseItem } from "../PurchaseItem";
+import { currencyFormat } from "../../styles/GlobalStyles";
 const PurchaseOrder = ({ value }) => {
     return (
         <Box
@@ -33,10 +34,11 @@ const PurchaseOrder = ({ value }) => {
             >
                 Tổng số tiền:{" "}
                 <span>
-                    ₫
-                    {value.products.reduce(
-                        (total, product) => total + product.price,
-                        0,
+                    {currencyFormat(
+                        value.products.reduce(
+                            (total, product) => total + product.price,
+                            0,
+                        ),
                     )}
                 </span>
             </Typography>

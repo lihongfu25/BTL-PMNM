@@ -23,7 +23,6 @@ const NoOrders = () => {
                     "& .no-order-text": {
                         color: "#495057",
                         fontSize: "1.6rem",
-                        fontFamily: "Nunito",
                     },
                 }}
             >

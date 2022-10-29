@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Divider } from "@mui/material";
+import { currencyFormat } from "../../styles/GlobalStyles";
 const PurchaseItem = ({ value }) => {
     return (
         <>
@@ -22,7 +23,6 @@ const PurchaseItem = ({ value }) => {
                         color: "#495057",
                         minWidth: "20rem",
                         fontSize: "1.6rem",
-                        fontFamily: "Nunito",
                         textAlign: "center",
                     },
                 }}
@@ -38,14 +38,12 @@ const PurchaseItem = ({ value }) => {
                             m: 0,
                             color: "#495057",
                             fontSize: "1.6rem",
-                            fontFamily: "Nunito",
                             overflowWrap: "break-word",
                         },
                         "& > p": {
                             m: "0.4rem 0 0",
                             color: "#888",
                             fontSize: "1.2rem",
-                            fontFamily: "Nunito",
                             "& span": {
                                 position: "absolute",
                                 display: "inline-block",
@@ -65,7 +63,7 @@ const PurchaseItem = ({ value }) => {
                     </p>
                     <p>x{value.quantity}</p>
                 </Box>
-                <p>₫ {value.price * value.quantity}</p>
+                <p>{currencyFormat(value.price * value.quantity)}</p>
             </Box>
             <Divider
                 sx={{

@@ -195,7 +195,6 @@ const Purchase = () => {
                         fontWeight: 700,
                         cursor: "pointer",
                         fontSize: "1.6rem",
-                        fontFamily: "Nunito",
                         textAlign: "center",
                         textDecoration: "none",
                         borderRadius: "0.2rem",
