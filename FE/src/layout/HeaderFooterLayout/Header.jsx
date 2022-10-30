@@ -129,7 +129,7 @@ const Header = () => {
                     />
                 </Box>
                 <StyledLink
-                    href='/cart'
+                    href='/user/cart'
                     sx={{
                         color: "#666",
                         fontSize: "2.4rem",
