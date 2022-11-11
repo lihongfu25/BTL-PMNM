@@ -3,10 +3,16 @@ import { styled } from "@mui/material/styles";
 import { Button as MuiBtn } from "@mui/material";
 const StyledButton = styled(MuiBtn)({
     zIndex: 10,
-    color: "#fff",
     fontSize: "1.6rem",
-    background: "#29323c",
     transition: "0.6s all ease",
+    "&.buttonContained": {
+        color: "#fff",
+        background: "#29323c",
+    },
+    "&.buttonText": {
+        color: "#495057",
+        background: "inherit",
+    },
     "::before": {
         background: "linear-gradient(to right, #859398, #283048)",
         content: "''",
@@ -23,10 +29,18 @@ const StyledButton = styled(MuiBtn)({
     ":hover::before": {
         width: "100%",
     },
+    "&.buttonText:hover": {
+        color: "#fff",
+    },
 });
-const Button = ({ children, className, ...props }) => {
+const Button = ({ children, className, variant = "contained", ...props }) => {
     return (
-        <StyledButton className={`${className} useFont-Nunito`} {...props}>
+        <StyledButton
+            className={`${className} ${
+                variant === "text" ? "buttonText" : "buttonContained"
+            } useFont-Nunito`}
+            {...props}
+        >
             {children}
         </StyledButton>
     );
