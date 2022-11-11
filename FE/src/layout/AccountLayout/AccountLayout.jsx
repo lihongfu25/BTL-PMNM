@@ -69,9 +69,9 @@ const AccountLayout = ({ children }) => {
                     }}
                 >
                     <Link
-                        to='/account/profile'
+                        to='/user/profile'
                         className={
-                            location.pathname === "/account/profile"
+                            location.pathname === "/user/profile"
                                 ? "active"
                                 : ""
                         }
@@ -79,9 +79,9 @@ const AccountLayout = ({ children }) => {
                         Tài Khoản Của Tôi
                     </Link>
                     <Link
-                        to='/account/purchase'
+                        to='/user/purchase'
                         className={
-                            location.pathname === "/account/purchase"
+                            location.pathname === "/user/purchase"
                                 ? "active"
                                 : ""
                         }

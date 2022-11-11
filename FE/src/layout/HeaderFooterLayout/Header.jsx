@@ -1,22 +1,14 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useLocation, Link } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { BsSearch } from "react-icons/bs";
 import { styled } from "@mui/material/styles";
-import { Box, IconButton, Link, Menu, MenuItem } from "@mui/material";
+import { Box, IconButton, Menu, MenuItem } from "@mui/material";
 import { userLogout } from "../../redux/store/userSlice";
 import logo from "../../assets/img/logo.png";
 import userAvatar from "../../assets/img/user.png";
 import "./header.scss";
-const StyledIconButton = styled(IconButton)({
-    fontSize: "2.4rem",
-    marginLeft: "2rem",
-    color: "#666",
-    "&:hover": {
-        backgroundColor: "inherit",
-    },
-});
 const StyledLink = styled(Link)({
     color: "#495057",
     fontSize: "1.6rem",
@@ -28,7 +20,6 @@ const Header = () => {
     const [search, setSearch] = React.useState("");
     const [anchorEl, setAnchorEl] = React.useState(null);
 
-    const navigate = useNavigate();
     const dispatch = useDispatch();
     const reactLocation = useLocation();
 
@@ -52,8 +43,9 @@ const Header = () => {
     const handleLogout = () => {
         setAnchorEl(null);
         dispatch(userLogout());
-        if (reactLocation.pathname.includes("account")) navigate("/login");
-        else navigate(reactLocation.pathname);
+    };
+    const handleCloseMenuUser = () => {
+        setAnchorEl(null);
     };
     return (
         <Box
@@ -64,7 +56,7 @@ const Header = () => {
                 boxShadow: "0 0 1rem #e5e5e5",
             }}
         >
-            <Link href='/'>
+            <Link to='/'>
                 <img
                     src={logo}
                     alt='logo'
@@ -96,11 +88,11 @@ const Header = () => {
                     },
                 }}
             >
-                <Link href='/'>Trang chủ</Link>
-                <Link href='/men'>Nam</Link>
-                <Link href='/women'>Nữ</Link>
-                <Link href='/accessory'>Phụ Kiện</Link>
-                <Link href='/contact'>Liên Hệ</Link>
+                <Link to='/'>Trang chủ</Link>
+                <Link to='/men'>Nam</Link>
+                <Link to='/women'>Nữ</Link>
+                <Link to='/accessory'>Phụ Kiện</Link>
+                <Link to='/contact'>Liên Hệ</Link>
             </Box>
             <Box
                 sx={{
@@ -129,16 +121,27 @@ const Header = () => {
                     />
                 </Box>
                 <StyledLink
-                    href='/user/cart'
+                    to='/user/cart'
                     sx={{
+                        ml: "1.4rem",
                         color: "#666",
                         fontSize: "2.4rem",
-                        ml: "1.4rem",
                     }}
                 >
                     <FaShoppingCart />
                 </StyledLink>
-                <StyledIconButton onClick={handleClickUser}>
+                <IconButton
+                    onClick={handleClickUser}
+                    sx={{
+                        ml: "2rem",
+                        mt: "-0.6rem",
+                        color: "#666",
+                        fontSize: "2.4rem",
+                        "&:hover": {
+                            backgroundColor: "inherit",
+                        },
+                    }}
+                >
                     <img
                         src={userAvatar}
                         alt='user'
@@ -147,7 +150,7 @@ const Header = () => {
                             borderRadius: "50%",
                         }}
                     />
-                </StyledIconButton>
+                </IconButton>
                 {!isLogin ? (
                     <Menu
                         open={Boolean(anchorEl)}
@@ -162,10 +165,10 @@ const Header = () => {
                         }}
                     >
                         <MenuItem>
-                            <StyledLink href='/login'>Đăng nhập</StyledLink>
+                            <StyledLink to='/auth/login'>Đăng nhập</StyledLink>
                         </MenuItem>
                         <MenuItem>
-                            <StyledLink href='/register'>Đăng ký</StyledLink>
+                            <StyledLink to='/auth/register'>Đăng ký</StyledLink>
                         </MenuItem>
                     </Menu>
                 ) : (
@@ -182,17 +185,30 @@ const Header = () => {
                         }}
                     >
                         <MenuItem>
-                            <StyledLink href='/account/profile'>
+                            <StyledLink
+                                to='/user/profile'
+                                onClick={handleCloseMenuUser}
+                            >
                                 Tài khoản của tôi
                             </StyledLink>
                         </MenuItem>
                         <MenuItem>
-                            <StyledLink href='/account/purchase'>
+                            <StyledLink
+                                to='/user/purchase'
+                                onClick={handleCloseMenuUser}
+                            >
                                 Đơn mua
                             </StyledLink>
                         </MenuItem>
                         <MenuItem>
-                            <StyledLink onClick={handleLogout}>
+                            <StyledLink
+                                to={
+                                    reactLocation.pathname.includes("account")
+                                        ? "/auth/login"
+                                        : reactLocation.pathname
+                                }
+                                onClick={handleLogout}
+                            >
                                 Đăng xuất
                             </StyledLink>
                         </MenuItem>

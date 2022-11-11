@@ -96,7 +96,7 @@ const Login = () => {
                     }}
                 />
                 <Link
-                    to='/forgot-password'
+                    to='/auth/forgot-password'
                     className='linkUnderlineHover whiteTextColor'
                     style={{
                         fontSize: "1.4rem",
@@ -118,7 +118,7 @@ const Login = () => {
                 Bạn chưa có tài khoản ?{" "}
                 <Link
                     className='linkNoneUnderline'
-                    to='/register'
+                    to='/auth/register'
                     style={{
                         color: "#AF0171",
                     }}

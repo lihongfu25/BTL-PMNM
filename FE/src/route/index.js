@@ -1,116 +1,134 @@
 import { LoginLogoutLayout } from "../layout/LoginLogoutLayout";
 import { HeaderFooterLayout } from "../layout/HeaderFooterLayout";
 import { AccountLayout } from "../layout/AccountLayout";
+import { ManagerLayout } from "../layout/ManagerLayout";
 import { Login } from "../screen/Login";
 import { Register } from "../screen/Register";
 import { ForgotPassword } from "../screen/ForgotPassword";
-import { Home, Contact, Profile, Purchase, Search, Cart } from "../pages";
 
-export const routes = [{
-        path: "/login",
-        element: ( <
-            LoginLogoutLayout >
-            <
-            Login / >
-            <
-            /LoginLogoutLayout>
-        ),
-    },
+import {
+    Home,
+    Contact,
+    Profile,
+    Purchase,
+    Search,
+    Cart,
+    ProductDetail,
+    Dashboard,
+    ProductManager,
+} from "../pages";
+
+export const routes = [
     {
-        path: "/register",
-        element: ( <
-            LoginLogoutLayout >
-            <
-            Register / >
-            <
-            /LoginLogoutLayout>
-        ),
-    },
-    {
-        path: "/forgot-password",
-        element: ( <
-            LoginLogoutLayout >
-            <
-            ForgotPassword / >
-            <
-            /LoginLogoutLayout>
-        ),
+        path: "/auth",
+        element: <LoginLogoutLayout></LoginLogoutLayout>,
+        children: [
+            {
+                path: "login",
+                element: <Login />,
+            },
+            {
+                path: "register",
+                element: <Register />,
+            },
+            {
+                path: "forgot-password",
+                element: <ForgotPassword />,
+            },
+        ],
     },
     {
         path: "/",
-        element: ( <
-            HeaderFooterLayout >
-            <
-            Home / >
-            <
-            /HeaderFooterLayout>
-        ),
-    },
-    {
-        path: "/men",
-        element: ( <
-            HeaderFooterLayout >
-            <
-            Search title = "Thời trang nam | 360 Store" / >
-            <
-            /HeaderFooterLayout>
-        ),
-    },
-    {
-        path: "/women",
-        element: ( <
-            HeaderFooterLayout >
-            <
-            Search title = "Thời trang nữ | 360 Store" / >
-            <
-            /HeaderFooterLayout>
-        ),
-    },
-    {
-        path: "/accessory",
-        element: ( <
-            HeaderFooterLayout >
-            <
-            Search title = "Phụ kiện | 360 Store" / >
-            <
-            /HeaderFooterLayout>
-        ),
-    },
-    {
-        path: "/contact",
-        element: ( <
-            HeaderFooterLayout >
-            <
-            Contact / >
-            <
-            /HeaderFooterLayout>
-        ),
-    },
-    {
-        path: "/user/cart",
-        element: ( <
-            HeaderFooterLayout >
-            <
-            Cart / >
-            <
-            /HeaderFooterLayout>
-        ),
-    },
-    {
-        path: "/account",
-        element: ( <
-            HeaderFooterLayout >
-            <
-            AccountLayout > < /AccountLayout> < /
-            HeaderFooterLayout >
-        ),
-        children: [{
-                path: "profile",
-                element: < Profile / > ,
+        element: <HeaderFooterLayout></HeaderFooterLayout>,
+        children: [
+            {
+                index: true,
+                element: <Home />,
             },
             {
-                path: "purchase",
-                element: < Purchase / > ,
+                path: "contact",
+                element: <Contact />,
+            },
+            {
+                path: "product/detail/:productId",
+                element: <ProductDetail />,
+            },
+            {
+                path: "user/cart",
+                element: <Cart />,
+            },
+            {
+                path: "user",
+                element: <AccountLayout></AccountLayout>,
+                children: [
+                    {
+                        path: "profile",
+                        element: <Profile />,
+                    },
+                    {
+                        path: "purchase",
+                        element: <Purchase />,
+                    },
+                ],
+            },
+            {
+                path: "/men",
+                element: <Search title='Thời trang nam | 360 Store' />,
+            },
+            {
+                path: "women",
+                element: <Search title='Thời trang nữ | 360 Store' />,
+            },
+            {
+                path: "accessory",
+                element: <Search title='Phụ kiện | 360 Store' />,
+            },
+        ],
+    },
+    {
+        path: "/manager",
+        element: <ManagerLayout></ManagerLayout>,
+        children: [
+            {
+                path: "dashboard",
+                element: <Dashboard />,
+            },
+            {
+                path: "carousels",
+                children: [
+                    {
+                        index: true,
+                        element: <ProductManager />,
+                    },
+                    {
+                        path: ":id",
+                        element: <ProductManager />,
+                    },
+                ],
+            },
+            {
+                path: "categories",
+                element: <ProductManager />,
+            },
+            {
+                path: "orders",
+                element: <ProductManager />,
+            },
+            {
+                path: "contacts",
+                element: <ProductManager />,
+            },
+            {
+                path: "members",
+                element: <ProductManager />,
+            },
+            {
+                path: "products",
+                element: <ProductManager />,
+            },
+            {
+                path: "user/profile",
+                element: <ProductManager />,
             },
         ],
     },

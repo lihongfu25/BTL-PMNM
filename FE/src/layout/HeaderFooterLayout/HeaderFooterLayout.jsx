@@ -1,4 +1,5 @@
 import React from "react";
+import { Outlet } from "react-router-dom";
 import { Box } from "@mui/material";
 import Header from "./Header";
 import Footer from "./Footer";
@@ -13,7 +14,7 @@ const HeaderFooterLayout = ({ children }) => {
             }}
         >
             <Header />
-            {children}
+            <Outlet />
             <Footer />
         </Box>
     );

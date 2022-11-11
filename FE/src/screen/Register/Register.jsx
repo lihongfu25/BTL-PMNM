@@ -83,7 +83,7 @@ const Register = () => {
                 Bạn đã có tài khoản ?{" "}
                 <Link
                     className='linkNoneUnderline'
-                    to='/login'
+                    to='/auth/login'
                     style={{
                         color: "#AF0171",
                     }}

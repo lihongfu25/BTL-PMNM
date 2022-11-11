@@ -30,7 +30,7 @@ const ForgotPassword = () => {
             }}
         >
             <Link
-                to='/login'
+                to='/auth/login'
                 className='navLink-Icon navLink whiteTextColor linkNoneUnderline'
                 onClick={handleBackLoginForm}
             >
