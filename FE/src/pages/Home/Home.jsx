@@ -1,129 +1,109 @@
 import React from "react";
-import Slider from "react-slick";
+import { Swiper, SwiperSlide } from "swiper/react";
+import { Autoplay, Pagination } from "swiper";
 import { Box } from "@mui/material";
 import { Recommend } from "../../components/Recommend";
 import productImg from "../../assets/img/demo_porduct.jpg";
 import slideImg from "../../assets/img/demo_slide.jpg";
+import "swiper/css";
+import "swiper/css/pagination";
+import "./slider.scss";
 const slides = [
     {
         id: 1,
-        img: slideImg,
+        image: slideImg,
     },
     {
         id: 2,
-        img: slideImg,
+        image: slideImg,
     },
     {
         id: 3,
-        img: slideImg,
+        image: slideImg,
     },
     {
         id: 4,
-        img: slideImg,
+        image: slideImg,
     },
     {
         id: 5,
-        img: slideImg,
+        image: slideImg,
     },
     {
         id: 6,
-        img: slideImg,
+        image: slideImg,
     },
 ];
 const products = [
     {
-        id: "1",
+        productId: 1,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 45,
-        sold: "12k",
-        description: "abc xyz",
         rating: 4.7,
         img: productImg,
     },
     {
-        id: "2",
+        productId: 2,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 0,
-        sold: "12k",
-        description: "abc xyz",
         rating: 4.5,
         img: productImg,
     },
     {
-        id: "3",
+        productId: 3,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 30,
-        sold: "12k",
-        description: "abc xyz",
         rating: 4.3,
         img: productImg,
     },
     {
-        id: "4",
+        productId: 4,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 0,
-        sold: "12k",
-        description: "abc xyz",
         rating: 4.8,
         img: productImg,
     },
     {
-        id: "5",
+        productId: 5,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 60,
-        sold: "12k",
-        description: "abc xyz",
         rating: 5,
         img: productImg,
     },
     {
-        id: "6",
+        productId: 6,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 0,
-        sold: "12k",
-        description: "abc xyz",
         rating: 5,
         img: productImg,
     },
     {
-        id: "7",
+        productId: 7,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 60,
-        sold: "12k",
-        description: "abc xyz",
         rating: 5,
         img: productImg,
     },
     {
-        id: "8",
+        productId: 8,
         name: "Sản phẩm 1",
         price: 123000,
         discount: 0,
-        sold: "12k",
-        description: "abc xyz",
         rating: 5,
         img: productImg,
     },
 ];
 const Home = () => {
-    const slideSettings = {
-        dots: true,
-        speed: 2000,
-        arrows: false,
-        autoplay: true,
-        pauseOnHover: false,
-        focusOnSelect: true,
-        autoplaySpeed: 10000,
-    };
+    document.title = "360 Store";
     React.useEffect(() => {
-        const slideImgs = document.querySelectorAll(".slick-slide-img");
+        const slideImgs = document.querySelectorAll(".swiper-slide-img");
         Array.from(slideImgs).forEach(
             (slideImg) =>
                 (slideImg.style.height = slideImg.clientWidth * 0.4 + "px"),
@@ -143,16 +123,29 @@ const Home = () => {
                     },
                 }}
             >
-                <Slider {...slideSettings}>
-                    {slides.map((slide) => (
-                        <img
-                            className='slick-slide-img'
-                            alt=''
-                            src={slide.img}
-                            key={slide.id}
-                        />
+                <Swiper
+                    spaceBetween={30}
+                    centeredSlides={true}
+                    autoplay={{
+                        delay: 10000,
+                        disableOnInteraction: false,
+                    }}
+                    pagination={{
+                        clickable: true,
+                    }}
+                    modules={[Autoplay, Pagination]}
+                    className='mySwiper2'
+                >
+                    {slides.map((img) => (
+                        <SwiperSlide key={img.id}>
+                            <img
+                                className='swiper-slide-img'
+                                alt=''
+                                src={img.image}
+                            />
+                        </SwiperSlide>
                     ))}
-                </Slider>
+                </Swiper>
             </Box>
             <Recommend title='Sản phẩm mới' products={products} />
             <Recommend title='Sản phẩm hot' products={products} />
