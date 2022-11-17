@@ -76,8 +76,9 @@ const CategoryManager = () => {
         setOpenDelForm(true);
         setDelId(value);
     };
-    const handleSubmitDelReq = () => {
+    const onDel = () => {
         console.log(delId);
+        setOpenDelForm(false);
     };
     const {
         control,
@@ -260,10 +261,7 @@ const CategoryManager = () => {
                         </p>
                     </DialogContent>
                     <DialogActions>
-                        <StyledButton
-                            variant='text'
-                            onClick={handleSubmitDelReq}
-                        >
+                        <StyledButton variant='text' onClick={onDel}>
                             Đồng ý
                         </StyledButton>
                         <StyledButton
