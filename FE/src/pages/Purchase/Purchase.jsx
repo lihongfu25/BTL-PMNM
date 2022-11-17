@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import NoOrders from "./NoOrders";
-import { PurchaseOrder } from "../../components/PurchaseOrder";
+import { PurchaseOrder } from "./PurchaseOrder";
 const datas = [
     {
         id: "1",
