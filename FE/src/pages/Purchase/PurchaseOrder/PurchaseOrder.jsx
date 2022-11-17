@@ -1,7 +1,7 @@
 import React from "react";
 import { Box, Typography } from "@mui/material";
 import { PurchaseItem } from "../PurchaseItem";
-import { currencyFormat } from "../../styles/GlobalStyles";
+import { currencyFormat } from "../../../styles/GlobalStyles";
 const PurchaseOrder = ({ value }) => {
     return (
         <Box

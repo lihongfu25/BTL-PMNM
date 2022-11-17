@@ -1,15 +1,15 @@
 import React from "react";
-import { Box, InputBase } from "@mui/material";
+import { InputBase } from "@mui/material";
 
-const Input = ({ startIcon, sx, ...props }) => {
-    const Icon = startIcon;
+const Input = ({ sx, ...props }) => {
     return (
         <InputBase
             {...props}
             sx={{
-                border: "1px solid #ccc",
-                borderRadius: 1,
                 fontSize: "1.6rem",
+                fontFamily: "Nunito",
+                borderRadius: "0.4rem",
+                border: "1px solid #ccc",
                 "& input": {
                     px: "1.2rem",
                     py: "0.8rem",

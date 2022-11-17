@@ -1,6 +1,6 @@
 import React from "react";
 import { Box, Divider } from "@mui/material";
-import { currencyFormat } from "../../styles/GlobalStyles";
+import { currencyFormat } from "../../../styles/GlobalStyles";
 const PurchaseItem = ({ value }) => {
     return (
         <>

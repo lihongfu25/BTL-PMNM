@@ -16,9 +16,10 @@ import {
     ProductDetail,
     Dashboard,
     CategoryManager,
+    CarouselManager,
+    ContactManager,
 } from "../pages";
 import { ProductManager, ProductDetailManager } from "../pages/ProductManager";
-import { CarouselManager, CarouselDetail } from "../pages/CarouselManager";
 
 export const routes = [
     {
@@ -97,16 +98,7 @@ export const routes = [
             },
             {
                 path: "carousels",
-                children: [
-                    {
-                        index: true,
-                        element: <CarouselManager />,
-                    },
-                    {
-                        path: ":id",
-                        element: <CarouselDetail />,
-                    },
-                ],
+                element: <CarouselManager />,
             },
             {
                 path: "categories",
@@ -118,7 +110,7 @@ export const routes = [
             },
             {
                 path: "contacts",
-                element: <ProductManager />,
+                element: <ContactManager />,
             },
             {
                 path: "members",
