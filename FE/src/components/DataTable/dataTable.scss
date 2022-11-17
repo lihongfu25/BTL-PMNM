@@ -38,6 +38,12 @@
         td {
             padding: 0.6rem 1.2rem;
         }
+        td.success {
+            color: #54b435;
+        }
+        td.error {
+            color: #d32f2f;
+        }
         .go-to-detail {
             cursor: pointer;
         }
