@@ -124,8 +124,8 @@ const Home = () => {
                 }}
             >
                 <Swiper
+                    slidesPerView={1}
                     spaceBetween={30}
-                    centeredSlides={true}
                     autoplay={{
                         delay: 10000,
                         disableOnInteraction: false,
