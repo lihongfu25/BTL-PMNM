@@ -10,7 +10,17 @@ import {
 const StyledMenuItem = styled(MenuItem)({
     fontSize: "1.6rem",
 });
-const Select = ({ label, options, isError, errorMessage, field, ...props }) => {
+const Select = ({
+    label,
+    options,
+    isError,
+    errorMessage,
+    field,
+    value,
+    onChange,
+    disabledEmValue = false,
+    ...props
+}) => {
     return (
         <FormControl
             {...props}
@@ -47,10 +57,17 @@ const Select = ({ label, options, isError, errorMessage, field, ...props }) => {
             }}
         >
             <InputLabel>{label}</InputLabel>
-            <MuiSelect label={label} {...field}>
-                <StyledMenuItem value=''>
-                    <em>{label}</em>
-                </StyledMenuItem>
+            <MuiSelect
+                label={label}
+                value={value}
+                {...field}
+                onChange={onChange}
+            >
+                {!disabledEmValue && (
+                    <StyledMenuItem value=''>
+                        <em>{label}</em>
+                    </StyledMenuItem>
+                )}
                 {options.map((option) => (
                     <StyledMenuItem
                         key={option.id || option.name}
