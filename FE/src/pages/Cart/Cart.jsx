@@ -33,7 +33,6 @@ const carts = [
         },
         price: 123000,
         quantity: 1,
-        maxQuantity: 10,
     },
     {
         id: 2,
@@ -46,7 +45,6 @@ const carts = [
         },
         price: 123000,
         quantity: 1,
-        maxQuantity: 10,
     },
     {
         id: 3,
@@ -59,7 +57,6 @@ const carts = [
         },
         price: 123000,
         quantity: 1,
-        maxQuantity: 10,
     },
 ];
 const Cart = () => {
@@ -100,20 +97,6 @@ const Cart = () => {
                         }}
                     ></Box>
                     <h3 className='textColor'>Cart</h3>
-                </Box>
-                <Box
-                    sx={{
-                        alignSelf: "center",
-                    }}
-                >
-                    <Input
-                        className='textColor'
-                        placeholder='Tìm kiếm'
-                        sx={{
-                            minWidth: "40rem",
-                            fontSize: "1.6rem",
-                        }}
-                    />
                 </Box>
             </Box>
             <Box

@@ -107,13 +107,6 @@ const CartItem = ({ product }) => {
                 sx={{
                     position: "relative",
                     flexDirection: "column",
-                    "& .quantityError": {
-                        position: "absolute",
-                        bottom: 0,
-                        color: "#d32f2f",
-                        fontSize: "1.4rem",
-                        whiteSpace: "nowrap",
-                    },
                 }}
             >
                 <Box
@@ -150,7 +143,6 @@ const CartItem = ({ product }) => {
                     </StyledTypography>
                     <StyledButton
                         variant='outlined'
-                        disabled={quantity === product.maxQuantity}
                         onClick={() =>
                             setQuantity((prevState) => prevState + 1)
                         }
@@ -158,11 +150,6 @@ const CartItem = ({ product }) => {
                         <BsPlus />
                     </StyledButton>
                 </Box>
-                {quantity === product.maxQuantity && (
-                    <span className='quantityError'>
-                        Đã đạt đến giới hạn số lượng hàng có sẵn!
-                    </span>
-                )}
             </StyledBox>
             <StyledBox>
                 <StyledTypography>
