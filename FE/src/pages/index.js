@@ -9,3 +9,4 @@ export { default as Dashboard } from "./Dashboard/Dashboard";
 export { default as CategoryManager } from "./CategoryManager/CategoryManager";
 export { default as CarouselManager } from "./CarouselManager/CarouselManager";
 export { default as ContactManager } from "./ContactManager/ContactManager";
+export { default as MemberManager } from "./MemberManager/MemberManager";
