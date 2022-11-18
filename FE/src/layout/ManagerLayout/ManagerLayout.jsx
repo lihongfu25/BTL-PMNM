@@ -93,7 +93,7 @@ const ManagerLayout = ({ children }) => {
         >
             <Box
                 sx={{
-                    width: "28rem",
+                    minWidth: "28rem",
                     height: "100%",
                     display: "flex",
                     flexDirection: "column",
