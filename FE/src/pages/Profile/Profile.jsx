@@ -374,11 +374,16 @@ const Profile = () => {
                     />
                 </Box>
             </Box>
-            <Button sx={{
-                minWidth: '10rem',
-                textTransform: 'none',
-                ml: '15rem'
-            }} onClick={handleSubmitProfile}>Lưu</Button>
+            <Button
+                sx={{
+                    minWidth: "10rem",
+                    textTransform: "none",
+                    ml: "15rem",
+                }}
+                onClick={handleSubmitProfile}
+            >
+                Lưu
+            </Button>
         </Box>
     );
 };
