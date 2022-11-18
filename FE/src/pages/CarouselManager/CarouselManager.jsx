@@ -14,13 +14,13 @@ import {
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import { Select } from "../../components/Select";
-import "../../components/DataTable/dataTable.scss";
+import "../../styles/DataTable/dataTable.scss";
 
 const columns = [
     { field: "carousel_id", headerName: "Mã slide", width: 130 },
     { field: "title", headerName: "Tiêu đề", width: 160 },
     { field: "category", headerName: "Danh mục", width: 160 },
-    { field: "state", headerName: "Trạng thái", width: 160 },
+    { field: "status", headerName: "Trạng thái", width: 160 },
     { field: "date", headerName: "Ngày tạo", width: 160 },
 ];
 const rows = [
@@ -132,10 +132,11 @@ const StyledDialog = styled(Dialog)({
     },
 });
 const ContactManager = () => {
-    document.title = "Carousel - 360 Store";
+    document.title = "Carousel | 360 Store";
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
     const [data, setData] = React.useState([]);
+    const [dataRemaining, setDataRemaining] = React.useState([]);
     const [openAddForm, setOpenAddForm] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
     const [openUpdateForm, setOpenUpdateForm] = React.useState(false);
@@ -152,6 +153,16 @@ const ContactManager = () => {
     React.useEffect(() => {
         setData(rows);
     }, []);
+    React.useEffect(() => {
+        setDataRemaining(
+            data.filter(
+                (row) =>
+                    row.title.toLowerCase().includes(search.toLowerCase()) ||
+                    row.category.toLowerCase().includes(search.toLowerCase()) ||
+                    row.status.toLowerCase().includes(search.toLowerCase()),
+            ),
+        );
+    }, [data, search]);
     const handleChangePage = (e, value) => {
         setPage(value);
     };
@@ -231,7 +242,7 @@ const ContactManager = () => {
                         justifyContent: "space-between",
                     }}
                 >
-                    <Button
+                    <StyledButton
                         onClick={handleOpenAddForm}
                         sx={{
                             py: "0.4rem",
@@ -239,7 +250,7 @@ const ContactManager = () => {
                         }}
                     >
                         Thêm mới
-                    </Button>
+                    </StyledButton>
 
                     <TextField
                         label='Tìm kiếm'
@@ -278,76 +289,85 @@ const ContactManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {data
-                                .filter(
-                                    (row) =>
-                                        row.title
-                                            .toLowerCase()
-                                            .includes(search.toLowerCase()) ||
-                                        row.category
-                                            .toLowerCase()
-                                            .includes(search.toLowerCase()) ||
-                                        row.state
-                                            .toLowerCase()
-                                            .includes(search.toLowerCase()),
-                                )
-                                .filter(
-                                    (row, i) =>
-                                        i >= 10 * (page - 1) &&
-                                        i <= 10 * page - 1,
-                                )
-                                .map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
+                            {dataRemaining.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
                                         }
+                                        align='center'
                                     >
-                                        <td>{row.id}</td>
-                                        <td>{row.title}</td>
-                                        <td>{row.category}</td>
-                                        <td
+                                        Chưa có bản ghi nào
+                                    </td>
+                                </tr>
+                            ) : (
+                                dataRemaining
+                                    .filter(
+                                        (row, i) =>
+                                            i >= 10 * (page - 1) &&
+                                            i <= 10 * page - 1,
+                                    )
+                                    .map((row, index) => (
+                                        <tr
+                                            key={index}
                                             className={
-                                                row.status === "Đang tắt"
-                                                    ? "error"
-                                                    : "success"
+                                                index % 2 === 0 ? "even" : "odd"
                                             }
                                         >
-                                            {row.status}
-                                        </td>
-                                        <td>{row.date}</td>
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
-                                        >
-                                            <Link
-                                                underline='hover'
-                                                sx={{
-                                                    mr: "1rem",
-                                                }}
-                                                onClick={() =>
-                                                    handleOpenUpdateForm(row)
+                                            <td>{row.id}</td>
+                                            <td>{row.title}</td>
+                                            <td>{row.category}</td>
+                                            <td
+                                                className={
+                                                    row.status === "Đang tắt"
+                                                        ? "error"
+                                                        : "success"
                                                 }
                                             >
-                                                Sửa
-                                            </Link>
-                                            <Link
-                                                underline='hover'
-                                                onClick={() =>
-                                                    handleOpenDelForm(row.id)
-                                                }
+                                                {row.status}
+                                            </td>
+                                            <td>{row.date}</td>
+                                            <td
+                                                className='go-to-detail'
+                                                align='center'
                                             >
-                                                Xóa
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
+                                                <Link
+                                                    underline='hover'
+                                                    sx={{
+                                                        mr: "1rem",
+                                                    }}
+                                                    onClick={() =>
+                                                        handleOpenUpdateForm(
+                                                            row,
+                                                        )
+                                                    }
+                                                >
+                                                    Sửa
+                                                </Link>
+                                                <Link
+                                                    underline='hover'
+                                                    onClick={() =>
+                                                        handleOpenDelForm(
+                                                            row.id,
+                                                        )
+                                                    }
+                                                >
+                                                    Xóa
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))
+                            )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={Math.floor(data.length / 10) + 1}
+                                        count={
+                                            Math.floor(
+                                                dataRemaining.length / 10,
+                                            ) + 1
+                                        }
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
@@ -518,7 +538,7 @@ const ContactManager = () => {
                     noValidate
                     onSubmit={handleSubmit(onUpdate)}
                 >
-                    <DialogTitle>Sửa slide</DialogTitle>
+                    <DialogTitle>Cập nhật slide</DialogTitle>
                     <DialogContent
                         sx={{
                             pt: "2rem!important",
