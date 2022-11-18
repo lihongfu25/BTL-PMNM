@@ -13,7 +13,7 @@ import {
 } from "@mui/material";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
-import "../../components/DataTable/dataTable.scss";
+import "../../styles/DataTable/dataTable.scss";
 
 const columns = [
     { field: "id", headerName: "Mã Danh Mục", width: 120 },
@@ -22,9 +22,9 @@ const columns = [
 ];
 
 const rows = [
-    { id: 1, name: "Nam", slug: "men" },
-    { id: 2, name: "Nữ", slug: "women" },
-    { id: 3, name: "Phụ Kiện", slug: "accessory" },
+    { id: "1", name: "Nam", slug: "men" },
+    { id: "2", name: "Nữ", slug: "women" },
+    { id: "3", name: "Phụ Kiện", slug: "accessory" },
 ];
 const StyledButton = styled(Button)({
     textTransform: "none",
@@ -42,9 +42,11 @@ const StyledDialog = styled(Dialog)({
     },
 });
 const CategoryManager = () => {
-    document.title = "Danh mục - 360 Store";
+    document.title = "Danh mục | 360 Store";
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
+    const [data, setData] = React.useState([]);
+    const [dataRemaining, setDataRemaining] = React.useState([]);
     const [openAddForm, setOpenAddForm] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
     const [openUpdateForm, setOpenUpdateForm] = React.useState(false);
@@ -53,6 +55,19 @@ const CategoryManager = () => {
     const handleChangePage = (e, value) => {
         setPage(value);
     };
+    React.useEffect(() => {
+        setData(rows);
+    }, []);
+    React.useEffect(() => {
+        setDataRemaining(
+            data.filter(
+                (row) =>
+                    row.id.toLowerCase().includes(search.toLowerCase()) ||
+                    row.name.toLowerCase().includes(search.toLowerCase()) ||
+                    row.email.toLowerCase().includes(search.toLowerCase()),
+            ),
+        );
+    }, [data, search]);
     const handleOpenAddForm = () => {
         setOpenAddForm(true);
         setValue("name", "");
@@ -173,61 +188,77 @@ const CategoryManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {rows
-                                .filter((row) =>
-                                    row.name
-                                        .toLowerCase()
-                                        .includes(search.toLowerCase()),
-                                )
-                                .filter(
-                                    (row, i) =>
-                                        i >= 10 * (page - 1) &&
-                                        i <= 10 * page - 1,
-                                )
-                                .map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
+                            {dataRemaining.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
                                         }
+                                        align='center'
                                     >
-                                        {Object.values(row).map(
-                                            (value, index) => (
-                                                <td key={index}>{value}</td>
-                                            ),
-                                        )}
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
+                                        Chưa có bản ghi nào
+                                    </td>
+                                </tr>
+                            ) : (
+                                dataRemaining
+                                    .filter(
+                                        (row, i) =>
+                                            i >= 10 * (page - 1) &&
+                                            i <= 10 * page - 1,
+                                    )
+                                    .map((row, index) => (
+                                        <tr
+                                            key={index}
+                                            className={
+                                                index % 2 === 0 ? "even" : "odd"
+                                            }
                                         >
-                                            <Link
-                                                underline='hover'
-                                                sx={{
-                                                    mr: "1rem",
-                                                }}
-                                                onClick={() =>
-                                                    handleOpenUpdateForm(row)
-                                                }
+                                            {Object.values(row).map(
+                                                (value, index) => (
+                                                    <td key={index}>{value}</td>
+                                                ),
+                                            )}
+                                            <td
+                                                className='go-to-detail'
+                                                align='center'
                                             >
-                                                Sửa
-                                            </Link>
-                                            <Link
-                                                underline='hover'
-                                                onClick={() =>
-                                                    handleOpenDelForm(row.id)
-                                                }
-                                            >
-                                                Xóa
-                                            </Link>
-                                        </td>
-                                    </tr>
-                                ))}
+                                                <Link
+                                                    underline='hover'
+                                                    sx={{
+                                                        mr: "1rem",
+                                                    }}
+                                                    onClick={() =>
+                                                        handleOpenUpdateForm(
+                                                            row,
+                                                        )
+                                                    }
+                                                >
+                                                    Sửa
+                                                </Link>
+                                                <Link
+                                                    underline='hover'
+                                                    onClick={() =>
+                                                        handleOpenDelForm(
+                                                            row.id,
+                                                        )
+                                                    }
+                                                >
+                                                    Xóa
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    ))
+                            )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={Math.floor(rows.length / 10) + 1}
+                                        count={
+                                            Math.floor(
+                                                dataRemaining.length / 10,
+                                            ) + 1
+                                        }
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
