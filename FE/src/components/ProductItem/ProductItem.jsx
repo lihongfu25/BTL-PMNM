@@ -19,6 +19,7 @@ const ProductItem = ({ product }) => {
                 cursor: "pointer",
                 overflow: "hidden",
                 backgroundColor: "#fff",
+                position: "relative",
                 boxShadow:
                     "0 0 0.1rem 0 rgba(0, 0, 0, 0.1), 0 0 1rem 0 rgba(0, 0, 0, 0.1)",
                 "& .product-img": {
@@ -28,8 +29,47 @@ const ProductItem = ({ product }) => {
                 ":hover .product-img": {
                     transform: "scale(1.1)",
                 },
+                "& .productDiscount": {
+                    m: 0,
+                    right: 0,
+                    zIndex: 10,
+                    color: "#fff",
+                    height: "3.6rem",
+                    width: "3.6rem",
+                    display: "flex",
+                    fontSize: "1.2rem",
+                    position: "absolute",
+                    alignItems: "center",
+                    flexDirection: "column",
+                    justifyContent: "center",
+                    backgroundColor: "#F49D1A",
+                    "&::after": {
+                        content: "''",
+                        display: "block",
+                        position: "absolute",
+                        bottom: "-0.6rem",
+                        borderColor: "transparent #F49D1A",
+                        borderWidth: "0 1.8rem 0.6rem",
+                        borderStyle: "solid",
+                        width: "100%",
+                        boxSizing: "border-box",
+                        zIndex: 10,
+                    },
+                },
             }}
         >
+            {product.discount !== 0 && (
+                <p className='productDiscount'>
+                    {product.discount}%{" "}
+                    <span
+                        style={{
+                            fontSize: "1rem",
+                        }}
+                    >
+                        GIẢM
+                    </span>
+                </p>
+            )}
             <Box
                 sx={{
                     overflow: "hidden",
