@@ -97,7 +97,7 @@ const rows = [
         image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
     },
 ];
-const options = [
+const catigories = [
     {
         id: 1,
         name: "Nam",
@@ -174,7 +174,7 @@ const ContactManager = () => {
         setValue("image", undefined);
     };
     const handleOpenUpdateForm = (row) => {
-        const c_id = options.filter(
+        const c_id = catigories.filter(
             (category) => category.name === row.category,
         )[0].id;
         setOpenUpdateForm(true);
@@ -460,12 +460,12 @@ const ContactManager = () => {
                             name='category'
                             control={control}
                             rules={{
-                                required: "Vui lòng nhập trường này!",
+                                required: "Vui lòng chọn danh mục!",
                             }}
                             render={({ field }) => (
                                 <Select
                                     label='Danh mục'
-                                    options={options}
+                                    options={catigories}
                                     isError={Boolean(errors.category)}
                                     errorMessage={errors.category?.message}
                                     field={field}
@@ -484,7 +484,7 @@ const ContactManager = () => {
                                     ml: "1.2rem",
                                     display: "block",
                                     color: "#d32f2f",
-                                    fontSize: "1.2rem",
+                                    fontSize: "1.3rem",
                                 },
                             }}
                         >
@@ -579,7 +579,7 @@ const ContactManager = () => {
                             render={({ field }) => (
                                 <Select
                                     label='Danh mục'
-                                    options={options}
+                                    options={catigories}
                                     isError={Boolean(errors.category)}
                                     errorMessage={errors.category?.message}
                                     field={field}
@@ -599,6 +599,7 @@ const ContactManager = () => {
                                     }}
                                     label='Trạng thái'
                                     options={statuses}
+                                    disabledEmValue
                                     isError={Boolean(errors.status)}
                                     errorMessage={errors.status?.message}
                                     field={field}
