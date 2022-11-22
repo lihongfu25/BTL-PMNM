@@ -60,8 +60,8 @@ const Select = ({
             <MuiSelect
                 label={label}
                 value={value}
-                {...field}
                 onChange={onChange}
+                {...field}
             >
                 {!disabledEmValue && (
                     <StyledMenuItem value=''>
