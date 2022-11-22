@@ -73,7 +73,7 @@ const rows = [
         memberName: "Phạm Thị I",
         memberAddress: "Hà Nội",
         date: "2022-10-02",
-        status: "canceled",
+        status: "request cancel",
     },
 ];
 const statuses = [
@@ -94,7 +94,7 @@ const statuses = [
         name: "Đã giao",
     },
     {
-        id: "canceled",
+        id: "request cancel",
         name: "Yêu cầu hủy",
     },
 ];

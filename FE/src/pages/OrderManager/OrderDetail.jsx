@@ -87,7 +87,11 @@ const OrderDetail = () => {
     };
     const handleUpdateStatus = () => {
         const newStatus =
-            data.orderStatus === "wait" ? "prepare" : "delivering";
+            data.orderStatus === "wait"
+                ? "prepare"
+                : data.orderStatus === "prepare"
+                ? "delivering"
+                : "canceled";
         console.log(newStatus);
     };
     const onCancel = (data) => {
@@ -226,7 +230,8 @@ const OrderDetail = () => {
                     }}
                 >
                     {(data.orderStatus === "wait" ||
-                        data.orderStatus === "prepare") && (
+                        data.orderStatus === "prepare" ||
+                        data.orderStatus === "request cancel") && (
                         <StyledButton
                             variant='contained'
                             color='success'
@@ -236,9 +241,9 @@ const OrderDetail = () => {
                             }}
                             onClick={handleUpdateStatus}
                         >
-                            {data.orderStatus === "wait"
-                                ? "Xác nhận"
-                                : "Tiếp theo"}
+                            {data.orderStatus === "prepare"
+                                ? "Tiếp theo"
+                                : "Xác nhận"}
                         </StyledButton>
                     )}
                     {data.orderStatus === "wait" && (
@@ -283,7 +288,6 @@ const OrderDetail = () => {
                     <DialogTitle>Từ chối đơn hàng</DialogTitle>
                     <DialogContent
                         sx={{
-                            pt: "2rem!important",
                             flexDirection: "column",
                         }}
                     >
@@ -297,8 +301,10 @@ const OrderDetail = () => {
                                 <TextField
                                     label='Lý do'
                                     sx={{
+                                        mt: "1.5rem",
                                         width: "100%",
                                     }}
+                                    multiline
                                     error={Boolean(errors.reason)}
                                     helperText={
                                         errors?.reason
