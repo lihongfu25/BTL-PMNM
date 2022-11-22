@@ -344,6 +344,11 @@ const CategoryManager = () => {
                                 control={control}
                                 rules={{
                                     required: "Vui lòng nhập trường này!",
+                                    pattern: {
+                                        value: /^[a-z-]+$/u,
+                                        message:
+                                            "Slug chỉ chứa chữ cái thường và dấu (-)",
+                                    },
                                 }}
                                 render={({ field }) => {
                                     return (
@@ -422,6 +427,11 @@ const CategoryManager = () => {
                                 control={control}
                                 rules={{
                                     required: "Vui lòng nhập trường này!",
+                                    pattern: {
+                                        value: /^[a-z-]+$/u,
+                                        message:
+                                            "Slug chỉ chứa chữ cái viết thường không dấu và dấu (-)",
+                                    },
                                 }}
                                 render={({ field }) => {
                                     return (
