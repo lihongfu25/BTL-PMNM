@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -133,10 +133,11 @@ const CarouselManager = () => {
     const [openFeedbackForm, setOpenFeedbackForm] = React.useState(false);
     const [feedbackId, setFeedbackId] = React.useState();
     const {
-        register,
+        control,
         handleSubmit,
         formState: { errors },
         clearErrors,
+        setValue,
     } = useForm();
     React.useEffect(() => {
         setData(rows);
@@ -157,6 +158,7 @@ const CarouselManager = () => {
     const handleOpenFeedbackForm = (row) => {
         setOpenFeedbackForm(true);
         setFeedbackId(row.id);
+        setValue("content", "");
     };
     const handleCloseFeedbackForm = () => {
         setOpenFeedbackForm(false);
@@ -327,50 +329,35 @@ const CarouselManager = () => {
                     <DialogTitle>Phản hồi</DialogTitle>
                     <DialogContent
                         sx={{
-                            pt: "2rem!important",
                             flexDirection: "column",
                         }}
                     >
-                        <Box
-                            sx={{
-                                width: "100%",
-                                "& label": {
-                                    mb: "0.8rem",
-                                    display: "block",
-                                    fontSize: "1.6rem",
-                                },
-                                "& textarea": {
-                                    resize: "none",
-                                    width: "100%",
-                                    boxSizing: "border-box",
-                                    fontSize: "1.6rem",
-                                    p: "0.8rem 1.2rem",
-                                    borderRadius: "0.4rem",
-                                },
-                                "& .error-message": {
-                                    fontSize: "1.2rem",
-                                    color: "#d32f2f",
-                                    m: "0.4rem 0 0 1.2rem",
-                                },
+                        <Controller
+                            name='content'
+                            control={control}
+                            rules={{
+                                required: "Vui lòng nhập trường này!",
                             }}
-                        >
-                            <label htmlFor='content'>Nội dung:</label>
-                            <textarea
-                                id='content'
-                                rows={10}
-                                {...register("content", {
-                                    required: {
-                                        value: true,
-                                        message: "Vui lòng nhập trường này!",
-                                    },
-                                })}
-                            />
-                            {errors.content && (
-                                <p className='error-message'>
-                                    {errors.content.message}
-                                </p>
-                            )}
-                        </Box>
+                            render={({ field }) => {
+                                return (
+                                    <TextField
+                                        label='Nội dung'
+                                        sx={{
+                                            mt: "1.5rem",
+                                            width: "100%",
+                                        }}
+                                        multiline
+                                        error={Boolean(errors.content)}
+                                        helperText={
+                                            errors?.content
+                                                ? errors.content.message
+                                                : ""
+                                        }
+                                        {...field}
+                                    />
+                                );
+                            }}
+                        />
                     </DialogContent>
                     <DialogActions
                         sx={{
