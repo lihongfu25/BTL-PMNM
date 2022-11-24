@@ -2,12 +2,13 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
     id: "1",
     name: "Nhóm 9",
-    username: "nhom9",
     email: "nhom9@gmail.com",
     phone: "0123456789",
     address: "Q. Bắc Từ Liêm, Hà Nội",
     gender: "Nam",
     birthOfDate: "2001-01-01",
+    username: "",
+    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbvaBdtJ4GaN7m79jU-Y47NqT3Grvxd7qIZ9VKUZKyU1ynYKxoNdlQCixTRDnliBE62os&usqp=CAU",
     role: 0,
 };
 

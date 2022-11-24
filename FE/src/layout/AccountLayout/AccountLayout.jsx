@@ -3,7 +3,6 @@ import { useSelector } from "react-redux";
 import { Link, useLocation } from "react-router-dom";
 import { Box, Divider, Typography } from "@mui/material";
 import { Outlet } from "react-router-dom";
-import avatar from "../../assets/img/user.png";
 const AccountLayout = ({ children }) => {
     const user = useSelector((state) => state.user);
     const location = useLocation();
@@ -39,7 +38,7 @@ const AccountLayout = ({ children }) => {
                         },
                     }}
                 >
-                    <img src={avatar} alt='' />
+                    <img src={user.avatar} alt='' />
                     <Typography className='useFont-Nunito'>
                         {user.name}
                     </Typography>
