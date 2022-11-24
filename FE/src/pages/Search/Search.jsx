@@ -1,4 +1,10 @@
 import React from "react";
+import {
+    useNavigate,
+    useLocation,
+    createSearchParams,
+    useSearchParams,
+} from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -7,6 +13,8 @@ import {
     Checkbox,
     FormGroup,
     Button,
+    Typography,
+    Pagination,
 } from "@mui/material";
 import { NumericFormat } from "react-number-format";
 import { BsCaretDownFill } from "react-icons/bs";
@@ -51,101 +59,207 @@ const products = [
     {
         id: "1",
         name: "Sản phẩm 1",
-        price: 123000,
+        price: 115000,
         discount: 45,
-        sold: "12k",
+        sold: 60,
         description: "abc xyz",
         rating: 4.7,
         img: productImg,
+        date: "2022/11/02",
+        category: "Nam",
     },
     {
         id: "2",
-        name: "Sản phẩm 1",
-        price: 123000,
+        name: "Sản phẩm 2",
+        price: 100000,
         discount: 0,
-        sold: "12k",
+        sold: 50,
         description: "abc xyz",
         rating: 4.5,
         img: productImg,
+        date: "2022/11/21",
+        category: "Nữ",
     },
     {
         id: "3",
-        name: "Sản phẩm 1",
-        price: 123000,
+        name: "Sản phẩm 3",
+        price: 112000,
         discount: 30,
-        sold: "12k",
+        sold: 65,
         description: "abc xyz",
         rating: 4.3,
         img: productImg,
+        date: "2022/11/20",
+        category: "Nam",
     },
     {
         id: "4",
-        name: "Sản phẩm 1",
-        price: 123000,
+        name: "Sản phẩm 4",
+        price: 152000,
         discount: 0,
-        sold: "12k",
+        sold: 110,
         description: "abc xyz",
         rating: 4.8,
         img: productImg,
+        date: "2022/10/24",
+        category: "Phụ Kiện",
     },
     {
         id: "5",
-        name: "Sản phẩm 1",
-        price: 123000,
+        name: "Sản phẩm 5",
+        price: 120000,
         discount: 60,
-        sold: "12k",
+        sold: 3,
         description: "abc xyz",
         rating: 5,
         img: productImg,
+        date: "2022/10/25",
+        category: "Nữ",
     },
     {
         id: "6",
-        name: "Sản phẩm 1",
+        name: "Sản phẩm 6",
         price: 123000,
         discount: 0,
-        sold: "12k",
+        sold: 12,
         description: "abc xyz",
         rating: 5,
         img: productImg,
+        date: "2022/10/23",
+        category: "Phụ Kiện",
     },
     {
         id: "7",
-        name: "Sản phẩm 1",
+        name: "Sản phẩm 7",
         price: 123000,
         discount: 60,
-        sold: "12k",
+        sold: 100,
         description: "abc xyz",
         rating: 5,
         img: productImg,
+        date: "2022/10/21",
+        category: "Nam",
     },
     {
         id: "8",
-        name: "Sản phẩm 1",
-        price: 123000,
+        name: "Sản phẩm 8",
+        price: 132000,
         discount: 0,
-        sold: "12k",
+        sold: 120,
         description: "abc xyz",
         rating: 5,
         img: productImg,
+        date: "2022/10/22",
+        category: "Nam",
     },
 ];
 const Search = ({ title }) => {
-    document.title = title;
-    const [filterCategory, setFilterCategory] = React.useState([]);
+    const [searchParams] = useSearchParams();
+
+    document.title =
+        title || 'Kết quả tìm kiếm "' + searchParams.get("keyword") + '"';
+    const [data, setData] = React.useState([]);
+    const [dataRemaining, setDataRemaining] = React.useState([]);
     const [filterPrice, setFilterPrice] = React.useState({});
+    const [filterCategory, setFilterCategory] = React.useState([]);
     const [sorting, setSorting] = React.useState("Liên Quan");
-    const [data, setData] = React.useState();
+    const [page, setPage] = React.useState(parseInt(searchParams.get("page")));
+
+    const navigate = useNavigate();
+    const { search } = useLocation();
 
     React.useEffect(() => {
-        const newProducts = products.filter((product) => product.rating >= 4.5);
-        setData(newProducts);
-    }, [filterCategory, filterPrice]);
+        setData(products);
+        setDataRemaining(products);
+    }, []);
+    React.useEffect(() => {
+        // console.log(searchParams.get("keyword"));
+        // console.log(searchParams.get("sortBy"));
+        // console.log(searchParams.get("order"));
+        // console.log(searchParams.get("page"));
+        // console.log(searchParams.get("category"));
+        setPage(parseInt(searchParams.get("page")));
+        window.scrollTo(0, 0);
+    }, [search, searchParams]);
+    React.useEffect(() => {
+        // const listedPrice =
+        //     (product.price * (100 - product.discount)) / 100;
+        // console.log(listedPrice);
+        // if (filterPrice.min !== undefined)
+        //     return listedPrice >= filterPrice.min;
+        // else if (filterPrice.max !== undefined)
+        //     return listedPrice <= filterPrice.max;
+        // else if (
+        //     filterPrice.min !== undefined &&
+        //     filterPrice.max !== undefined
+        // )
+        //     return (
+        //         listedPrice >= filterPrice.min &&
+        //         listedPrice <= filterPrice.max
+        //     );
+        // else return product;
+        if (searchParams.get("sortBy") === "price") {
+            if (filterCategory.length === 0)
+                navigate({
+                    search: createSearchParams({
+                        keyword: searchParams.get("keyword"),
+                        sortBy: searchParams.get("sortBy"),
+                        order: searchParams.get("order"),
+                        page: searchParams.get("page"),
+                    }).toString(),
+                });
+            else {
+                navigate({
+                    search: createSearchParams({
+                        keyword: searchParams.get("keyword"),
+                        category: filterCategory.join("&"),
+                        sortBy: searchParams.get("sortBy"),
+                        order: searchParams.get("order"),
+                        page: searchParams.get("page"),
+                    }).toString(),
+                });
+            }
+        } else {
+            if (filterCategory.length === 0)
+                navigate({
+                    search: createSearchParams({
+                        keyword: searchParams.get("keyword"),
+                        sortBy: searchParams.get("sortBy"),
+                        page: searchParams.get("page"),
+                    }).toString(),
+                });
+            else {
+                navigate({
+                    search: createSearchParams({
+                        keyword: searchParams.get("keyword"),
+                        category: filterCategory.join("&"),
+                        sortBy: searchParams.get("sortBy"),
+                        order: searchParams.get("order"),
+                        page: searchParams.get("page"),
+                    }).toString(),
+                });
+            }
+        }
+    }, [filterCategory, filterPrice, searchParams, navigate]);
 
-    const handleChangeFilterPrice = (event) => {
-        setFilterPrice();
-    };
-    const handleSortPrice = (e) => {
-        setSorting(e.target.value);
+    const handleChangePage = (e, value) => {
+        setPage(value);
+        searchParams.get("sortBy") === "price"
+            ? navigate({
+                  search: createSearchParams({
+                      keyword: searchParams.get("keyword"),
+                      sortBy: searchParams.get("sortBy"),
+                      order: searchParams.get("order"),
+                      page: value,
+                  }).toString(),
+              })
+            : navigate({
+                  search: createSearchParams({
+                      keyword: searchParams.get("keyword"),
+                      sortBy: searchParams.get("sortBy"),
+                      page: value,
+                  }).toString(),
+              });
     };
     return (
         <Box
@@ -313,6 +427,16 @@ const Search = ({ title }) => {
                             flexDirection: "column",
                         }}
                     >
+                        <Typography
+                            className='useFont-Nunito'
+                            sx={{
+                                mb: "2rem",
+                                fontSize: "1.6rem",
+                            }}
+                        >
+                            Kết quả tìm kiếm cho từ khoá "
+                            {searchParams.get("keyword")}"
+                        </Typography>
                         <Box
                             sx={{
                                 p: "1rem 3rem",
@@ -332,7 +456,17 @@ const Search = ({ title }) => {
                                 className={
                                     sorting === "Liên Quan" ? "active" : ""
                                 }
-                                onClick={(e) => setSorting("Liên Quan")}
+                                onClick={(e) => {
+                                    setSorting("Liên Quan");
+                                    navigate({
+                                        search: createSearchParams({
+                                            keyword:
+                                                searchParams.get("keyword"),
+                                            sortBy: "relevancy",
+                                            page: 1,
+                                        }).toString(),
+                                    });
+                                }}
                             >
                                 Liên Quan
                             </StyledButton>
@@ -340,7 +474,17 @@ const Search = ({ title }) => {
                                 className={
                                     sorting === "Mới Nhất" ? "active" : ""
                                 }
-                                onClick={(e) => setSorting("Mới Nhất")}
+                                onClick={(e) => {
+                                    setSorting("Mới Nhất");
+                                    navigate({
+                                        search: createSearchParams({
+                                            keyword:
+                                                searchParams.get("keyword"),
+                                            sortBy: "ctime",
+                                            page: 1,
+                                        }).toString(),
+                                    });
+                                }}
                             >
                                 Mới Nhất
                             </StyledButton>
@@ -348,7 +492,17 @@ const Search = ({ title }) => {
                                 className={
                                     sorting === "Bán Chạy" ? "active" : ""
                                 }
-                                onClick={(e) => setSorting("Bán Chạy")}
+                                onClick={(e) => {
+                                    setSorting("Bán Chạy");
+                                    navigate({
+                                        search: createSearchParams({
+                                            keyword:
+                                                searchParams.get("keyword"),
+                                            sortBy: "sales",
+                                            page: 1,
+                                        }).toString(),
+                                    });
+                                }}
                             >
                                 Bán Chạy
                             </StyledButton>
@@ -361,6 +515,7 @@ const Search = ({ title }) => {
                                 sx={{
                                     px: "1.2rem",
                                     ml: "1.2rem",
+                                    zIndex: 11,
                                     fontWeight: 500,
                                     minWidth: "16rem",
                                     fontSize: "1.4rem",
@@ -443,7 +598,20 @@ const Search = ({ title }) => {
                                                 : ""
                                         }
                                         value='ascending'
-                                        onClick={handleSortPrice}
+                                        onClick={(e) => {
+                                            setSorting(e.target.value);
+                                            navigate({
+                                                search: createSearchParams({
+                                                    keyword:
+                                                        searchParams.get(
+                                                            "keyword",
+                                                        ),
+                                                    sortBy: "price",
+                                                    order: "asc",
+                                                    page: 1,
+                                                }).toString(),
+                                            });
+                                        }}
                                     >
                                         Giá: Thấp đến Cao
                                     </option>
@@ -454,7 +622,20 @@ const Search = ({ title }) => {
                                                 : ""
                                         }
                                         value='descending'
-                                        onClick={handleSortPrice}
+                                        onClick={(e) => {
+                                            setSorting(e.target.value);
+                                            navigate({
+                                                search: createSearchParams({
+                                                    keyword:
+                                                        searchParams.get(
+                                                            "keyword",
+                                                        ),
+                                                    sortBy: "price",
+                                                    order: "desc",
+                                                    page: 1,
+                                                }).toString(),
+                                            });
+                                        }}
                                     >
                                         Giá: Cao đến Thấp
                                     </option>
@@ -469,12 +650,49 @@ const Search = ({ title }) => {
                                 mt: "0rem!important",
                             }}
                         >
-                            {products.map((product) => (
+                            {dataRemaining.map((product) => (
                                 <Grid xs={2} sm={3} key={product.id} item>
                                     <ProductItem product={product} />
                                 </Grid>
                             ))}
                         </Grid>
+                        <Box
+                            sx={{
+                                mt: "2.4rem",
+                                width: "100%",
+                                display: "flex",
+                                p: "1.2rem 3rem",
+                                borderRadius: "0.4rem",
+                                boxSizing: "border-box",
+                                justifyContent: "center",
+                                boxShadow: "0 0 1rem #eaeaea",
+                            }}
+                        >
+                            <Pagination
+                                count={10}
+                                variant='outlined'
+                                shape='rounded'
+                                page={page}
+                                onChange={handleChangePage}
+                                sx={{
+                                    "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root":
+                                        {
+                                            fontSize: "1.4rem",
+                                        },
+                                    "& .css-g2z002-MuiSvgIcon-root-MuiPaginationItem-icon":
+                                        {
+                                            width: "2rem",
+                                            height: "2rem",
+                                        },
+                                    "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected":
+                                        {
+                                            color: "#fff",
+                                            backgroundImage:
+                                                "linear-gradient(to right, #666, #283048)",
+                                        },
+                                }}
+                            />
+                        </Box>
                     </Box>
                 </Grid>
             </Grid>

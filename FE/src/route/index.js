@@ -77,7 +77,7 @@ export const routes = [
                 ],
             },
             {
-                path: "/men",
+                path: "men",
                 element: <Search title='Thời trang nam | 360 Store' />,
             },
             {
@@ -87,6 +87,10 @@ export const routes = [
             {
                 path: "accessory",
                 element: <Search title='Phụ kiện | 360 Store' />,
+            },
+            {
+                path: "search",
+                element: <Search />,
             },
         ],
     },
