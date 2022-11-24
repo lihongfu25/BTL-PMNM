@@ -123,6 +123,30 @@ const datas = [
             },
         ],
     },
+    {
+        id: "5",
+        status: "delivered",
+        products: [
+            {
+                id: "1",
+                name: "Sản phẩm 1",
+                size: "L",
+                color: "red",
+                quantity: 1,
+                price: 123456,
+                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
+            },
+            {
+                id: "2",
+                name: "Sản phẩm 1",
+                size: "L",
+                color: "red",
+                quantity: 1,
+                price: 123456,
+                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
+            },
+        ],
+    },
 ];
 const tabs = [
     {
