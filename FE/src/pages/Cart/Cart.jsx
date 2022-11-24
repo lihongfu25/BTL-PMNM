@@ -1,7 +1,6 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
-import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import { CartItem } from "./CartItem";
 import { currencyFormat } from "../../styles/GlobalStyles";
@@ -23,7 +22,7 @@ const StyledButton = styled(Button)({
 });
 const carts = [
     {
-        id: 1,
+        id: "1",
         name: "Sản phẩm 1",
         img: productImg,
         size: "M",
@@ -35,24 +34,24 @@ const carts = [
         quantity: 1,
     },
     {
-        id: 2,
-        name: "Sản phẩm 1",
+        id: "2",
+        name: "Sản phẩm 2",
         img: productImg,
         size: "M",
         color: {
-            colorId: 1,
+            id: 1,
             url: "https://wallpapercave.com/wp/wp2552423.jpg",
         },
         price: 123000,
-        quantity: 1,
+        quantity: 3,
     },
     {
-        id: 3,
-        name: "Sản phẩm 1",
+        id: "3",
+        name: "Sản phẩm 3",
         img: productImg,
         size: "M",
         color: {
-            colorId: 1,
+            id: 1,
             url: "https://wallpapercave.com/wp/wp2552423.jpg",
         },
         price: 123000,
