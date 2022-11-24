@@ -1,13 +1,17 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { useLocation, Link } from "react-router-dom";
+import {
+    useLocation,
+    Link,
+    createSearchParams,
+    useNavigate,
+} from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { BsSearch } from "react-icons/bs";
 import { styled } from "@mui/material/styles";
 import { Box, IconButton, Menu, MenuItem } from "@mui/material";
 import { userLogout } from "../../redux/store/userSlice";
 import logo from "../../assets/img/logo.png";
-import userAvatar from "../../assets/img/user.png";
 import "./header.scss";
 const StyledLink = styled(Link)({
     color: "#495057",
@@ -16,18 +20,27 @@ const StyledLink = styled(Link)({
 });
 const Header = () => {
     const isLogin = useSelector((state) => state.user.id !== "");
+    const user = useSelector((state) => state.user);
     const [checked, setChecked] = React.useState(false);
     const [search, setSearch] = React.useState("");
     const [anchorEl, setAnchorEl] = React.useState(null);
 
     const dispatch = useDispatch();
     const reactLocation = useLocation();
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         const handleListenKeyPress = (e) => {
             if (e.key === "Enter") {
-                console.log(search);
+                navigate({
+                    pathname: "search",
+                    search: createSearchParams({
+                        keyword: search,
+                        page: 1,
+                    }).toString(),
+                });
                 setSearch("");
+                setChecked(false);
             }
         };
         if (checked && search !== "")
@@ -36,7 +49,7 @@ const Header = () => {
         return () => {
             window.removeEventListener("keypress", handleListenKeyPress);
         };
-    }, [search, checked]);
+    }, [search, checked, navigate]);
     const handleClickUser = (e) => {
         setAnchorEl(e.target);
     };
@@ -143,7 +156,7 @@ const Header = () => {
                     }}
                 >
                     <img
-                        src={userAvatar}
+                        src={user.avatar}
                         alt='user'
                         style={{
                             width: "3.2rem",
