@@ -1,36 +1,29 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { BsEyeFill, BsEyeSlashFill } from "react-icons/bs";
+import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    InputAdornment,
-    IconButton,
-    FormControlLabel,
-    Checkbox,
-} from "@mui/material";
-import { Input } from "../../components/Input";
+import { Box, FormControlLabel, Checkbox } from "@mui/material";
 import { Button } from "../../components/Button";
+import { TextField } from "../../components/TextField";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
-const StyledInput = styled(Input)({
-    backgroundColor: "#fff",
+const StyledTextField = styled(TextField)({
     width: "100%",
     margin: "1rem 0",
 });
 const Login = () => {
     document.title = "Đăng nhập | 360 Store";
 
-    const [showPassword, setShowPassword] = React.useState(false);
-    const [username, setUsername] = React.useState("");
-    const [password, setPassword] = React.useState("");
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
 
-    const handleSubmit = (e) => {
-        console.log({ username, password });
-        e.preventDefault();
-    };
+    const onSubmit = (data) => console.log(data);
 
     return (
         <Box
+            component='form'
             sx={{
                 flexGrow: 1,
                 width: "100%",
@@ -38,33 +31,44 @@ const Login = () => {
                 alignItems: "center",
                 flexDirection: "column",
             }}
+            noValidate
+            onSubmit={handleSubmit(onSubmit)}
         >
-            <h6 className='heading whiteTextColor useFont-Nunito'>Đăng nhập</h6>
-            <StyledInput
-                placeholder='Tên đăng nhập/Email/SĐT'
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
+            <h6 className='heading textColor useFont-Nunito'>Đăng nhập</h6>
+            <Controller
+                name='username'
+                control={control}
+                rules={{
+                    required: "Vui lòng nhập tên tài khoản",
+                }}
+                render={({ field }) => (
+                    <StyledTextField
+                        label='Tên đăng nhập/Email/SĐT'
+                        error={Boolean(errors.username)}
+                        helperText={
+                            errors?.username ? errors.username.message : ""
+                        }
+                        {...field}
+                    />
+                )}
             />
-            <StyledInput
-                placeholder='Mật khẩu'
-                type={showPassword ? "text" : "password"}
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                endAdornment={
-                    <InputAdornment
-                        position='end'
-                        sx={{
-                            position: "absolute",
-                            right: 0,
-                        }}
-                    >
-                        <IconButton
-                            onClick={() => setShowPassword(!showPassword)}
-                        >
-                            {showPassword ? <BsEyeSlashFill /> : <BsEyeFill />}
-                        </IconButton>
-                    </InputAdornment>
-                }
+            <Controller
+                name='password'
+                control={control}
+                rules={{
+                    required: "Vui lòng nhập mật khẩu",
+                }}
+                render={({ field }) => (
+                    <StyledTextField
+                        label='Mật khẩu'
+                        type='password'
+                        error={Boolean(errors.password)}
+                        helperText={
+                            errors?.password ? errors.password.message : ""
+                        }
+                        {...field}
+                    />
+                )}
             />
             <Box
                 sx={{
@@ -75,7 +79,7 @@ const Login = () => {
                 }}
             >
                 <FormControlLabel
-                    className='whiteTextColor useFont-Nunito'
+                    className='textColor useFont-Nunito'
                     control={
                         <Checkbox
                             color='default'
@@ -97,7 +101,7 @@ const Login = () => {
                 />
                 <Link
                     to='/auth/forgot-password'
-                    className='linkUnderlineHover whiteTextColor'
+                    className='linkUnderlineHover textColor'
                     style={{
                         fontSize: "1.4rem",
                     }}
@@ -106,7 +110,7 @@ const Login = () => {
                 </Link>
             </Box>
             <Button
-                onClick={handleSubmit}
+                type='submit'
                 sx={{
                     width: "100%",
                     mt: "1rem",
@@ -114,7 +118,7 @@ const Login = () => {
             >
                 Đăng nhập
             </Button>
-            <h6 className='navLink whiteTextColor useFont-Nunito'>
+            <h6 className='navLink textColor useFont-Nunito'>
                 Bạn chưa có tài khoản ?{" "}
                 <Link
                     className='linkNoneUnderline'

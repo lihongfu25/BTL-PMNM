@@ -9,9 +9,20 @@
     margin: 3rem 0 0;
 }
 .notifyMessage {
-    font-size: 1.4rem;
-    text-align: center;
+    margin: 0;
+    padding: 1.6rem;
     color: #04804d;
+    font-size: 1.6rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    border-radius: 0.4rem;
+    background-color: #cdf7ec;
+    border: 1px solid #b4f3e3;
+    &.error {
+        color: #d32f2f;
+        background-color: rgba(211, 47, 47, 0.3);
+        border-color: rgba(211, 47, 47, 0.5);
+    }
 }
 .navLink-Icon {
     font-size: 4rem;

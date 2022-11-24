@@ -21,13 +21,13 @@ const LoginLogoutLayout = ({ children }) => {
             <Box
                 sx={{
                     alignSelf: "center",
-                    width: "30rem",
+                    width: "40rem",
                     mx: "auto",
                     px: "6rem",
                     pt: "3rem",
                     pb: "4rem",
                     borderRadius: "0.4rem",
-                    backgroundColor: "rgba(0, 0, 0, 0.15)",
+                    backgroundColor: "#fff",
                     boxShadow: "0 0 10px 1px #888",
                     display: "flex",
                     alignItems: "center",

@@ -1,25 +1,35 @@
 import React from "react";
 import { Link } from "react-router-dom";
 import { BsArrowLeftShort } from "react-icons/bs";
+import { useForm, Controller } from "react-hook-form";
 import { Box } from "@mui/material";
-import { Input } from "../../components/Input";
+
 import { Button } from "../../components/Button";
+import { TextField } from "../../components/TextField";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 
 const ForgotPassword = () => {
     document.title = "Quên mật khẩu | 360 Store";
     const [sended, setSended] = React.useState(false);
-    const [email, setEmail] = React.useState("");
-    const handleResetPass = () => {
-        setSended(true);
-        console.log(email);
+    const [notExist, setNotExist] = React.useState(false);
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+    } = useForm();
+    const onSubmit = (data) => {
+        console.log(data);
+        // setSended(true);
+        setNotExist(true);
     };
     const handleBackLoginForm = () => {
         setSended(false);
-        setEmail("");
+        setNotExist(false);
     };
+
     return (
         <Box
+            component='form'
             sx={{
                 flexGrow: 1,
                 width: "100%",
@@ -28,45 +38,59 @@ const ForgotPassword = () => {
                 flexDirection: "column",
                 mb: "3rem",
             }}
+            noValidate
+            onSubmit={handleSubmit(onSubmit)}
         >
             <Link
                 to='/auth/login'
-                className='navLink-Icon navLink whiteTextColor linkNoneUnderline'
+                className='navLink-Icon navLink textColor linkNoneUnderline'
                 onClick={handleBackLoginForm}
             >
                 <BsArrowLeftShort />
             </Link>
-            <h6 className='heading whiteTextColor useFont-Nunito'>
+            <h6 className='heading textColor useFont-Nunito'>
                 Đặt lại mật khẩu
             </h6>
             <Box
                 sx={{
                     width: "100%",
-                    backgroundColor: "#cdf7ec",
-                    border: "1px solid #cdf7ec",
-                    borderRadius: "0.4rem",
-                    mb: "2rem",
                 }}
             >
-                <p className='notifyMessage'>
+                <p className={`notifyMessage ${notExist && "error"}`}>
                     {sended
                         ? "Kiểm tra Email của bạn và đặt lại mật khẩu."
+                        : notExist
+                        ? `Không tìm thấy tài khoản liên kết với email đã nhập`
                         : "Nhập Email của bạn và hướng dẫn sẽ được gửi cho bạn!"}
+                    {}
                 </p>
             </Box>
-            <Input
-                fullWidth
-                placeholder='Email'
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                sx={{
-                    backgroundColor: "#fff",
-                    my: "1rem",
+            <Controller
+                name='email'
+                control={control}
+                defaultValue=''
+                rules={{
+                    required: "Vui lòng nhập trường này",
+                    pattern: {
+                        value: /^([a-z0-9_.-]+)@([\da-z.-]+).([a-z.]{2,6})$/,
+                        message: "Vui lòng nhập vào email của bạn",
+                    },
                 }}
+                render={({ field }) => (
+                    <TextField
+                        label='Email'
+                        error={Boolean(errors.email)}
+                        helperText={errors?.email ? errors.email.message : ""}
+                        {...field}
+                        sx={{
+                            width: "100%",
+                            my: "1rem",
+                        }}
+                    />
+                )}
             />
             <Button
-                onClick={handleResetPass}
-                disabled={email === ""}
+                type='submit'
                 sx={{
                     width: "100%",
                     mt: "1rem",
