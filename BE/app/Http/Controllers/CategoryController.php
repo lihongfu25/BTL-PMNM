@@ -15,22 +15,13 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        $category = Category::paginate(10);
+        $keyword = request()->keyword;
+        $category = Category::where("id", "like", "%" . $keyword . "%")
+             ->orWhere('name', 'LIKE', "%" . $keyword . "%")
+             ->orWhere('slug', 'LIKE', "%" . $keyword . "%")
+             ->paginate(10);
         return response()->json(['data' => $category], 200);
     }
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    // public function filter() {
-    //     $keyword = $_GET["keyword"];
-    //     $category = Category::where("id", "like", "%" . $keyword . "%")
-    //          ->orWhere('name', 'LIKE', "%" . $keyword . "%")
-    //          ->orWhere('slug', 'LIKE', "%" . $keyword . "%")
-    //          ->get()->paginate(2);
-    //     return response()->json(['data' => $category], 200);
-    // }
 
     /**
      * Store a newly created resource in storage.

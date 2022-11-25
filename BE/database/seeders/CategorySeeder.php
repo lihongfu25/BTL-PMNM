@@ -31,6 +31,6 @@ class CategorySeeder extends Seeder
                     'slug' => 'accessory',
                 ]
             ]
-                );
+        );
     }
 }

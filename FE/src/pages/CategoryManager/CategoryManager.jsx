@@ -47,7 +47,7 @@ const CategoryManager = () => {
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
-    const debounceSearch = useDebounce(search, 1000);
+    const debounceSearch = useDebounce(search, 500);
     const [data, setData] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(false);
     const [openAddForm, setOpenAddForm] = React.useState(false);
