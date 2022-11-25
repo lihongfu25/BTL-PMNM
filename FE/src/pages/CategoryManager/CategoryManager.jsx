@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import {
@@ -10,7 +11,11 @@ import {
     DialogTitle,
     DialogContent,
     DialogActions,
+    Snackbar,
+    Alert,
+    LinearProgress,
 } from "@mui/material";
+import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import "../../styles/DataTable/dataTable.scss";
@@ -21,11 +26,6 @@ const columns = [
     { field: "slug", headerName: "Slug", width: 120 },
 ];
 
-const rows = [
-    { id: "1", name: "Nam", slug: "men" },
-    { id: "2", name: "Nữ", slug: "women" },
-    { id: "3", name: "Phụ Kiện", slug: "accessory" },
-];
 const StyledButton = styled(Button)({
     textTransform: "none",
     padding: "0.2rem 1.2rem",
@@ -41,33 +41,62 @@ const StyledDialog = styled(Dialog)({
         fontSize: "1.6rem",
     },
 });
+
 const CategoryManager = () => {
     document.title = "Danh mục | 360 Store";
+    const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
+    const debounceSearch = useDebounce(search, 1000);
     const [data, setData] = React.useState([]);
-    const [dataRemaining, setDataRemaining] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(false);
     const [openAddForm, setOpenAddForm] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
     const [openUpdateForm, setOpenUpdateForm] = React.useState(false);
     const [delId, setDelId] = React.useState();
     const [updateId, setUpdateId] = React.useState();
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
+
+    const {
+        control,
+        handleSubmit,
+        formState: { errors },
+        setValue,
+        setError,
+        clearErrors,
+    } = useForm();
+
+    React.useEffect(() => {
+        async function getData() {
+            setIsLoading(true);
+            const res = await axios.get(
+                `//localhost:8000/api/categories?keyword=${debounceSearch}&page=${page}`,
+            );
+            setData(res.data.data.data);
+            setPage(res.data.data.current_page);
+            setTotalPage(res.data.data.last_page);
+            setIsLoading(false);
+        }
+        getData();
+    }, [page, debounceSearch]);
+
+    const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
+        return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
+    });
     const handleChangePage = (e, value) => {
         setPage(value);
     };
-    React.useEffect(() => {
-        setData(rows);
-    }, []);
-    React.useEffect(() => {
-        setDataRemaining(
-            data.filter(
-                (row) =>
-                    row.id.toLowerCase().includes(search.toLowerCase()) ||
-                    row.name.toLowerCase().includes(search.toLowerCase()) ||
-                    row.email.toLowerCase().includes(search.toLowerCase()),
-            ),
-        );
-    }, [data, search]);
+
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
+    };
     const handleOpenAddForm = () => {
         setOpenAddForm(true);
         setValue("name", "");
@@ -92,23 +121,93 @@ const CategoryManager = () => {
         setDelId(value);
     };
     const onDel = () => {
-        console.log(delId);
         setOpenDelForm(false);
+        async function delCategory() {
+            try {
+                const res = await axios.delete(
+                    `//localhost:8000/api/categories/${delId}`,
+                    {
+                        ...data,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setData(res.data.data.data);
+                setPage(res.data.data.current_page);
+                setTotalPage(res.data.data.last_page);
+                setOpenUpdateForm(false);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        delCategory();
     };
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-        clearErrors,
-        setValue,
-    } = useForm();
+
     const onUpdate = (data) => {
         setOpenUpdateForm(false);
-        console.log({ id: updateId, ...data });
+        async function updateCategory() {
+            try {
+                const res = await axios.put(
+                    `//localhost:8000/api/categories/${updateId}`,
+                    {
+                        ...data,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setData(res.data.data.data);
+                setPage(res.data.data.current_page);
+                setTotalPage(res.data.data.last_page);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        updateCategory();
     };
     const onAdd = (data) => {
-        setOpenAddForm(false);
-        console.log({ ...data });
+        async function createCategory() {
+            try {
+                const res = await axios.post(
+                    `//localhost:8000/api/categories`,
+                    {
+                        ...data,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setData(res.data.data.data);
+                setPage(res.data.data.current_page);
+                setTotalPage(res.data.data.last_page);
+                setOpenAddForm(false);
+            } catch (err) {
+                if (err.response.data.messageName) {
+                    setSnackbar({
+                        isOpen: true,
+                        type: "error",
+                        message: err.response.data.messageName,
+                    });
+                    setError("name", err.response.data.messageName);
+                }
+                if (err.response.data.messageSlug) {
+                    setSnackbar({
+                        isOpen: true,
+                        type: "error",
+                        message: err.response.data.messageSlug,
+                    });
+                    setError("slug", err.response.data.messageSlug);
+                }
+            }
+        }
+        createCategory();
     };
     return (
         <Box
@@ -188,7 +287,18 @@ const CategoryManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {dataRemaining.length === 0 ? (
+                            {isLoading ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
+                                        }
+                                        align='center'
+                                    >
+                                        <LinearProgress color='inherit' />
+                                    </td>
+                                </tr>
+                            ) : data.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={
@@ -200,65 +310,51 @@ const CategoryManager = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                dataRemaining
-                                    .filter(
-                                        (row, i) =>
-                                            i >= 10 * (page - 1) &&
-                                            i <= 10 * page - 1,
-                                    )
-                                    .map((row, index) => (
-                                        <tr
-                                            key={index}
-                                            className={
-                                                index % 2 === 0 ? "even" : "odd"
-                                            }
+                                data.map((row, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            index % 2 === 0 ? "even" : "odd"
+                                        }
+                                    >
+                                        {Object.values(row).map(
+                                            (value, index) => (
+                                                <td key={index}>{value}</td>
+                                            ),
+                                        )}
+                                        <td
+                                            className='go-to-detail'
+                                            align='center'
                                         >
-                                            {Object.values(row).map(
-                                                (value, index) => (
-                                                    <td key={index}>{value}</td>
-                                                ),
-                                            )}
-                                            <td
-                                                className='go-to-detail'
-                                                align='center'
+                                            <Link
+                                                underline='hover'
+                                                sx={{
+                                                    mr: "1rem",
+                                                }}
+                                                onClick={() =>
+                                                    handleOpenUpdateForm(row)
+                                                }
                                             >
-                                                <Link
-                                                    underline='hover'
-                                                    sx={{
-                                                        mr: "1rem",
-                                                    }}
-                                                    onClick={() =>
-                                                        handleOpenUpdateForm(
-                                                            row,
-                                                        )
-                                                    }
-                                                >
-                                                    Sửa
-                                                </Link>
-                                                <Link
-                                                    underline='hover'
-                                                    onClick={() =>
-                                                        handleOpenDelForm(
-                                                            row.id,
-                                                        )
-                                                    }
-                                                >
-                                                    Xóa
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))
+                                                Sửa
+                                            </Link>
+                                            <Link
+                                                underline='hover'
+                                                onClick={() =>
+                                                    handleOpenDelForm(row.id)
+                                                }
+                                            >
+                                                Xóa
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={
-                                            Math.floor(
-                                                dataRemaining.length / 10,
-                                            ) + 1
-                                        }
+                                        count={totalPage}
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
@@ -470,6 +566,22 @@ const CategoryManager = () => {
                     </Box>
                 </StyledDialog>
             </Box>
+            <Snackbar
+                open={snackbar.isOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <MuiAlert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.type}
+                    sx={{
+                        width: "100%",
+                        fontSize: "1.6rem",
+                    }}
+                >
+                    {snackbar.message}
+                </MuiAlert>
+            </Snackbar>
         </Box>
     );
 };
