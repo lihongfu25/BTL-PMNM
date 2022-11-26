@@ -53,9 +53,14 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
+    public function show($template)
     {
         //
+
+        $category = Category::all();
+        return response()->json([
+            'data' => $category,
+        ], 200);
     }
 
     /**

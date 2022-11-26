@@ -71,6 +71,13 @@ const CategoryManager = () => {
         clearErrors,
     } = useForm();
 
+    const {
+        control: control2,
+        handleSubmit: handleSubmit2,
+        formState: { errors: errors2 },
+        setValue2,
+    } = useForm();
+
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
@@ -88,6 +95,7 @@ const CategoryManager = () => {
     const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
         return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
     });
+
     const handleChangePage = (e, value) => {
         setPage(value);
     };
@@ -109,8 +117,8 @@ const CategoryManager = () => {
     };
     const handleOpenUpdateForm = (row) => {
         setUpdateId(row.id);
-        setValue("name", row.name);
-        setValue("slug", row.slug);
+        setValue2("name", row.name);
+        setValue2("slug", row.slug);
         setOpenUpdateForm(true);
     };
     const handleCloseUpdateForm = () => {
@@ -409,7 +417,7 @@ const CategoryManager = () => {
                 >
                     <Box
                         component='form'
-                        onSubmit={handleSubmit(onUpdate)}
+                        onSubmit={handleSubmit2(onUpdate)}
                         noValidate
                     >
                         <DialogTitle>Cập nhật danh mục</DialogTitle>
@@ -421,17 +429,17 @@ const CategoryManager = () => {
                         >
                             <Controller
                                 name='name'
-                                control={control}
+                                control={control2}
                                 rules={{
                                     required: "Vui lòng nhập trường này!",
                                 }}
                                 render={({ field }) => (
                                     <TextFieldFull
                                         label='Tên danh mục'
-                                        error={Boolean(errors.name)}
+                                        error={Boolean(errors2.name)}
                                         helperText={
-                                            errors?.name
-                                                ? errors.name.message
+                                            errors2?.name
+                                                ? errors2.name.message
                                                 : ""
                                         }
                                         {...field}
@@ -440,7 +448,7 @@ const CategoryManager = () => {
                             />
                             <Controller
                                 name='slug'
-                                control={control}
+                                control={control2}
                                 rules={{
                                     required: "Vui lòng nhập trường này!",
                                     pattern: {
@@ -456,10 +464,10 @@ const CategoryManager = () => {
                                             sx={{
                                                 mt: "1.5rem",
                                             }}
-                                            error={Boolean(errors.slug)}
+                                            error={Boolean(errors2.slug)}
                                             helperText={
-                                                errors?.slug
-                                                    ? errors.slug.message
+                                                errors2?.slug
+                                                    ? errors2.slug.message
                                                     : ""
                                             }
                                             {...field}
