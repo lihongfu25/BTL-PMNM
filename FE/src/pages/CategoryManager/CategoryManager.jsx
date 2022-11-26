@@ -55,6 +55,7 @@ const CategoryManager = () => {
     const [openUpdateForm, setOpenUpdateForm] = React.useState(false);
     const [delId, setDelId] = React.useState();
     const [updateId, setUpdateId] = React.useState();
+    const [callApi, setCallApi] = React.useState(Math.random());
     const [snackbar, setSnackbar] = React.useState({
         isOpen: false,
         type: "",
@@ -82,7 +83,7 @@ const CategoryManager = () => {
             setIsLoading(false);
         }
         getData();
-    }, [page, debounceSearch]);
+    }, [page, debounceSearch, callApi]);
 
     const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
         return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
@@ -121,33 +122,32 @@ const CategoryManager = () => {
         setDelId(value);
     };
     const onDel = () => {
-        setOpenDelForm(false);
         async function delCategory() {
             try {
                 const res = await axios.delete(
                     `//localhost:8000/api/categories/${delId}`,
-                    {
-                        ...data,
-                    },
                 );
                 setSnackbar({
                     isOpen: true,
                     type: "success",
                     message: res.data.message,
                 });
-                setData(res.data.data.data);
-                setPage(res.data.data.current_page);
-                setTotalPage(res.data.data.last_page);
-                setOpenUpdateForm(false);
+                setCallApi(Math.random());
+                setOpenDelForm(false);
             } catch (err) {
-                console.log(err);
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+                setOpenDelForm(false);
+                setCallApi(Math.random());
             }
         }
         delCategory();
     };
 
     const onUpdate = (data) => {
-        setOpenUpdateForm(false);
         async function updateCategory() {
             try {
                 const res = await axios.put(
@@ -161,11 +161,16 @@ const CategoryManager = () => {
                     type: "success",
                     message: res.data.message,
                 });
-                setData(res.data.data.data);
-                setPage(res.data.data.current_page);
-                setTotalPage(res.data.data.last_page);
+                setOpenUpdateForm(false);
+                setCallApi(Math.random());
             } catch (err) {
-                console.log(err);
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+                setOpenUpdateForm(false);
+                setCallApi(Math.random());
             }
         }
         updateCategory();
@@ -184,9 +189,7 @@ const CategoryManager = () => {
                     type: "success",
                     message: res.data.message,
                 });
-                setData(res.data.data.data);
-                setPage(res.data.data.current_page);
-                setTotalPage(res.data.data.last_page);
+                setCallApi(Math.random());
                 setOpenAddForm(false);
             } catch (err) {
                 if (err.response.data.messageName) {
@@ -306,7 +309,7 @@ const CategoryManager = () => {
                                         }
                                         align='center'
                                     >
-                                        Chưa có bản ghi nào
+                                        Không tìm thấy dữ liệu phù hợp!
                                     </td>
                                 </tr>
                             ) : (

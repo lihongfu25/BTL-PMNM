@@ -42,10 +42,8 @@ class CategoryController extends Controller
             return response()->json(['messageSlug' => "Slug đã tồn tại!"], 409);
         }
         Category::create($request->all());
-        $category = Category::paginate(10);
         return response()->json([
             'message' => "Tạo mới thành công!",
-            'data' => $category
         ], 201);
     }
 
@@ -70,12 +68,13 @@ class CategoryController extends Controller
     public function update(UpdateCategoryRequest $request, $categoryId)
     {
         $categoryFind = Category::find($categoryId);
+
+        if (!$categoryFind)
+            return response()->json(['message' => 'Không tìm thấy danh mục cần sửa!'], 404);
         
         $categoryFind->update($request->all());
-        $category = Category::paginate(10);
         return response()->json([
             'message' => "Cập nhật thành công!",
-            'data' => $category
         ], 201);
     }
 
@@ -89,13 +88,14 @@ class CategoryController extends Controller
     {
         //
         $categoryFind = Category::find($categoryId);
+
+        if (!$categoryFind)
+            return response()->json(['message' => 'Không tìm thấy danh mục cần xóa!'], 404);
         
         $categoryFind->delete();
-        $category = Category::paginate(10);
 
         return response()->json([
             'message' => "Xóa thành công!",
-            'data' => $category
         ], 200);
     }
 }
