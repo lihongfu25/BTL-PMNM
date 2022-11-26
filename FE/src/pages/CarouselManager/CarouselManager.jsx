@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import {
@@ -10,10 +11,15 @@ import {
     DialogActions,
     Link,
     Pagination,
+    Snackbar,
+    Alert,
+    LinearProgress,
 } from "@mui/material";
+import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import { Select } from "../../components/Select";
+import { formatDate } from "../../styles/GlobalStyles";
 import "../../styles/DataTable/dataTable.scss";
 
 const columns = [
@@ -23,94 +29,7 @@ const columns = [
     { field: "status", headerName: "Trạng thái", width: 160 },
     { field: "date", headerName: "Ngày tạo", width: 160 },
 ];
-const rows = [
-    {
-        id: 1,
-        title: "Tiêu đề 1",
-        category: "Nam",
-        status: "Đang hoạt động",
-        date: "2022-10-20",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 2,
-        title: "Tiêu đề 2",
-        category: "Nữ",
-        status: "Đang hoạt động",
-        date: "2022-10-21",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 3,
-        title: "Tiêu đề 3",
-        category: "Nam",
-        status: "Đang tắt",
-        date: "2022-10-22",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 4,
-        title: "Tiêu đề 4",
-        category: "Phụ Kiện",
-        status: "Đang tắt",
-        date: "2022-10-29",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 5,
-        title: "Tiêu đề 5",
-        category: "Nam",
-        status: "Đang hoạt động",
-        date: "2022-11-20",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 6,
-        title: "Tiêu đề 6",
-        category: "Nữ",
-        status: "Đang tắt",
-        date: "2022-10-22",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 7,
-        title: "Tiêu đề 7",
-        category: "Nữ",
-        status: "Đang hoạt động",
-        date: "2022-09-20",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 8,
-        title: "Tiêu đề 8",
-        category: "Phụ Kiện",
-        status: "Đang tắt",
-        date: "2022-10-10",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-    {
-        id: 9,
-        title: "Tiêu đề 9",
-        category: "Nam",
-        status: "Đang hoạt động",
-        date: "2022-10-02",
-        image: "https://img3.thuthuatphanmem.vn/uploads/2019/10/14/anh-lookbook-thoi-trang_113854100.jpg",
-    },
-];
-const catigories = [
-    {
-        id: 1,
-        name: "Nam",
-    },
-    {
-        id: 2,
-        name: "Nữ",
-    },
-    {
-        id: 3,
-        name: "Phụ Kiện",
-    },
-];
+
 const statuses = [
     {
         name: "Đang hoạt động",
@@ -133,15 +52,25 @@ const StyledDialog = styled(Dialog)({
 });
 const ContactManager = () => {
     document.title = "Carousel | 360 Store";
+    const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
     const [data, setData] = React.useState([]);
-    const [dataRemaining, setDataRemaining] = React.useState([]);
+    const [categories, setCategories] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(false);
     const [openAddForm, setOpenAddForm] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
     const [openUpdateForm, setOpenUpdateForm] = React.useState(false);
+    const [callApi, setCallApi] = React.useState(Math.random());
     const [delId, setDelId] = React.useState();
+    const debounceSearch = useDebounce(search, 500);
     const [updateId, setUpdateId] = React.useState();
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
+
     const {
         control,
         register,
@@ -150,39 +79,60 @@ const ContactManager = () => {
         clearErrors,
         setValue,
     } = useForm();
+
+    const {
+        control: control2,
+        handleSubmit: handleSubmit2,
+        formState: { errors: errors2 },
+        clearErrors: clearErrors2,
+        setValue: setValue2,
+    } = useForm();
+
     React.useEffect(() => {
-        setData(rows);
-    }, []);
-    React.useEffect(() => {
-        setDataRemaining(
-            data.filter(
-                (row) =>
-                    row.title.toLowerCase().includes(search.toLowerCase()) ||
-                    row.category.toLowerCase().includes(search.toLowerCase()) ||
-                    row.status.toLowerCase().includes(search.toLowerCase()),
-            ),
-        );
-    }, [data, search]);
+        async function getData() {
+            setIsLoading(true);
+            const res = await Promise.all([
+                axios.get(`//localhost:8000/api/categories/all`),
+                axios.get(
+                    `//localhost:8000/api/carousels?keyword=${debounceSearch}&page=${page}`,
+                ),
+            ]);
+            setCategories(res[0].data.data);
+            setData(res[1].data.data.data);
+            setPage(res[1].data.data.current_page);
+            setTotalPage(res[1].data.data.last_page);
+            setIsLoading(false);
+        }
+        getData();
+    }, [page, debounceSearch, callApi]);
+
+    const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
+        return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
+    });
+
     const handleChangePage = (e, value) => {
         setPage(value);
     };
-
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
+    };
     const handleOpenAddForm = () => {
         setOpenAddForm(true);
         setValue("title", "");
-        setValue("category", "");
+        setValue("category_id", "");
+        setValue("status", "Đang hoạt động");
         setValue("image", undefined);
     };
     const handleOpenUpdateForm = (row) => {
-        const c_id = catigories.filter(
-            (category) => category.name === row.category,
-        )[0].id;
         setOpenUpdateForm(true);
         setUpdateId(row.id);
-        setValue("title", row.title);
-        setValue("category", c_id);
-        setValue("status", row.status);
-        setValue("image", row.image);
+        setValue2("title", row.title);
+        setValue2("category_id", row.category_id);
+        setValue2("status", row.status);
+        setValue2("image", row.image);
     };
     const handleOpenDelForm = (value) => {
         setOpenDelForm(true);
@@ -195,20 +145,89 @@ const ContactManager = () => {
     };
     const handleCloseUpdateForm = () => {
         setOpenUpdateForm(false);
-        clearErrors();
+        clearErrors2();
     };
 
     const onDel = () => {
-        console.log(delId);
         setOpenDelForm(false);
+        async function delCategory() {
+            try {
+                const res = await axios.delete(
+                    `//localhost:8000/api/carousels/${delId}`,
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setCallApi(Math.random());
+                setOpenDelForm(false);
+            } catch (err) {
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+                setOpenDelForm(false);
+                setCallApi(Math.random());
+            }
+        }
+        delCategory();
     };
     const onAdd = (data) => {
-        console.log({ ...data, image: data.image[0].name });
         setOpenAddForm(false);
+        async function createCategory() {
+            try {
+                const formData = new FormData();
+
+                Object.keys(data).forEach((item) => {
+                    formData.append(item, data[item]);
+                });
+                if (data.image[0]) formData.append("image", data.image[0]);
+                const res = await axios.post(
+                    `//localhost:8000/api/carousels`,
+                    formData,
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setCallApi(Math.random());
+                setOpenAddForm(false);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        createCategory();
     };
     const onUpdate = (data) => {
-        console.log({ id: updateId, ...data });
-        setOpenUpdateForm(false);
+        async function updateCarousel() {
+            try {
+                const res = await axios.put(
+                    `//localhost:8000/api/carousels/${updateId}`,
+                    {
+                        ...data,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setOpenUpdateForm(false);
+                setCallApi(Math.random());
+            } catch (err) {
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+                setOpenUpdateForm(false);
+                setCallApi(Math.random());
+            }
+        }
+        updateCarousel();
     };
 
     return (
@@ -289,7 +308,7 @@ const ContactManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {dataRemaining.length === 0 ? (
+                            {isLoading ? (
                                 <tr>
                                     <td
                                         colSpan={
@@ -297,77 +316,74 @@ const ContactManager = () => {
                                         }
                                         align='center'
                                     >
-                                        Chưa có bản ghi nào
+                                        <LinearProgress color='inherit' />
+                                    </td>
+                                </tr>
+                            ) : data.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
+                                        }
+                                        align='center'
+                                    >
+                                        Không tìm thấy dữ liệu phù hợp!
                                     </td>
                                 </tr>
                             ) : (
-                                dataRemaining
-                                    .filter(
-                                        (row, i) =>
-                                            i >= 10 * (page - 1) &&
-                                            i <= 10 * page - 1,
-                                    )
-                                    .map((row, index) => (
-                                        <tr
-                                            key={index}
+                                data.map((row, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            index % 2 === 0 ? "even" : "odd"
+                                        }
+                                    >
+                                        <td>{row.id}</td>
+                                        <td>{row.title}</td>
+                                        <td>{row.category.name}</td>
+                                        <td
                                             className={
-                                                index % 2 === 0 ? "even" : "odd"
+                                                row.status === "Đang tắt"
+                                                    ? "error"
+                                                    : "success"
                                             }
                                         >
-                                            <td>{row.id}</td>
-                                            <td>{row.title}</td>
-                                            <td>{row.category}</td>
-                                            <td
-                                                className={
-                                                    row.status === "Đang tắt"
-                                                        ? "error"
-                                                        : "success"
+                                            {row.status}
+                                        </td>
+                                        <td>{formatDate(row.created_at)}</td>
+                                        <td
+                                            className='go-to-detail'
+                                            align='center'
+                                        >
+                                            <Link
+                                                underline='hover'
+                                                sx={{
+                                                    mr: "1rem",
+                                                }}
+                                                onClick={() =>
+                                                    handleOpenUpdateForm(row)
                                                 }
                                             >
-                                                {row.status}
-                                            </td>
-                                            <td>{row.date}</td>
-                                            <td
-                                                className='go-to-detail'
-                                                align='center'
+                                                Sửa
+                                            </Link>
+                                            <Link
+                                                underline='hover'
+                                                onClick={() =>
+                                                    handleOpenDelForm(row.id)
+                                                }
                                             >
-                                                <Link
-                                                    underline='hover'
-                                                    sx={{
-                                                        mr: "1rem",
-                                                    }}
-                                                    onClick={() =>
-                                                        handleOpenUpdateForm(
-                                                            row,
-                                                        )
-                                                    }
-                                                >
-                                                    Sửa
-                                                </Link>
-                                                <Link
-                                                    underline='hover'
-                                                    onClick={() =>
-                                                        handleOpenDelForm(
-                                                            row.id,
-                                                        )
-                                                    }
-                                                >
-                                                    Xóa
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))
+                                                Xóa
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={
-                                            Math.floor(
-                                                dataRemaining.length / 10,
-                                            ) + 1
-                                        }
+                                        count={totalPage}
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
@@ -457,7 +473,7 @@ const ContactManager = () => {
                             }}
                         />
                         <Controller
-                            name='category'
+                            name='category_id'
                             control={control}
                             rules={{
                                 required: "Vui lòng chọn danh mục!",
@@ -465,9 +481,9 @@ const ContactManager = () => {
                             render={({ field }) => (
                                 <Select
                                     label='Danh mục'
-                                    options={catigories}
-                                    isError={Boolean(errors.category)}
-                                    errorMessage={errors.category?.message}
+                                    options={categories}
+                                    isError={Boolean(errors.category_id)}
+                                    errorMessage={errors.category_id?.message}
                                     field={field}
                                 />
                             )}
@@ -536,7 +552,7 @@ const ContactManager = () => {
                 <Box
                     component='form'
                     noValidate
-                    onSubmit={handleSubmit(onUpdate)}
+                    onSubmit={handleSubmit2(onUpdate)}
                 >
                     <DialogTitle>Cập nhật slide</DialogTitle>
                     <DialogContent
@@ -547,7 +563,7 @@ const ContactManager = () => {
                     >
                         <Controller
                             name='title'
-                            control={control}
+                            control={control2}
                             rules={{
                                 required: "Vui lòng nhập trường này!",
                             }}
@@ -559,10 +575,10 @@ const ContactManager = () => {
                                             mb: "1.5rem",
                                             width: "100%",
                                         }}
-                                        error={Boolean(errors.title)}
+                                        error={Boolean(errors2.title)}
                                         helperText={
-                                            errors?.title
-                                                ? errors.title.message
+                                            errors2?.title
+                                                ? errors2.title.message
                                                 : ""
                                         }
                                         {...field}
@@ -571,24 +587,24 @@ const ContactManager = () => {
                             }}
                         />
                         <Controller
-                            name='category'
-                            control={control}
+                            name='category_id'
+                            control={control2}
                             rules={{
                                 required: "Vui lòng chọn danh mục!",
                             }}
                             render={({ field }) => (
                                 <Select
                                     label='Danh mục'
-                                    options={catigories}
-                                    isError={Boolean(errors.category)}
-                                    errorMessage={errors.category?.message}
+                                    options={categories}
+                                    isError={Boolean(errors2.category_id)}
+                                    errorMessage={errors2.category_id?.message}
                                     field={field}
                                 />
                             )}
                         />
                         <Controller
                             name='status'
-                            control={control}
+                            control={control2}
                             rules={{
                                 required: "Vui lòng chọn trạng thái!",
                             }}
@@ -600,8 +616,8 @@ const ContactManager = () => {
                                     label='Trạng thái'
                                     options={statuses}
                                     disabledEmValue
-                                    isError={Boolean(errors.status)}
-                                    errorMessage={errors.status?.message}
+                                    isError={Boolean(errors2.status)}
+                                    errorMessage={errors2.status?.message}
                                     field={field}
                                 />
                             )}
@@ -623,9 +639,10 @@ const ContactManager = () => {
                                 <img
                                     alt=''
                                     src={
-                                        data.filter(
-                                            (row) => row.id === updateId,
-                                        )[0].image || undefined
+                                        "http://localhost:8000/" +
+                                            data.filter(
+                                                (row) => row.id === updateId,
+                                            )[0].image || undefined
                                     }
                                 />
                             )}
@@ -648,6 +665,22 @@ const ContactManager = () => {
                     </DialogActions>
                 </Box>
             </StyledDialog>
+            <Snackbar
+                open={snackbar.isOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <MuiAlert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.type}
+                    sx={{
+                        width: "100%",
+                        fontSize: "1.6rem",
+                    }}
+                >
+                    {snackbar.message}
+                </MuiAlert>
+            </Snackbar>
         </Box>
     );
 };
