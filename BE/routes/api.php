@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CarouselController;
+use App\Http\Controllers\MemberController;
 use App\Http\Controllers\SizeController;
 
 
@@ -25,6 +26,7 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 
 Route::apiResource('/categories', CategoryController::class);
 Route::apiResource('/carousels', CarouselController::class);
+Route::apiResource('/members', MemberController::class);
 
 // Route::apiResource('/carousels', CarouselController::class)->except('update');
 // Route::post('/carousels/{carousel_id}', [CarouselController::class, 'update']);

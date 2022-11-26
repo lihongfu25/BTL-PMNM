@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -9,7 +10,11 @@ import {
     DialogActions,
     Link,
     Pagination,
+    Snackbar,
+    Alert,
+    LinearProgress,
 } from "@mui/material";
+import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import { Select } from "../../components/Select";
@@ -153,26 +158,48 @@ const StyledTextField = styled(TextField)({
 });
 const MemberManager = () => {
     document.title = "Thành viên | 360 Store";
+    const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
     const [data, setData] = React.useState([]);
-    const [dataRemaining, setDataRemaining] = React.useState([]);
     const [openDetail, setOpenDetail] = React.useState(false);
+    const [openDelForm, setOpenDelForm] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
     const [memberInfor, setMemberInfor] = React.useState({});
+    const debounceSearch = useDebounce(search, 500);
+    const [callApi, setCallApi] = React.useState(Math.random());
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
+    React.useEffect(() => {
+        async function getData() {
+            setIsLoading(true);
+            const res = await Promise.all([
+                axios.get(`//localhost:8000/api/categories/all`),
+                axios.get(
+                    `//localhost:8000/api/carousels?keyword=${debounceSearch}&page=${page}`,
+                ),
+            ]);
+            setData(res[1].data.data.data);
+            setPage(res[1].data.data.current_page);
+            setTotalPage(res[1].data.data.last_page);
+            setIsLoading(false);
+        }
+        getData();
+    }, [page, debounceSearch, callApi]);
 
-    React.useEffect(() => {
-        setData(rows);
-    }, []);
-    React.useEffect(() => {
-        setDataRemaining(
-            data.filter(
-                (row) =>
-                    row.id.toLowerCase().includes(search.toLowerCase()) ||
-                    row.name.toLowerCase().includes(search.toLowerCase()) ||
-                    row.email.toLowerCase().includes(search.toLowerCase()),
-            ),
-        );
-    }, [data, search]);
+    const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
+        return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
+    });
+
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
+    };
     const handleChangePage = (e, value) => {
         setPage(value);
     };
@@ -190,6 +217,7 @@ const MemberManager = () => {
     const handleDeleteMember = () => {
         console.log(memberInfor.id);
         setOpenDetail(false);
+        setOpenDelForm(false);
     };
 
     return (
@@ -262,7 +290,7 @@ const MemberManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {dataRemaining.length === 0 ? (
+                            {data.length === 0 ? (
                                 <tr>
                                     <td
                                         colSpan={
@@ -274,53 +302,43 @@ const MemberManager = () => {
                                     </td>
                                 </tr>
                             ) : (
-                                dataRemaining
-                                    .filter(
-                                        (row, i) =>
-                                            i >= 10 * (page - 1) &&
-                                            i <= 10 * page - 1,
-                                    )
-                                    .map((row, index) => (
-                                        <tr
-                                            key={index}
-                                            className={
-                                                index % 2 === 0 ? "even" : "odd"
-                                            }
+                                data.map((row, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            index % 2 === 0 ? "even" : "odd"
+                                        }
+                                    >
+                                        <td>{row.id}</td>
+                                        <td>{row.name}</td>
+                                        <td>{row.email}</td>
+                                        <td>{row.phone}</td>
+                                        <td>{row.address}</td>
+                                        <td
+                                            className='go-to-detail'
+                                            align='center'
                                         >
-                                            <td>{row.id}</td>
-                                            <td>{row.name}</td>
-                                            <td>{row.email}</td>
-                                            <td>{row.phone}</td>
-                                            <td>{row.address}</td>
-                                            <td
-                                                className='go-to-detail'
-                                                align='center'
+                                            <Link
+                                                underline='hover'
+                                                sx={{
+                                                    mr: "1rem",
+                                                }}
+                                                onClick={() =>
+                                                    handleOpenDetail(row)
+                                                }
                                             >
-                                                <Link
-                                                    underline='hover'
-                                                    sx={{
-                                                        mr: "1rem",
-                                                    }}
-                                                    onClick={() =>
-                                                        handleOpenDetail(row)
-                                                    }
-                                                >
-                                                    Xem
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))
+                                                Xem
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={
-                                            Math.floor(
-                                                dataRemaining.length / 10,
-                                            ) + 1
-                                        }
+                                        count={totalPage}
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
@@ -333,7 +351,7 @@ const MemberManager = () => {
                 </Box>
             </Box>
             <Dialog
-                className='feedback-form'
+                className='detail-form'
                 open={openDetail}
                 onClose={handleCloseDetail}
                 sx={{
@@ -349,109 +367,147 @@ const MemberManager = () => {
                         },
                 }}
             >
-                <Box
-                    component='form'
-                    noValidate
-                    // onSubmit={handleSubmit(onSubmit)}
+                <DialogTitle>Thông tin thành viên</DialogTitle>
+                <DialogContent
+                    sx={{
+                        pt: "1rem!important",
+                        flexDirection: "column",
+                    }}
                 >
-                    <DialogTitle>Thông tin thành viên</DialogTitle>
-                    <DialogContent
-                        sx={{
-                            pt: "1rem!important",
-                            flexDirection: "column",
+                    <StyledTextField
+                        label='Mã thành viên'
+                        value={memberInfor.id}
+                        InputProps={{
+                            readOnly: true,
                         }}
-                    >
-                        <StyledTextField
-                            label='Mã thành viên'
-                            value={memberInfor.id}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <StyledTextField
-                            label='Họ tên'
-                            value={memberInfor.name}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <StyledTextField
-                            label='Email'
-                            value={memberInfor.email}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <StyledTextField
-                            label='Số điện thoại'
-                            value={memberInfor.phone}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <StyledTextField
-                            label='Địa chỉ'
-                            value={memberInfor.address}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <StyledTextField
-                            label='Tên đăng nhập'
-                            value={memberInfor.username}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <StyledTextField
-                            label='Mật khẩu'
-                            value={memberInfor.password}
-                            InputProps={{
-                                readOnly: true,
-                            }}
-                        />
-                        <Select
-                            label='Quyền'
-                            options={roles}
-                            value={memberInfor.role}
-                            onChange={(e) =>
-                                setMemberInfor((prev) => ({
-                                    ...prev,
-                                    role: e.target.value,
-                                }))
-                            }
-                            disabledEmValue={true}
-                            sx={{
-                                mt: "0.8rem",
-                            }}
-                        />
-                    </DialogContent>
-                    <DialogActions
-                        sx={{
-                            px: "2.4rem",
+                    />
+                    <StyledTextField
+                        label='Họ tên'
+                        value={memberInfor.name}
+                        InputProps={{
+                            readOnly: true,
                         }}
+                    />
+                    <StyledTextField
+                        label='Email'
+                        value={memberInfor.email}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                    />
+                    <StyledTextField
+                        label='Số điện thoại'
+                        value={memberInfor.phone}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                    />
+                    <StyledTextField
+                        label='Địa chỉ'
+                        value={memberInfor.address}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                    />
+                    <StyledTextField
+                        label='Tên đăng nhập'
+                        value={memberInfor.username}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                    />
+                    <StyledTextField
+                        label='Mật khẩu'
+                        value={memberInfor.password}
+                        InputProps={{
+                            readOnly: true,
+                        }}
+                    />
+                    <Select
+                        label='Quyền'
+                        options={roles}
+                        value={memberInfor.role}
+                        onChange={(e) =>
+                            setMemberInfor((prev) => ({
+                                ...prev,
+                                role: e.target.value,
+                            }))
+                        }
+                        disabledEmValue={true}
+                        sx={{
+                            mt: "0.8rem",
+                        }}
+                    />
+                </DialogContent>
+                <DialogActions
+                    sx={{
+                        px: "2.4rem",
+                    }}
+                >
+                    <StyledButton variant='text' onClick={handleUpdateMember}>
+                        Cập nhật
+                    </StyledButton>
+                    <StyledButton
+                        variant='text'
+                        onClick={() => setOpenDelForm(true)}
                     >
-                        <StyledButton
-                            variant='text'
-                            onClick={handleUpdateMember}
-                        >
-                            Cập nhật
-                        </StyledButton>
-                        <StyledButton
-                            variant='text'
-                            onClick={handleDeleteMember}
-                        >
-                            Xóa
-                        </StyledButton>
-                        <StyledButton
-                            variant='text'
-                            onClick={handleCloseDetail}
-                        >
-                            Đóng
-                        </StyledButton>
-                    </DialogActions>
-                </Box>
+                        Xóa
+                    </StyledButton>
+                    <StyledButton variant='text' onClick={handleCloseDetail}>
+                        Đóng
+                    </StyledButton>
+                </DialogActions>
             </Dialog>
+            <Dialog
+                className='del-form'
+                open={openDelForm}
+                onClose={() => setOpenDelForm(false)}
+                sx={{
+                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                        maxWidth: "40rem",
+                    },
+                    "& .mess": {
+                        m: 0,
+                        fontSize: "1.6rem",
+                        textAlign: "center",
+                    },
+                }}
+            >
+                <DialogTitle>Xóa slide</DialogTitle>
+                <DialogContent>
+                    <p className='mess'>
+                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa slide{" "}
+                        {memberInfor.id} ?
+                    </p>
+                </DialogContent>
+                <DialogActions>
+                    <StyledButton variant='text' onClick={handleDeleteMember}>
+                        Đồng ý
+                    </StyledButton>
+                    <StyledButton
+                        variant='text'
+                        onClick={() => setOpenDelForm(false)}
+                    >
+                        Hủy
+                    </StyledButton>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                open={snackbar.isOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <MuiAlert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.type}
+                    sx={{
+                        width: "100%",
+                        fontSize: "1.6rem",
+                    }}
+                >
+                    {snackbar.message}
+                </MuiAlert>
+            </Snackbar>
         </Box>
     );
 };
