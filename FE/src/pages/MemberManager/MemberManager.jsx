@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -11,11 +12,11 @@ import {
     Link,
     Pagination,
     Snackbar,
-    Alert,
     LinearProgress,
 } from "@mui/material";
 import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
+import { Alert } from "../../components/Alert";
 import { TextField } from "../../components/TextField";
 import { Select } from "../../components/Select";
 import "../../styles/DataTable/dataTable.scss";
@@ -26,126 +27,6 @@ const columns = [
     { field: "email", headerName: "Email", width: 160 },
     { field: "phone", headerName: "Số điện thoại", width: 160 },
     { field: "address", headerName: "Địa chỉ", width: 260 },
-];
-const rows = [
-    {
-        id: "1",
-        name: "Nguyễn Văn 1",
-        email: "nguyenvan1@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan1",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "2",
-        name: "Nguyễn Văn 2",
-        email: "nguyenvan2@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan2",
-        password: "@Ten1234",
-        role: "Quản Trị Viên",
-    },
-    {
-        id: "3",
-        name: "Nguyễn Văn 3",
-        email: "nguyenvan3@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan3",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "4",
-        name: "Nguyễn Văn 4",
-        email: "nguyenvan4@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan4",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "5",
-        name: "Nguyễn Văn 5",
-        email: "nguyenvan5@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan5",
-        password: "@Ten1234",
-        role: "Quản Trị Viên",
-    },
-    {
-        id: "6",
-        name: "Nguyễn Văn 6",
-        email: "nguyenvan6@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan6",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "7",
-        name: "Nguyễn Văn 7",
-        email: "nguyenvan7@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan7",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "8",
-        name: "Nguyễn Văn 8",
-        email: "nguyenvan8@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan8",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "9",
-        name: "Nguyễn Văn 9",
-        email: "nguyenvan9@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan9",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "10",
-        name: "Nguyễn Văn 10",
-        email: "nguyenvan1@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan10",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-    {
-        id: "11",
-        name: "Nguyễn Văn 11",
-        email: "nguyenvan11@gmail.com",
-        phone: "0123456789",
-        address: "Hà Nội",
-        username: "nguyenvan11",
-        password: "@Ten1234",
-        role: "Khách Hàng",
-    },
-];
-const roles = [
-    {
-        name: "Khách Hàng",
-    },
-    {
-        name: "Quản Trị Viên",
-    },
 ];
 const StyledButton = styled(Button)({
     textTransform: "none",
@@ -158,10 +39,12 @@ const StyledTextField = styled(TextField)({
 });
 const MemberManager = () => {
     document.title = "Thành viên | 360 Store";
+    const user = useSelector((state) => state.user);
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
     const [data, setData] = React.useState([]);
+    const [roles, setRoles] = React.useState([]);
     const [openDetail, setOpenDetail] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -173,6 +56,7 @@ const MemberManager = () => {
         type: "",
         message: "",
     });
+
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
@@ -180,20 +64,16 @@ const MemberManager = () => {
                 axios.get(
                     `//localhost:8000/api/members?keyword=${debounceSearch}&page=${page}`,
                 ),
-                // axios.get(`//localhost:8000/api/roles`),
+                axios.get(`//localhost:8000/api/roles`),
             ]);
+            setRoles(res[1].data.data);
             setData(res[0].data.data.data);
-            console.log(res[0].data.data.data);
             setPage(res[0].data.data.current_page);
             setTotalPage(res[0].data.data.last_page);
             setIsLoading(false);
         }
         getData();
     }, [page, debounceSearch, callApi]);
-
-    const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
-        return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
-    });
 
     const handleCloseSnackbar = (e, reason) => {
         if (reason === "clickaway") {
@@ -211,14 +91,58 @@ const MemberManager = () => {
     const handleCloseDetail = () => {
         setOpenDetail(false);
     };
-    const handleUpdateMember = () => {
-        console.log(memberInfor);
-        setOpenDetail(false);
+    const handleUpdateRole = () => {
+        async function updateRole() {
+            try {
+                const res = await axios.post(
+                    `//localhost:8000/api/members/role/${memberInfor.id}`,
+                    {
+                        role_id: memberInfor.role_id,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setOpenDetail(false);
+                setCallApi(Math.random());
+            } catch (err) {
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+                setOpenDetail(false);
+            }
+        }
+        updateRole();
     };
     const handleDeleteMember = () => {
-        console.log(memberInfor.id);
-        setOpenDetail(false);
-        setOpenDelForm(false);
+        async function deleteMember() {
+            try {
+                const res = await axios.delete(
+                    `//localhost:8000/api/members/${memberInfor.id}?userRole=${user.role_id}`,
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setOpenDetail(false);
+                setOpenDelForm(false);
+                setCallApi(Math.random());
+            } catch (err) {
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+                setOpenDetail(false);
+                setOpenDelForm(false);
+            }
+        }
+        deleteMember();
     };
 
     return (
@@ -291,7 +215,7 @@ const MemberManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {data.length === 0 ? (
+                            {isLoading ? (
                                 <tr>
                                     <td
                                         colSpan={
@@ -299,7 +223,18 @@ const MemberManager = () => {
                                         }
                                         align='center'
                                     >
-                                        Chưa có bản ghi nào
+                                        <LinearProgress color='inherit' />
+                                    </td>
+                                </tr>
+                            ) : data.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
+                                        }
+                                        align='center'
+                                    >
+                                        Chưa có thành viên nào
                                     </td>
                                 </tr>
                             ) : (
@@ -399,6 +334,7 @@ const MemberManager = () => {
                     <StyledTextField
                         label='Địa chỉ'
                         value={memberInfor.address}
+                        multiline
                         InputProps={{
                             readOnly: true,
                         }}
@@ -410,30 +346,34 @@ const MemberManager = () => {
                             readOnly: true,
                         }}
                     />
-                    <Select
-                        label='Quyền'
-                        options={roles}
-                        value={memberInfor.role}
-                        onChange={(e) =>
-                            setMemberInfor((prev) => ({
-                                ...prev,
-                                role: e.target.value,
-                            }))
-                        }
-                        disabledEmValue={true}
-                        sx={{
-                            mt: "0.8rem",
-                        }}
-                    />
+                    {user.role_id === "r0" && (
+                        <Select
+                            label='Quyền'
+                            options={roles}
+                            value={memberInfor.role_id}
+                            onChange={(e) =>
+                                setMemberInfor((prev) => ({
+                                    ...prev,
+                                    role_id: e.target.value,
+                                }))
+                            }
+                            disabledEmValue={true}
+                            sx={{
+                                mt: "0.8rem",
+                            }}
+                        />
+                    )}
                 </DialogContent>
                 <DialogActions
                     sx={{
                         px: "2.4rem",
                     }}
                 >
-                    <StyledButton variant='text' onClick={handleUpdateMember}>
-                        Cập nhật
-                    </StyledButton>
+                    {user.role_id === "r0" && (
+                        <StyledButton variant='text' onClick={handleUpdateRole}>
+                            Cập nhật
+                        </StyledButton>
+                    )}
                     <StyledButton
                         variant='text'
                         onClick={() => setOpenDelForm(true)}
@@ -460,11 +400,11 @@ const MemberManager = () => {
                     },
                 }}
             >
-                <DialogTitle>Xóa slide</DialogTitle>
+                <DialogTitle>Xóa thành viên</DialogTitle>
                 <DialogContent>
                     <p className='mess'>
-                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa slide{" "}
-                        {memberInfor.id} ?
+                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa thành
+                        viên {memberInfor.id} ?
                     </p>
                 </DialogContent>
                 <DialogActions>
@@ -484,7 +424,7 @@ const MemberManager = () => {
                 autoHideDuration={5000}
                 onClose={handleCloseSnackbar}
             >
-                <MuiAlert
+                <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}
                     sx={{
@@ -493,7 +433,7 @@ const MemberManager = () => {
                     }}
                 >
                     {snackbar.message}
-                </MuiAlert>
+                </Alert>
             </Snackbar>
         </Box>
     );

@@ -12,11 +12,11 @@ import {
     DialogContent,
     DialogActions,
     Snackbar,
-    Alert,
     LinearProgress,
 } from "@mui/material";
 import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
+import { Alert } from "../../components/Alert";
 import { TextField } from "../../components/TextField";
 import "../../styles/DataTable/dataTable.scss";
 
@@ -91,10 +91,6 @@ const CategoryManager = () => {
         }
         getData();
     }, [page, debounceSearch, callApi]);
-
-    const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
-        return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
-    });
 
     const handleChangePage = (e, value) => {
         setPage(value);
@@ -578,7 +574,7 @@ const CategoryManager = () => {
                 autoHideDuration={5000}
                 onClose={handleCloseSnackbar}
             >
-                <MuiAlert
+                <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}
                     sx={{
@@ -587,7 +583,7 @@ const CategoryManager = () => {
                     }}
                 >
                     {snackbar.message}
-                </MuiAlert>
+                </Alert>
             </Snackbar>
         </Box>
     );
