@@ -35,8 +35,11 @@ class CategoryController extends Controller
         $uniqueName = Category::where("name", $request->get("name"))->first();
         $uniqueSlug = Category::where("slug", $request->get("slug"))->first();
         
-        if ($uniqueName) {
-            return response()->json(['messageName' => "Danh mục đã tồn tại!"], 409);
+        if ($uniqueName && $uniqueSlug) {
+            return response()->json([
+                'messageName' => "Danh mục đã tồn tại!",
+                'messageSlug' => "Slug đã tồn tại!"
+            ], 409);
         }
         if ($uniqueSlug) {
             return response()->json(['messageSlug' => "Slug đã tồn tại!"], 409);

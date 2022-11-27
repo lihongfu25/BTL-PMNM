@@ -201,20 +201,16 @@ const CategoryManager = () => {
                 setOpenAddForm(false);
             } catch (err) {
                 if (err.response.data.messageName) {
-                    setSnackbar({
-                        isOpen: true,
-                        type: "error",
+                    setError("name", {
+                        type: "validate",
                         message: err.response.data.messageName,
                     });
-                    setError("name", err.response.data.messageName);
                 }
                 if (err.response.data.messageSlug) {
-                    setSnackbar({
-                        isOpen: true,
-                        type: "error",
+                    setError("slug", {
+                        type: "validate",
                         message: err.response.data.messageSlug,
                     });
-                    setError("slug", err.response.data.messageSlug);
                 }
             }
         }
