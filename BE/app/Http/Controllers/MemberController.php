@@ -60,9 +60,47 @@ class MemberController extends Controller
      * @param  \App\Models\Member  $member
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateMemberRequest $request, Member $member)
+    public function update(UpdateMemberRequest $request, $memberId)
     {
-        //
+        $memberFind = Member::find($memberId);
+
+        $body = $request->all();
+        if ($request->hasFile('avatar')) {
+            $ext = $request->file('avatar')->extension();
+            $generate_unique_file_name = md5(time()) . '.' . $ext;
+            $request->file('avatar')->move('images', $generate_unique_file_name, 'local');
+
+            $body['avatar'] = 'images/' . $generate_unique_file_name;
+        }
+        $memberFind->update($body);
+        return response()->json([
+                    'message' => "Cập nhật thành công!",
+                ], 201);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateMemberRequest  $request
+     * @param  \App\Models\Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function pass(UpdateMemberRequest $request, $memberId)
+    {
+        $memberFind = Member::find($memberId)->where('password', $request->get('password'))->first();
+
+        $body = $request->all();
+        if ($request->hasFile('avatar')) {
+            $ext = $request->file('avatar')->extension();
+            $generate_unique_file_name = md5(time()) . '.' . $ext;
+            $request->file('avatar')->move('images', $generate_unique_file_name, 'local');
+
+            $body['avatar'] = 'images/' . $generate_unique_file_name;
+        }
+        $memberFind->update($body);
+        return response()->json([
+                    'message' => "Cập nhật thành công!",
+                ], 201);
     }
 
     /**
@@ -71,8 +109,17 @@ class MemberController extends Controller
      * @param  \App\Models\Member  $member
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Member $member)
+    public function destroy($memberId)
     {
-        //
+        $memberFind = Member::find($memberId);
+
+        if (!$memberFind)
+            return response()->json(['message' => 'Không tìm thấy người dùng cần xóa!'], 404);
+        
+        $memberFind->delete();
+
+        return response()->json([
+            'message' => "Xóa thành công!",
+        ], 200);
     }
 }

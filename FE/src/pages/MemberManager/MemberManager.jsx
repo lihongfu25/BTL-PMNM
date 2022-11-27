@@ -22,7 +22,7 @@ import "../../styles/DataTable/dataTable.scss";
 
 const columns = [
     { field: "id", headerName: "Mã thành viên", width: 100 },
-    { field: "name", headerName: "Họ tên", width: 200 },
+    { field: "full_name", headerName: "Họ tên", width: 200 },
     { field: "email", headerName: "Email", width: 160 },
     { field: "phone", headerName: "Số điện thoại", width: 160 },
     { field: "address", headerName: "Địa chỉ", width: 260 },
@@ -177,14 +177,15 @@ const MemberManager = () => {
         async function getData() {
             setIsLoading(true);
             const res = await Promise.all([
-                axios.get(`//localhost:8000/api/categories/all`),
                 axios.get(
-                    `//localhost:8000/api/carousels?keyword=${debounceSearch}&page=${page}`,
+                    `//localhost:8000/api/members?keyword=${debounceSearch}&page=${page}`,
                 ),
+                // axios.get(`//localhost:8000/api/roles`),
             ]);
-            setData(res[1].data.data.data);
-            setPage(res[1].data.data.current_page);
-            setTotalPage(res[1].data.data.last_page);
+            setData(res[0].data.data.data);
+            console.log(res[0].data.data.data);
+            setPage(res[0].data.data.current_page);
+            setTotalPage(res[0].data.data.last_page);
             setIsLoading(false);
         }
         getData();
@@ -310,7 +311,7 @@ const MemberManager = () => {
                                         }
                                     >
                                         <td>{row.id}</td>
-                                        <td>{row.name}</td>
+                                        <td>{row.full_name}</td>
                                         <td>{row.email}</td>
                                         <td>{row.phone}</td>
                                         <td>{row.address}</td>
@@ -375,15 +376,8 @@ const MemberManager = () => {
                     }}
                 >
                     <StyledTextField
-                        label='Mã thành viên'
-                        value={memberInfor.id}
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
-                    <StyledTextField
                         label='Họ tên'
-                        value={memberInfor.name}
+                        value={memberInfor.full_name}
                         InputProps={{
                             readOnly: true,
                         }}
@@ -412,13 +406,6 @@ const MemberManager = () => {
                     <StyledTextField
                         label='Tên đăng nhập'
                         value={memberInfor.username}
-                        InputProps={{
-                            readOnly: true,
-                        }}
-                    />
-                    <StyledTextField
-                        label='Mật khẩu'
-                        value={memberInfor.password}
                         InputProps={{
                             readOnly: true,
                         }}
