@@ -73,8 +73,17 @@ class CarouselController extends Controller
 
         if (!$carouselFind)
             return response()->json(['message' => 'Không tìm thấy slide cần sửa!'], 404);
+            
+        $body = $request->all();
+        if ($request->hasFile('image')) {
+            $ext = $request->file('image')->extension();
+            $generate_unique_file_name = md5(time()) . '.' . $ext;
+            $request->file('image')->move('images', $generate_unique_file_name, 'local');
+
+            $body['image'] = 'images/' . $generate_unique_file_name;
+        }
         
-        $carouselFind->update($request->all());
+        $carouselFind->update($body);
         return response()->json([
             'message' => "Cập nhật thành công!",
         ], 201);

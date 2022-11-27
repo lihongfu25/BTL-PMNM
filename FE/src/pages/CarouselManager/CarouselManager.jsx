@@ -12,13 +12,13 @@ import {
     Link,
     Pagination,
     Snackbar,
-    Alert,
     LinearProgress,
 } from "@mui/material";
 import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import { Select } from "../../components/Select";
+import { Alert } from "../../components/Alert";
 import { formatDate } from "../../styles/GlobalStyles";
 import "../../styles/DataTable/dataTable.scss";
 
@@ -58,6 +58,8 @@ const ContactManager = () => {
     const [data, setData] = React.useState([]);
     const [categories, setCategories] = React.useState([]);
     const [isLoading, setIsLoading] = React.useState(false);
+    const [image, setImage] = React.useState();
+    const [preview, setPreview] = React.useState();
     const [openAddForm, setOpenAddForm] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
     const [openUpdateForm, setOpenUpdateForm] = React.useState(false);
@@ -71,12 +73,14 @@ const ContactManager = () => {
         message: "",
     });
 
+    const avatarRef = React.useRef();
+
     const {
         control,
-        register,
         handleSubmit,
         formState: { errors },
         clearErrors,
+        setError,
         setValue,
     } = useForm();
 
@@ -102,13 +106,22 @@ const ContactManager = () => {
             setPage(res[1].data.data.current_page);
             setTotalPage(res[1].data.data.last_page);
             setIsLoading(false);
+            console.log("call api...");
         }
         getData();
     }, [page, debounceSearch, callApi]);
 
-    const MuiAlert = React.forwardRef(function MuiAlert(props, ref) {
-        return <Alert elevation={6} ref={ref} variant='filled' {...props} />;
-    });
+    React.useEffect(() => {
+        if (image) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreview(reader.result);
+            };
+            reader.readAsDataURL(image);
+        } else {
+            setPreview((prev) => prev);
+        }
+    }, [image]);
 
     const handleChangePage = (e, value) => {
         setPage(value);
@@ -124,7 +137,8 @@ const ContactManager = () => {
         setValue("title", "");
         setValue("category_id", "");
         setValue("status", "Đang hoạt động");
-        setValue("image", undefined);
+        setPreview(undefined);
+        setImage(undefined);
     };
     const handleOpenUpdateForm = (row) => {
         setOpenUpdateForm(true);
@@ -132,7 +146,10 @@ const ContactManager = () => {
         setValue2("title", row.title);
         setValue2("category_id", row.category_id);
         setValue2("status", row.status);
-        setValue2("image", row.image);
+        setPreview(
+            "http://localhost:8000/" +
+                data.filter((carousel) => carousel.id === row.id)[0].image,
+        );
     };
     const handleOpenDelForm = (value) => {
         setOpenDelForm(true);
@@ -142,10 +159,14 @@ const ContactManager = () => {
     const handleCloseAddForm = () => {
         setOpenAddForm(false);
         clearErrors();
+        setPreview(undefined);
+        setImage(undefined);
     };
     const handleCloseUpdateForm = () => {
         setOpenUpdateForm(false);
         clearErrors2();
+        setPreview(undefined);
+        setImage(undefined);
     };
 
     const onDel = () => {
@@ -176,14 +197,14 @@ const ContactManager = () => {
     };
     const onAdd = (data) => {
         setOpenAddForm(false);
-        async function createCategory() {
+        async function createCarousel() {
             try {
                 const formData = new FormData();
 
                 Object.keys(data).forEach((item) => {
                     formData.append(item, data[item]);
                 });
-                if (data.image[0]) formData.append("image", data.image[0]);
+                if (data.image) formData.append("image", data.image);
                 const res = await axios.post(
                     `//localhost:8000/api/carousels`,
                     formData,
@@ -199,16 +220,20 @@ const ContactManager = () => {
                 console.log(err);
             }
         }
-        createCategory();
+        createCarousel();
     };
     const onUpdate = (data) => {
         async function updateCarousel() {
             try {
-                const res = await axios.put(
+                const formData = new FormData();
+
+                Object.keys(data).forEach((item) => {
+                    formData.append(item, data[item]);
+                });
+                if (data.image) formData.append("image", data.image);
+                const res = await axios.post(
                     `//localhost:8000/api/carousels/${updateId}`,
-                    {
-                        ...data,
-                    },
+                    formData,
                 );
                 setSnackbar({
                     isOpen: true,
@@ -224,7 +249,6 @@ const ContactManager = () => {
                     message: err.response.data.message,
                 });
                 setOpenUpdateForm(false);
-                setCallApi(Math.random());
             }
         }
         updateCarousel();
@@ -451,7 +475,7 @@ const ContactManager = () => {
                             name='title'
                             control={control}
                             rules={{
-                                required: "Vui lòng nhập trường này!",
+                                required: "Vui lòng nhập trường này",
                             }}
                             render={({ field }) => {
                                 return (
@@ -476,7 +500,7 @@ const ContactManager = () => {
                             name='category_id'
                             control={control}
                             rules={{
-                                required: "Vui lòng chọn danh mục!",
+                                required: "Vui lòng chọn danh mục",
                             }}
                             render={({ field }) => (
                                 <Select
@@ -505,21 +529,57 @@ const ContactManager = () => {
                             }}
                         >
                             <p>Hình ảnh</p>
-                            <input
-                                type='file'
-                                accept='image/*'
-                                {...register("image", {
-                                    required: {
-                                        value: true,
-                                        message: "Vui lòng thêm một hình ảnh!",
-                                    },
-                                })}
-                            />
                             {errors.image && (
                                 <span className='error-message'>
                                     {errors.image.message}
                                 </span>
                             )}
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexDirection: "column",
+                                    width: "100%",
+                                    "& input[type='file']": {
+                                        display: "none",
+                                    },
+                                    "& button": {
+                                        mt: "1rem",
+                                        cursor: "pointer",
+                                        p: "0.8rem 1.6rem",
+                                        backgroundColor: "#fff",
+                                        borderRadius: "0.4rem",
+                                        border: "1px solid #ccc",
+                                    },
+                                    "& img": {
+                                        width: "100%",
+                                        objectFit: "cover",
+                                    },
+                                }}
+                            >
+                                <img alt='' src={preview} />
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        avatarRef.current.click();
+                                    }}
+                                >
+                                    Chọn Ảnh
+                                </button>
+                                <input
+                                    type='file'
+                                    ref={avatarRef}
+                                    accept='image/*'
+                                    onChange={(e) => {
+                                        const newImage = e.target.files[0];
+                                        if (newImage) {
+                                            setImage(newImage);
+                                            setValue("image", newImage);
+                                            clearErrors("image");
+                                        }
+                                    }}
+                                />
+                            </Box>
                         </Box>
                     </DialogContent>
                     <DialogActions
@@ -527,7 +587,17 @@ const ContactManager = () => {
                             px: "2.4rem",
                         }}
                     >
-                        <StyledButton variant='text' type='submit'>
+                        <StyledButton
+                            variant='text'
+                            type='submit'
+                            onClick={() => {
+                                if (!image)
+                                    setError("image", {
+                                        type: "required",
+                                        message: "Vui lòng chọn một hình ảnh",
+                                    });
+                            }}
+                        >
                             Thêm
                         </StyledButton>
                         <StyledButton
@@ -565,7 +635,7 @@ const ContactManager = () => {
                             name='title'
                             control={control2}
                             rules={{
-                                required: "Vui lòng nhập trường này!",
+                                required: "Vui lòng nhập trường này",
                             }}
                             render={({ field }) => {
                                 return (
@@ -590,7 +660,7 @@ const ContactManager = () => {
                             name='category_id'
                             control={control2}
                             rules={{
-                                required: "Vui lòng chọn danh mục!",
+                                required: "Vui lòng chọn danh mục",
                             }}
                             render={({ field }) => (
                                 <Select
@@ -606,7 +676,7 @@ const ContactManager = () => {
                             name='status'
                             control={control2}
                             rules={{
-                                required: "Vui lòng chọn trạng thái!",
+                                required: "Vui lòng chọn trạng thái",
                             }}
                             render={({ field }) => (
                                 <Select
@@ -635,17 +705,51 @@ const ContactManager = () => {
                             }}
                         >
                             <p>Hình ảnh</p>
-                            {updateId && (
-                                <img
-                                    alt=''
-                                    src={
-                                        "http://localhost:8000/" +
-                                            data.filter(
-                                                (row) => row.id === updateId,
-                                            )[0].image || undefined
-                                    }
+                            <Box
+                                sx={{
+                                    display: "flex",
+                                    alignItems: "center",
+                                    flexDirection: "column",
+                                    width: "100%",
+                                    "& input[type='file']": {
+                                        display: "none",
+                                    },
+                                    "& button": {
+                                        mt: "1rem",
+                                        cursor: "pointer",
+                                        p: "0.8rem 1.6rem",
+                                        backgroundColor: "#fff",
+                                        borderRadius: "0.4rem",
+                                        border: "1px solid #ccc",
+                                    },
+                                    "& img": {
+                                        width: "100%",
+                                        objectFit: "cover",
+                                    },
+                                }}
+                            >
+                                <img alt='' src={preview} />
+                                <button
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        avatarRef.current.click();
+                                    }}
+                                >
+                                    Chọn Ảnh
+                                </button>
+                                <input
+                                    type='file'
+                                    ref={avatarRef}
+                                    accept='image/*'
+                                    onChange={(e) => {
+                                        const newImage = e.target.files[0];
+                                        if (newImage) {
+                                            setImage(newImage);
+                                            setValue2("image", newImage);
+                                        }
+                                    }}
                                 />
-                            )}
+                            </Box>
                         </Box>
                     </DialogContent>
                     <DialogActions
@@ -670,7 +774,7 @@ const ContactManager = () => {
                 autoHideDuration={5000}
                 onClose={handleCloseSnackbar}
             >
-                <MuiAlert
+                <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}
                     sx={{
@@ -679,7 +783,7 @@ const ContactManager = () => {
                     }}
                 >
                     {snackbar.message}
-                </MuiAlert>
+                </Alert>
             </Snackbar>
         </Box>
     );
