@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { Link } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
@@ -19,7 +20,9 @@ const Login = () => {
         formState: { errors },
     } = useForm();
 
-    const onSubmit = (data) => console.log(data);
+    const onSubmit = (data) => {
+        console.log(data);
+    };
 
     return (
         <Box
@@ -100,7 +103,7 @@ const Login = () => {
                     }}
                 />
                 <Link
-                    to='/auth/forgot-password'
+                    to='/forgot-password'
                     className='linkUnderlineHover textColor'
                     style={{
                         fontSize: "1.4rem",
@@ -122,7 +125,7 @@ const Login = () => {
                 Bạn chưa có tài khoản ?{" "}
                 <Link
                     className='linkNoneUnderline'
-                    to='/auth/register'
+                    to='/register'
                     style={{
                         color: "#AF0171",
                     }}

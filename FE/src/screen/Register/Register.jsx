@@ -24,7 +24,6 @@ const Register = () => {
     } = useForm();
 
     const onSubmit = (data) => {
-        console.log(data);
         async function register() {
             setIsLoading(true);
             try {

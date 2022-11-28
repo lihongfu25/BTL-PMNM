@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
 
@@ -50,6 +52,7 @@ class MemberController extends Controller
             return response()->json(['message_phone' => "Số điện thoại này đã được đăng ký bởi tài khoản khác!"], 409);
 
         $body = $request->all();
+        $body['password'] = bcrypt($fields['password']);
         if ($request->hasFile('avatar')) {
             $ext = $request->file('avatar')->extension();
             $generate_unique_file_name = md5(time()) . '.' . $ext;
@@ -77,6 +80,40 @@ class MemberController extends Controller
         return response()->json([
                     'data' => $member,
                 ], 201);
+    }
+
+
+    public function login(Request $request)
+    {
+        $fields = $request->all();
+
+        // Check username
+        $user = Member::where('username', $fields['username'])
+                    ->orWhere('email', $fields['username'])
+                    ->orWhere('phone', $fields['username'])->first();
+
+        // Check password
+        // if (!$user || !Hash::check($fields['password'], $user->password)) {
+        if (!$user ||  $fields['password'] !== $user->password) {
+            return response([
+                'message' => 'Tài khoản hoặc mật khẩu không chính xác!'
+            ], 401);
+        }
+
+        $token = $user->createToken($user["id"])->plainTextToken;
+
+        $response = [
+            'data' => $user,
+            'access_token' => $token,
+            'message' => 'Đăng nhập thành công!'
+        ];
+
+        return response($response, 200);
+    }
+
+    public function test($memberId)
+    {
+        return [123];
     }
 
     /**
