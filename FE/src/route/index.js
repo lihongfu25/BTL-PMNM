@@ -25,22 +25,28 @@ import { OrderManager, OrderDetail } from "../pages/OrderManager";
 
 export const routes = [
     {
-        path: "/auth",
-        element: <LoginLogoutLayout></LoginLogoutLayout>,
-        children: [
-            {
-                path: "login",
-                element: <Login />,
-            },
-            {
-                path: "register",
-                element: <Register />,
-            },
-            {
-                path: "forgot-password",
-                element: <ForgotPassword />,
-            },
-        ],
+        path: "/login",
+        element: (
+            <LoginLogoutLayout>
+                <Login />
+            </LoginLogoutLayout>
+        ),
+    },
+    {
+        path: "/register",
+        element: (
+            <LoginLogoutLayout>
+                <Register />
+            </LoginLogoutLayout>
+        ),
+    },
+    {
+        path: "/forgot-password",
+        element: (
+            <LoginLogoutLayout>
+                <ForgotPassword />
+            </LoginLogoutLayout>
+        ),
     },
     {
         path: "/",

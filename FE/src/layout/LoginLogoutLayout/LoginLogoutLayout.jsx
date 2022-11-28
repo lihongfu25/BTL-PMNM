@@ -2,7 +2,6 @@ import React from "react";
 import { Box } from "@mui/material";
 import logo from "../../assets/img/logo.png";
 import bg from "../../assets/img/bg-loginlogout.jpg";
-import { Outlet } from "react-router-dom";
 const LoginLogoutLayout = ({ children }) => {
     return (
         <Box
@@ -42,7 +41,7 @@ const LoginLogoutLayout = ({ children }) => {
                         width: "10rem",
                     }}
                 />
-                <Outlet />
+                {children}
             </Box>
         </Box>
     );
