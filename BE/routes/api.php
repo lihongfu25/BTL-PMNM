@@ -4,10 +4,11 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 use App\Http\Controllers\RoleController;
+use App\Http\Controllers\SizeController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\MemberController;
-use App\Http\Controllers\SizeController;
+use App\Http\Controllers\ContactController;
 
 
 /*
@@ -34,6 +35,8 @@ Route::post('/members/{memberId}', [MemberController::class, 'update']);
 // Route::post('/members/delete/{memberId}', [MemberController::class, 'destroy']);
 Route::post('/members/role/{memberId}', [MemberController::class, 'update_role']);
 Route::post('/members/password/{memberId}', [MemberController::class, 'update_password']);
+Route::apiResource('/contacts', ContactController::class);
+
 
 
 

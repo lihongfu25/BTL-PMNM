@@ -26,6 +26,7 @@ class DatabaseSeeder extends Seeder
                 CategorySeeder::class,
                 SizeSeeder::class,
                 CarouselSeeder::class,
+                ContactSeeder::class,
                 
                 // ScheduleSeeder::class,
             ]
