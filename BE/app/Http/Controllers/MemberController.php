@@ -15,7 +15,13 @@ class MemberController extends Controller
      */
     public function index()
     {
-        $member = Member::paginate(10);
+        $keyword = request()->keyword;
+        $memberFilterKeyword = Member::where('role_id', '<>', 'r0')->where("id", "like", "%" . $keyword . "%")
+                    ->orWhere('full_name', 'LIKE', "%" . $keyword . "%")
+                    ->orWhere('email', 'LIKE', "%" . $keyword . "%")
+                    ->orWhere('phone', 'LIKE', "%" . $keyword . "%")
+                    ->orWhere('address', 'LIKE', "%" . $keyword . "%")->get()->pluck('id')->toArray();
+        $member = Member::where('role_id', '<>', 'r0')->whereIn('id', $memberFilterKeyword)->paginate(10);
         return response()->json(['data' => $member], 200);
     }
 
@@ -27,6 +33,22 @@ class MemberController extends Controller
      */
     public function store(StoreMemberRequest $request)
     {
+        $email = $request->get('email');
+        $phone = $request->get('phone');
+
+        $unique_email = Member::where('email', $email)->first();
+        $unique_phone = Member::where('phone', $phone)->first();
+
+        if ($unique_email && $unique_phone)
+            return response()->json([
+                'message_email' => "Email này đã được đăng ký bởi tài khoản khác!",
+                'message_phone' => "Số điện thoại này đã được đăng ký bởi tài khoản khác!",
+            ], 409);
+        if ($unique_email)
+            return response()->json(['message_email' => "Email này đã được đăng ký bởi tài khoản khác!"], 409);
+        if ($unique_email)
+            return response()->json(['message_phone' => "Số điện thoại này đã được đăng ký bởi tài khoản khác!"], 409);
+
         $body = $request->all();
         if ($request->hasFile('avatar')) {
             $ext = $request->file('avatar')->extension();
@@ -48,9 +70,13 @@ class MemberController extends Controller
      * @param  \App\Models\Member  $member
      * @return \Illuminate\Http\Response
      */
-    public function show(Member $member)
+    public function show($memberId)
     {
-        //
+        $member = Member::find($memberId);
+        
+        return response()->json([
+                    'data' => $member,
+                ], 201);
     }
 
     /**
@@ -85,19 +111,36 @@ class MemberController extends Controller
      * @param  \App\Models\Member  $member
      * @return \Illuminate\Http\Response
      */
-    public function pass(UpdateMemberRequest $request, $memberId)
+    public function update_password(UpdateMemberRequest $request, $memberId)
     {
-        $memberFind = Member::find($memberId)->where('password', $request->get('password'))->first();
+        $memberFind = Member::where('id', $memberId)->where('password', $request->get('old_password'))->first();
 
-        $body = $request->all();
-        if ($request->hasFile('avatar')) {
-            $ext = $request->file('avatar')->extension();
-            $generate_unique_file_name = md5(time()) . '.' . $ext;
-            $request->file('avatar')->move('images', $generate_unique_file_name, 'local');
+        if (!$memberFind)
+            return response()->json(['message' => 'Mật khẩu cũ không chính xác'], 404);
+        
+        $memberFind->password = $request->get('new_password');
+        $memberFind->save();
+        return response()->json([
+                    'message' => "Cập nhật thành công!",
+                ], 201);
+    }
 
-            $body['avatar'] = 'images/' . $generate_unique_file_name;
-        }
-        $memberFind->update($body);
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \App\Http\Requests\UpdateMemberRequest  $request
+     * @param  \App\Models\Member  $member
+     * @return \Illuminate\Http\Response
+     */
+    public function update_role(UpdateMemberRequest $request, $memberId)
+    {
+        $memberFind = Member::find($memberId);
+
+        if (!$memberFind)
+            return response()->json(['message' => 'Không tìm thấy người dùng cần cập nhật!'], 404);
+        
+        $memberFind->role_id = $request->get('role_id');
+        $memberFind->save();
         return response()->json([
                     'message' => "Cập nhật thành công!",
                 ], 201);
@@ -112,9 +155,13 @@ class MemberController extends Controller
     public function destroy($memberId)
     {
         $memberFind = Member::find($memberId);
+        $user_request_role = request()->get('userRole');
 
         if (!$memberFind)
             return response()->json(['message' => 'Không tìm thấy người dùng cần xóa!'], 404);
+        
+        if ($memberFind->role_id === 'r1' && $user_request_role !== 'r0')
+            return response()->json(['message' => 'Bạn không có quyền thực hiện thao tác này!'], 404);
         
         $memberFind->delete();
 

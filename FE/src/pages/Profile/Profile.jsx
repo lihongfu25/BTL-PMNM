@@ -10,9 +10,12 @@ import {
     DialogActions,
     DialogContent,
     DialogTitle,
+    Snackbar,
 } from "@mui/material";
 import { Button } from "../../components/Button";
+import { Alert } from "../../components/Alert";
 import { userUpdateProfile } from "../../redux/store/userSlice";
+import axios from "axios";
 const StyledBox = styled(Box)({
     display: "grid",
     gap: "1.5rem",
@@ -29,23 +32,29 @@ const Profile = () => {
     const [image, setImage] = React.useState();
     const [preview, setPreview] = React.useState();
     const [openChangePass, setOpenChangePass] = React.useState(false);
-
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
     const {
         register,
         handleSubmit,
         formState: { errors },
+        setValue,
     } = useForm({
         defaultValues: {
-            id: user.id,
-            gender: user.gender,
             avatar: user.avatar,
+            date_of_birth: user.date_of_birth,
+            gender: user.gender,
         },
     });
     const {
         register: register2,
         formState: { errors: errors2 },
         handleSubmit: handleSubmit2,
-        setValue,
+        setValue: setValue2,
+        setError: setError2,
         clearErrors,
     } = useForm();
 
@@ -63,10 +72,16 @@ const Profile = () => {
             setPreview(user.avatar);
         }
     }, [image, user]);
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
+    };
     const handleOpenChangePassForm = () => {
         setOpenChangePass(true);
-        setValue("oldPass", "");
-        setValue("newPass", "");
+        setValue2("old_password", "");
+        setValue2("new_password", "");
     };
     const handleCloseChangePassForm = () => {
         setOpenChangePass(false);
@@ -74,12 +89,58 @@ const Profile = () => {
     };
 
     const onSubmit = (data) => {
-        // dispatch(userUpdateProfile(data));
-        console.log(data);
+        async function updateProfile() {
+            try {
+                const formData = new FormData();
+
+                Object.keys(data).forEach((item) => {
+                    formData.append(item, data[item]);
+                });
+                if (data.image) formData.append("image", data.image);
+                const res = await axios.post(
+                    `//localhost:8000/api/members/${user.id}`,
+                    formData,
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        updateProfile();
     };
     const onChangePass = (data) => {
-        console.log(data);
-        setOpenChangePass(false);
+        async function updatePassword() {
+            try {
+                const formData = new FormData();
+
+                Object.keys(data).forEach((item) => {
+                    formData.append(item, data[item]);
+                });
+                if (data.image) formData.append("image", data.image);
+                const res = await axios.post(
+                    `//localhost:8000/api/members/password/${user.id}`,
+                    {
+                        ...data,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setOpenChangePass(false);
+            } catch (err) {
+                setError2("old_password", {
+                    type: "validate",
+                    message: err.response.data.message,
+                });
+            }
+        }
+        updatePassword();
     };
     return (
         <Box
@@ -185,7 +246,7 @@ const Profile = () => {
                     >
                         <div
                             className={`form-group ${
-                                errors2.oldPass ? "error" : ""
+                                errors2.old_password ? "error" : ""
                             }`}
                         >
                             <div
@@ -198,34 +259,39 @@ const Profile = () => {
                                 <input
                                     className='form-input'
                                     placeholder='Mật khẩu cũ'
-                                    {...register2("oldPass", {
+                                    {...register2("old_password", {
                                         required: true,
                                         pattern:
                                             /^(?=.*[a-zA-Z])(?=.*[@$!%*#?&])(?=.*[0-9])[A-Za-z0-9@$!%*#?&]{8,}$/,
                                         minLength: 8,
                                     })}
                                 />
-                                {errors2.oldPass?.type === "required" && (
+                                {errors2.old_password?.type === "required" && (
                                     <span className='form-message'>
                                         Vui lòng nhập vào mật khẩu cũ
                                     </span>
                                 )}
-                                {errors2.oldPass?.type === "pattern" && (
+                                {errors2.old_password?.type === "pattern" && (
                                     <span className='form-message'>
                                         Mật khẩu phải bao gồm chữ cái, chữ số và
                                         ký tự đặc biệt
                                     </span>
                                 )}
-                                {errors2.oldPass?.type === "minLength" && (
+                                {errors2.old_password?.type === "minLength" && (
                                     <span className='form-message'>
                                         Mật khẩu phải có tối thiểu 8 ký tự
+                                    </span>
+                                )}
+                                {errors2.old_password?.type === "validate" && (
+                                    <span className='form-message'>
+                                        {errors2.old_password?.message}
                                     </span>
                                 )}
                             </div>
                         </div>
                         <div
                             className={`form-group ${
-                                errors2.newPass ? "error" : ""
+                                errors2.new_password ? "error" : ""
                             }`}
                         >
                             <div
@@ -239,25 +305,25 @@ const Profile = () => {
                                     className='form-input'
                                     placeholder='Mật khẩu mới'
                                     defaultValue=''
-                                    {...register2("newPass", {
+                                    {...register2("new_password", {
                                         required: true,
                                         pattern:
                                             /^(?=.*[a-zA-Z])(?=.*[@$!%*#?&])(?=.*[0-9])[A-Za-z0-9@$!%*#?&]{8,}$/,
                                         minLength: 8,
                                     })}
                                 />
-                                {errors2.newPass?.type === "required" && (
+                                {errors2.new_password?.type === "required" && (
                                     <span className='form-message'>
                                         Vui lòng nhập vào mật khẩu mới
                                     </span>
                                 )}
-                                {errors2.newPass?.type === "pattern" && (
+                                {errors2.new_password?.type === "pattern" && (
                                     <span className='form-message'>
                                         Mật khẩu phải bao gồm chữ cái, chữ số và
                                         ký tự đặc biệt
                                     </span>
                                 )}
-                                {errors2.newPass?.type === "minLength" && (
+                                {errors2.new_password?.type === "minLength" && (
                                     <span className='form-message'>
                                         Mật khẩu phải có tối thiểu 8 ký tự
                                     </span>
@@ -344,7 +410,7 @@ const Profile = () => {
                             }`}
                         >
                             <label className='form-label'>Tên đăng nhập</label>
-                            {user.username !== "" ? (
+                            {user.username ? (
                                 <Typography
                                     className='useFont-Nunito'
                                     sx={{
@@ -395,7 +461,7 @@ const Profile = () => {
                         </div>
                         <div
                             className={`form-group ${
-                                errors.name ? "error" : ""
+                                errors.full_name ? "error" : ""
                             }`}
                         >
                             <label className='form-label'>Họ tên</label>
@@ -409,12 +475,12 @@ const Profile = () => {
                                 <input
                                     className='form-input'
                                     placeholder='Họ tên'
-                                    defaultValue={user.name}
-                                    {...register("name", {
+                                    defaultValue={user.full_name}
+                                    {...register("full_name", {
                                         required: true,
                                     })}
                                 />
-                                {errors?.name?.type === "required" && (
+                                {errors?.full_name?.type === "required" && (
                                     <span className='form-message'>
                                         Vui lòng nhập vào họ tên của bạn
                                     </span>
@@ -575,26 +641,11 @@ const Profile = () => {
                                     className='form-input'
                                     type='date'
                                     placeholder='Ngày sinh'
-                                    defaultValue={user.birthOfDate}
-                                    {...register("birthOfDate")}
+                                    defaultValue={user.date_of_birth}
+                                    {...register("date_of_birth")}
                                 />
                             </div>
                         </div>
-
-                        {/* 
-                        
-                        
-                        <StyledInput
-                            placeholder='Ngày sinh'
-                            type='date'
-                            value={userInfo.birthOfDate}
-                            onChange={(e) =>
-                                setUserInfo((prevState) => ({
-                                    ...prevState,
-                                    birthOfDate: e.target.value,
-                                }))
-                            }
-                        /> */}
                     </StyledBox>
                 </Box>
                 <Box
@@ -638,7 +689,10 @@ const Profile = () => {
                         accept='image/*'
                         onChange={(e) => {
                             const newAvatar = e.target.files[0];
-                            if (newAvatar) setImage(newAvatar);
+                            if (newAvatar) {
+                                setImage(newAvatar);
+                                setValue("avatar", newAvatar);
+                            }
                         }}
                     />
                 </Box>
@@ -651,12 +705,27 @@ const Profile = () => {
                         position: "absolute",
                         bottom: -10,
                     }}
-                    // onClick={handleSubmitProfile}
                     type='submit'
                 >
                     Lưu
                 </Button>
             </Box>
+            <Snackbar
+                open={snackbar.isOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.type}
+                    sx={{
+                        width: "100%",
+                        fontSize: "1.6rem",
+                    }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
