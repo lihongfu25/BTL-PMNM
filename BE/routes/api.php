@@ -26,8 +26,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
-// Route::middleware('auth:sanctum')->get('/members/test', [MemberController::class, 'test']);
-
 Route::apiResource('/roles', RoleController::class);
 Route::apiResource('/categories', CategoryController::class);
 Route::apiResource('/carousels', CarouselController::class)->except('update');

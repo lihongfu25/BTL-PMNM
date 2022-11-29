@@ -36,23 +36,14 @@ class MemberController extends Controller
     public function store(StoreMemberRequest $request)
     {
         $email = $request->get('email');
-        $phone = $request->get('phone');
 
         $unique_email = Member::where('email', $email)->first();
-        $unique_phone = Member::where('phone', $phone)->first();
 
-        if ($unique_email && $unique_phone)
-            return response()->json([
-                'message_email' => "Email này đã được đăng ký bởi tài khoản khác!",
-                'message_phone' => "Số điện thoại này đã được đăng ký bởi tài khoản khác!",
-            ], 409);
         if ($unique_email)
-            return response()->json(['message_email' => "Email này đã được đăng ký bởi tài khoản khác!"], 409);
-        if ($unique_email)
-            return response()->json(['message_phone' => "Số điện thoại này đã được đăng ký bởi tài khoản khác!"], 409);
+            return response()->json(['message' => "Email này đã được đăng ký bởi tài khoản khác!"], 409);
 
         $body = $request->all();
-        $body['password'] = bcrypt($fields['password']);
+        $body['password'] = bcrypt($body['password']);
         if ($request->hasFile('avatar')) {
             $ext = $request->file('avatar')->extension();
             $generate_unique_file_name = md5(time()) . '.' . $ext;
@@ -62,7 +53,15 @@ class MemberController extends Controller
         }
 
         Member::create($body);
+
+        $member = Member::where('email', $email)->first();
+
+        $token = $member->createToken($member["id"])->plainTextToken;
+
+
         return response()->json([
+            'data' => $member,
+            'access_token' => $token,
             'message' => "Tạo mới thành công!",
         ], 201);
     }
@@ -85,35 +84,29 @@ class MemberController extends Controller
 
     public function login(Request $request)
     {
-        $fields = $request->all();
+        $body = $request->all();
 
         // Check username
-        $user = Member::where('username', $fields['username'])
-                    ->orWhere('email', $fields['username'])
-                    ->orWhere('phone', $fields['username'])->first();
+        $member = Member::where('username', $body['username'])
+                    ->orWhere('email', $body['username'])
+                    ->orWhere('phone', $body['username'])->first();
 
         // Check password
-        // if (!$user || !Hash::check($fields['password'], $user->password)) {
-        if (!$user ||  $fields['password'] !== $user->password) {
+        if (!$member || !Hash::check($body['password'], $member->password)) {
             return response([
                 'message' => 'Tài khoản hoặc mật khẩu không chính xác!'
             ], 401);
         }
 
-        $token = $user->createToken($user["id"])->plainTextToken;
+        $token = $member->createToken($member["id"])->plainTextToken;
 
         $response = [
-            'data' => $user,
+            'data' => $member,
             'access_token' => $token,
             'message' => 'Đăng nhập thành công!'
         ];
 
         return response($response, 200);
-    }
-
-    public function test($memberId)
-    {
-        return [123];
     }
 
     /**
@@ -127,6 +120,11 @@ class MemberController extends Controller
     {
         $memberFind = Member::find($memberId);
 
+        $unique_username = Member::where('username', $request->get('username'))->where('username', '<>', null)->first();
+
+        if ($unique_username)
+            return response()->json(['message_username' => "Tên đăng nhập đã tồn tại!"], 409);
+
         $body = $request->all();
         if ($request->hasFile('avatar')) {
             $ext = $request->file('avatar')->extension();
@@ -135,9 +133,12 @@ class MemberController extends Controller
 
             $body['avatar'] = 'images/' . $generate_unique_file_name;
         }
+
         $memberFind->update($body);
+        $member = Member::find($memberId);
         return response()->json([
                     'message' => "Cập nhật thành công!",
+                    'data' => $member,
                 ], 201);
     }
 
@@ -155,7 +156,7 @@ class MemberController extends Controller
         if (!$memberFind)
             return response()->json(['message' => 'Mật khẩu cũ không chính xác'], 404);
         
-        $memberFind->password = $request->get('new_password');
+        $memberFind->password = bcrypt($request->get('new_password'));
         $memberFind->save();
         return response()->json([
                     'message' => "Cập nhật thành công!",
