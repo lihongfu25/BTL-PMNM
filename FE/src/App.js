@@ -1,16 +1,42 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
 import { useRoutes, useLocation, useNavigate } from "react-router-dom";
 import { routes } from "./route";
+import { userUpdateProfile } from "./redux/store/userSlice";
+import { managerChangeTab } from "./layout/ManagerLayout/managerSlice";
 function App() {
-    const navigate = useNavigate();
-    const user = useSelector((state) => state.user);
     const appRoutes = useRoutes(routes);
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+    const token = useSelector((state) => state.token);
     const { pathname } = useLocation();
     React.useEffect(() => {
+        const getUser = async () => {
+            try {
+                const res = await axios.get("//localhost:8000/api/user", {
+                    headers: {
+                        Authorization: "Bearer " + token.authToken,
+                    },
+                });
+                dispatch(userUpdateProfile(res.data));
+                if (res.data.role_id !== "r2") navigate("/manager/dashboard");
+                dispatch(managerChangeTab("dashboard"));
+            } catch (err) {
+                console.log(err.response);
+            }
+        };
+        getUser();
+    }, []);
+    React.useEffect(() => {
         window.scrollTo(0, 0);
-        // if (user.role === 0) navigate("/manager");
-    }, [pathname, user]);
+
+        if (
+            !token.authToken &&
+            (pathname.includes("/user") || pathname.includes("/manager"))
+        )
+            navigate("/login");
+    }, [pathname, token, navigate]);
 
     return <div>{appRoutes}</div>;
 }

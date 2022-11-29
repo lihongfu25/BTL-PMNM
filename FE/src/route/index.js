@@ -151,7 +151,7 @@ export const routes = [
                 ],
             },
             {
-                path: "user/profile",
+                path: "profile",
                 element: <Profile />,
             },
         ],

@@ -1,15 +1,16 @@
 import { createSlice } from "@reduxjs/toolkit";
+
 const initialState = {
-    id: 1,
-    full_name: "Nhóm 9",
-    email: "nhom9@gmail.com",
-    phone: "0123456789",
-    address: "Q. Bắc Từ Liêm, Hà Nội",
+    id: null,
+    full_name: "",
+    email: "",
+    phone: "",
+    address: "",
     gender: null,
     date_of_birth: null,
-    username: "lehongphu25",
-    avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSbvaBdtJ4GaN7m79jU-Y47NqT3Grvxd7qIZ9VKUZKyU1ynYKxoNdlQCixTRDnliBE62os&usqp=CAU",
-    role_id: "r0",
+    username: "",
+    avatar: "images/a986302c6bb2e21c396a98aebf115ffe.png",
+    role_id: "",
 };
 
 export const userSlice = createSlice({
@@ -17,24 +18,28 @@ export const userSlice = createSlice({
     initialState: initialState,
     reducers: {
         userUpdateProfile: (state, action) => {
-            state.name = action.payload.name;
+            state.id = action.payload.id;
+            state.full_name = action.payload.full_name;
             state.username = action.payload.username;
             state.email = action.payload.email;
             state.phone = action.payload.phone;
             state.address = action.payload.address;
             state.gender = action.payload.gender;
-            state.birthOfDate = action.payload.birthOfDate;
+            state.date_of_birth = action.payload.date_of_birth;
+            state.avatar = action.payload.avatar;
+            state.role_id = action.payload.role_id;
         },
         userLogout: (state) => {
-            state.id = "";
-            state.name = "";
-            state.username = "";
+            state.id = null;
+            state.full_name = "";
             state.email = "";
             state.phone = "";
             state.address = "";
-            state.gender = "";
-            state.birthOfDate = "";
-            state.role = 1;
+            state.gender = null;
+            state.date_of_birth = null;
+            state.username = "";
+            state.avatar = "images/a986302c6bb2e21c396a98aebf115ffe.png";
+            state.role_id = "";
         },
     },
 });

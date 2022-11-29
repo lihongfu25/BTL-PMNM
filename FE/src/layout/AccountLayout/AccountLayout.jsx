@@ -1,11 +1,14 @@
 import React from "react";
 import { useSelector } from "react-redux";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Box, Divider, Typography } from "@mui/material";
 import { Outlet } from "react-router-dom";
 const AccountLayout = ({ children }) => {
     const user = useSelector((state) => state.user);
+    const isLogin = useSelector((state) => state.token.isLogin);
     const location = useLocation();
+    const navigate = useNavigate();
+    if (!isLogin) navigate("/login");
     return (
         <Box
             className='grid-wide'
@@ -31,6 +34,7 @@ const AccountLayout = ({ children }) => {
                             width: "6.8rem",
                             height: "6.8rem",
                             borderRadius: "50%",
+                            objectFit: "cover",
                         },
                         "& p": {
                             fontSize: "1.8rem",
@@ -38,7 +42,7 @@ const AccountLayout = ({ children }) => {
                         },
                     }}
                 >
-                    <img src={user.avatar} alt='' />
+                    <img src={`//localhost:8000/${user.avatar}`} alt='' />
                     <Typography className='useFont-Nunito'>
                         {user.name}
                     </Typography>

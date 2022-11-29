@@ -10,6 +10,7 @@ import { FaShoppingCart } from "react-icons/fa";
 import { BsSearch } from "react-icons/bs";
 import { styled } from "@mui/material/styles";
 import { Box, IconButton, Menu, MenuItem } from "@mui/material";
+import { clearToken } from "../../redux/store/tokenSlice";
 import { userLogout } from "../../redux/store/userSlice";
 import logo from "../../assets/img/logo.png";
 import "./header.scss";
@@ -19,7 +20,7 @@ const StyledLink = styled(Link)({
     textDecoration: "none",
 });
 const Header = () => {
-    const isLogin = useSelector((state) => state.user.id !== "");
+    const isLogin = useSelector((state) => state.token.isLogin);
     const user = useSelector((state) => state.user);
     const [checked, setChecked] = React.useState(false);
     const [search, setSearch] = React.useState("");
@@ -55,6 +56,7 @@ const Header = () => {
     };
     const handleLogout = () => {
         setAnchorEl(null);
+        dispatch(clearToken());
         dispatch(userLogout());
     };
     const handleCloseMenuUser = () => {
@@ -156,11 +158,13 @@ const Header = () => {
                     }}
                 >
                     <img
-                        src={user.avatar}
+                        src={`//localhost:8000/${user.avatar}`}
                         alt='user'
                         style={{
                             width: "3.2rem",
+                            height: "3.2rem",
                             borderRadius: "50%",
+                            objectFit: "cover",
                         }}
                     />
                 </IconButton>
@@ -178,10 +182,10 @@ const Header = () => {
                         }}
                     >
                         <MenuItem>
-                            <StyledLink to='/auth/login'>Đăng nhập</StyledLink>
+                            <StyledLink to='/login'>Đăng nhập</StyledLink>
                         </MenuItem>
                         <MenuItem>
-                            <StyledLink to='/auth/register'>Đăng ký</StyledLink>
+                            <StyledLink to='/register'>Đăng ký</StyledLink>
                         </MenuItem>
                     </Menu>
                 ) : (
@@ -216,8 +220,9 @@ const Header = () => {
                         <MenuItem>
                             <StyledLink
                                 to={
-                                    reactLocation.pathname.includes("account")
-                                        ? "/auth/login"
+                                    reactLocation.pathname.includes("user") ||
+                                    reactLocation.pathname.includes("manager")
+                                        ? "/login"
                                         : reactLocation.pathname
                                 }
                                 onClick={handleLogout}
