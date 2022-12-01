@@ -12,6 +12,7 @@ import {
     Profile,
     Purchase,
     Search,
+    Category,
     Cart,
     ProductDetail,
     Dashboard,
@@ -83,16 +84,8 @@ export const routes = [
                 ],
             },
             {
-                path: "men",
-                element: <Search title='Thời trang nam | 360 Store' />,
-            },
-            {
-                path: "women",
-                element: <Search title='Thời trang nữ | 360 Store' />,
-            },
-            {
-                path: "accessory",
-                element: <Search title='Phụ kiện | 360 Store' />,
+                path: "categories/:slug",
+                element: <Category />,
             },
             {
                 path: "search",

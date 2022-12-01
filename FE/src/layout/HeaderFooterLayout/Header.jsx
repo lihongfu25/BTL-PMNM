@@ -104,9 +104,9 @@ const Header = () => {
                 }}
             >
                 <Link to='/'>Trang chủ</Link>
-                <Link to='/men'>Nam</Link>
-                <Link to='/women'>Nữ</Link>
-                <Link to='/accessory'>Phụ Kiện</Link>
+                <Link to='/categories/men'>Nam</Link>
+                <Link to='/categories/women'>Nữ</Link>
+                <Link to='/categories/accessory'>Phụ Kiện</Link>
                 <Link to='/contact'>Liên Hệ</Link>
             </Box>
             <Box
