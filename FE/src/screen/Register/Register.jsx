@@ -1,12 +1,17 @@
 import React from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import { Box, FormControlLabel, Checkbox } from "@mui/material";
+
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import { Loading } from "../../components/Loading";
+import { setToken } from "../../redux/store/tokenSlice";
+import { userUpdateProfile } from "../../redux/store/userSlice";
+import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 
 const StyledTextField = styled(TextField)({
@@ -15,7 +20,10 @@ const StyledTextField = styled(TextField)({
 });
 const Register = () => {
     document.title = "Đăng ký | 360 Store";
+    const isLogin = useSelector((state) => state.token.isLogin);
+    const userRole = useSelector((state) => state.user.role_id);
     const [isLoading, setIsLoading] = React.useState(false);
+
     const {
         control,
         handleSubmit,
@@ -23,6 +31,17 @@ const Register = () => {
         setError,
     } = useForm();
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        if (isLogin) {
+            if (userRole !== "r2") {
+                dispatch(managerChangeTab("dashboard"));
+                navigate("/manager/dashboard");
+            } else navigate("/");
+        }
+    }, [isLogin, userRole, navigate, dispatch]);
     const onSubmit = (data) => {
         async function register() {
             setIsLoading(true);
@@ -30,18 +49,22 @@ const Register = () => {
                 const res = await axios.post("//localhost:8000/api/members", {
                     ...data,
                 });
-                console.log(res);
+                localStorage.setItem(
+                    "authTokens",
+                    JSON.stringify(res.data.access_token),
+                );
+                dispatch(
+                    setToken({
+                        isLogin: true,
+                        authToken: res.data.access_token,
+                    }),
+                );
+                dispatch(userUpdateProfile(res.data.data));
             } catch (err) {
-                if (err.response.data.message_email)
-                    setError("email", {
-                        type: "validate",
-                        message: err.response.data.message_email,
-                    });
-                if (err.response.data.message_phone)
-                    setError("phone", {
-                        type: "validate",
-                        message: err.response.data.message_phone,
-                    });
+                setError("email", {
+                    type: "validate",
+                    message: err.response.data.message,
+                });
             }
             setIsLoading(false);
         }

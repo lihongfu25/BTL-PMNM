@@ -1,11 +1,17 @@
 import React from "react";
 import axios from "axios";
-import { Link } from "react-router-dom";
+import { useSelector, useDispatch } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
-import { Box, FormControlLabel, Checkbox } from "@mui/material";
+import { Box, FormControlLabel, Checkbox, Typography } from "@mui/material";
+
 import { Button } from "../../components/Button";
+import { Loading } from "../../components/Loading";
 import { TextField } from "../../components/TextField";
+import { setToken } from "../../redux/store/tokenSlice";
+import { userUpdateProfile } from "../../redux/store/userSlice";
+import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 const StyledTextField = styled(TextField)({
     width: "100%",
@@ -13,15 +19,62 @@ const StyledTextField = styled(TextField)({
 });
 const Login = () => {
     document.title = "Đăng nhập | 360 Store";
+    const isLogin = useSelector((state) => state.token.isLogin);
+    const userRole = useSelector((state) => state.user.role_id);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [errorMessage, setErrorMessage] = React.useState("");
 
+    const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        if (isLogin) {
+            if (userRole !== "r2") {
+                dispatch(managerChangeTab("dashboard"));
+                navigate("/manager/dashboard");
+            } else navigate("/");
+        }
+    }, [isLogin, userRole, navigate, dispatch]);
     const {
         control,
         handleSubmit,
         formState: { errors },
+        setError,
     } = useForm();
 
     const onSubmit = (data) => {
-        console.log(data);
+        async function login() {
+            setIsLoading(true);
+            try {
+                const res = await axios.post(
+                    `//localhost:8000/api/members/login`,
+                    {
+                        ...data,
+                    },
+                );
+                localStorage.setItem(
+                    "authTokens",
+                    JSON.stringify(res.data.access_token),
+                );
+                dispatch(
+                    setToken({
+                        isLogin: true,
+                        authToken: res.data.access_token,
+                    }),
+                );
+                dispatch(userUpdateProfile(res.data.data));
+            } catch (err) {
+                setErrorMessage(err.response.data.message);
+                setError("username", {
+                    type: "validate",
+                });
+                setError("password", {
+                    type: "validate",
+                });
+            }
+            setIsLoading(false);
+        }
+        login();
     };
 
     return (
@@ -41,8 +94,9 @@ const Login = () => {
             <Controller
                 name='username'
                 control={control}
+                defaultValue=''
                 rules={{
-                    required: "Vui lòng nhập tên tài khoản",
+                    required: "Vui lòng nhập tên đăng nhâp/Email/SĐT",
                 }}
                 render={({ field }) => (
                     <StyledTextField
@@ -58,6 +112,7 @@ const Login = () => {
             <Controller
                 name='password'
                 control={control}
+                defaultValue=''
                 rules={{
                     required: "Vui lòng nhập mật khẩu",
                 }}
@@ -73,6 +128,16 @@ const Login = () => {
                     />
                 )}
             />
+            <Typography
+                sx={{
+                    ml: "1.2rem",
+                    color: "#d32f2f",
+                    fontSize: "1.2rem",
+                    alignSelf: "flex-start",
+                }}
+            >
+                {errorMessage}
+            </Typography>
             <Box
                 sx={{
                     width: "100%",
@@ -119,7 +184,7 @@ const Login = () => {
                     mt: "1rem",
                 }}
             >
-                Đăng nhập
+                {isLoading ? <Loading /> : "Đăng nhập"}
             </Button>
             <h6 className='navLink textColor useFont-Nunito'>
                 Bạn chưa có tài khoản ?{" "}
