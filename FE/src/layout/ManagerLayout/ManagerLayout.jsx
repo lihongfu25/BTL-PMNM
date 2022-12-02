@@ -1,6 +1,6 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { Outlet, useNavigate } from "react-router-dom";
+import { Outlet, useNavigate, useLocation } from "react-router-dom";
 import {
     Avatar,
     Box,
@@ -24,9 +24,9 @@ import {
     BsBoxArrowLeft,
 } from "react-icons/bs";
 import { managerChangeTab } from "./managerSlice";
+import { clearToken } from "../../redux/store/tokenSlice";
 import { userLogout } from "../../redux/store/userSlice";
 import logo from "../../assets/img/logo.png";
-import avatar from "../../assets/img/DSC_0036-1.jpg";
 import "./manager.scss";
 
 const tabs = [
@@ -68,17 +68,19 @@ const tabs = [
 ];
 const ManagerLayout = ({ children }) => {
     const user = useSelector((state) => state.user);
-    const currentTab = useSelector((state) => state.manager.currentTab);
+
+    const { pathname } = useLocation();
     const dispatch = useDispatch();
     const navigate = useNavigate();
+
     const handleChangeTab = (slug) => {
-        if (slug === "profile") navigate(`/manager/user/${slug}`);
-        else navigate(`/manager/${slug}`);
+        navigate(`/manager/${slug}`);
         dispatch(managerChangeTab(slug));
     };
     const handleLogout = () => {
+        dispatch(clearToken());
         dispatch(userLogout());
-        navigate("/auth/login");
+        navigate("/login");
     };
     return (
         <Box
@@ -132,7 +134,9 @@ const ManagerLayout = ({ children }) => {
                         <ListItem key={index} disablePadding>
                             <ListItemButton
                                 className={`tab ${
-                                    tab.slug === currentTab ? "currentTab" : ""
+                                    pathname.includes(tab.slug)
+                                        ? "currentTab"
+                                        : ""
                                 }`}
                                 onClick={() => handleChangeTab(tab.slug)}
                             >
@@ -152,7 +156,9 @@ const ManagerLayout = ({ children }) => {
                     <ListItem disablePadding>
                         <ListItemButton
                             className={`tab ${
-                                currentTab === "profile" ? "currentTab" : ""
+                                pathname.includes("/profile")
+                                    ? "currentTab"
+                                    : ""
                             }`}
                             onClick={() => handleChangeTab("profile")}
                         >
@@ -195,7 +201,7 @@ const ManagerLayout = ({ children }) => {
                         justifyContent: "flex-end",
                     }}
                 >
-                    <Avatar alt='' src={avatar} />
+                    <Avatar alt='' src={`//localhost:8000/${user.avatar}`} />
                     <Typography
                         sx={{
                             ml: "1.2rem",

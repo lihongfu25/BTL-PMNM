@@ -2,7 +2,7 @@ import { createSlice } from "@reduxjs/toolkit";
 export const managerSlice = createSlice({
     name: "manager",
     initialState: {
-        currentTab: "dashboard",
+        currentTab: "",
     },
     reducers: {
         managerChangeTab: (state, action) => {
