@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Contact;
 use App\Http\Requests\StoreContactRequest;
 use App\Http\Requests\UpdateContactRequest;
+use Illuminate\Support\Facades\Mail;
+
 
 class ContactController extends Controller
 {
@@ -20,7 +22,7 @@ class ContactController extends Controller
              ->orWhere('full_name', 'LIKE', "%" . $keyword . "%")
              ->orWhere('email', 'LIKE', "%" . $keyword . "%")
              ->orWhere('phone', 'LIKE', "%" . $keyword . "%")
-             ->paginate(10);
+             ->orderBy('is_feedback')->paginate(10);
         return response()->json(['data' => $contact], 200);
     }
 
@@ -34,7 +36,7 @@ class ContactController extends Controller
     {
         Contact::create($request->all());
         return response()->json([
-            'message' => "Tạo mới thành công!",
+            'message' => "Liên hệ đã được gửi tới bộ phận chăm sóc khách hàng!",
         ], 201);
     }
 
@@ -61,13 +63,20 @@ class ContactController extends Controller
         $contactFind = Contact::find($contactId);
 
         if (!$contactFind)
-            return response()->json(['message' => 'Không tìm thấy liên hệ cần sửa!'], 404);
+            return response()->json(['message' => 'Không tìm thấy liên hệ cần phản hồi!'], 404);
         
         $contactFind->is_feedback = $request->get('is_feedback');
-        $contactFind->member_id = $request->get('member_id');
         $contactFind->save();
+
+        #Queue
+
+        Mail::send('emails.contact', compact('contactFind'), function($email) use($contactFind) {
+            $email->subject("360 Store - Chăm sóc khách hàng");
+            $email->to($contactFind->email, $contactFind->full_name);
+        });
+
         return response()->json([
-            'message' => "Cập nhật thành công!",
+            'message' => "Đã gửi phản hồi đến khách hàng!",
         ], 201);
     }
 

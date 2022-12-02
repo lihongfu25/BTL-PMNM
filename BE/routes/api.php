@@ -9,7 +9,10 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\CarouselController;
 use App\Http\Controllers\MemberController;
 use App\Http\Controllers\ContactController;
-
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ColorController;
+use App\Http\Controllers\ImageController;
+use App\Http\Controllers\ProductSizeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -37,6 +40,12 @@ Route::post('/members/delete/{memberId}', [MemberController::class, 'destroy']);
 Route::post('/members/role/{memberId}', [MemberController::class, 'update_role']);
 Route::post('/members/password/{memberId}', [MemberController::class, 'update_password']);
 Route::apiResource('/contacts', ContactController::class);
+Route::apiResource('/products', ProductController::class);
+Route::apiResource('/sizes', SizeController::class);
+Route::apiResource('/colors', ColorController::class);
+Route::apiResource('/images', ImageController::class);
+Route::apiResource('/product-sizes', ProductSizeController::class)->except('destroy');
+Route::post('/product-sizes/delete', [ProductSizeController::class, 'destroy']);
 
 
 

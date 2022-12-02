@@ -14,6 +14,9 @@ class Carousel extends Model
         'status',
         'image'
     ];
+
+    public $timestamps = false;
+    
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');

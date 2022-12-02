@@ -56,12 +56,12 @@ class MemberController extends Controller
 
         $member = Member::where('email', $email)->first();
 
-        $token = $member->createToken($member["id"])->plainTextToken;
+        // $token = $member->createToken($member["id"])->plainTextToken;
 
 
         return response()->json([
             'data' => $member,
-            'access_token' => $token,
+            // 'access_token' => $token,
             'message' => "Tạo mới thành công!",
         ], 201);
     }
@@ -193,7 +193,7 @@ class MemberController extends Controller
     public function destroy($memberId)
     {
         $memberFind = Member::find($memberId);
-        $user_request_role = request()->get('userRole');
+        $user_request_role = request()->get('user_role');
 
         if (!$memberFind)
             return response()->json(['message' => 'Không tìm thấy người dùng cần xóa!'], 404);

@@ -19,13 +19,13 @@ return new class extends Migration
             $table->string("address");
             $table->string("email");
             $table->string("phone");
-            $table->string("gender");
-            $table->string("date_of_birth");
-            $table->string("avatar");
-            $table->string("username")->nullable();
+            $table->string("gender")->nullable()->default(null);
+            $table->string("date_of_birth")->nullable()->default(null);
+            $table->string("avatar")->default('images/a986302c6bb2e21c396a98aebf115ffe.png');
+            $table->string("username")->nullable()->default(null);
             $table->string("password");
 
-            $table->string('role_id');
+            $table->string('role_id')->default('r2');
             $table->foreign('role_id')->references('role_id')->on('roles');
         });
     }

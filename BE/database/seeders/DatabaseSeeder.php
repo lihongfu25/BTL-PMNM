@@ -23,10 +23,19 @@ class DatabaseSeeder extends Seeder
         $this->call(
             [
                 RoleSeeder::class,
-                CategorySeeder::class,
-                SizeSeeder::class,
-                CarouselSeeder::class,
+                MemberSeeder::class,
                 ContactSeeder::class,
+                SizeSeeder::class,
+                CategorySeeder::class,
+                CarouselSeeder::class,
+                ProductSeeder::class,
+                ImageSeeder::class,
+                ColorSeeder::class,
+                ProductSizeSeeder::class,
+                CartSeeder::class,
+                RatingSeeder::class,
+                OrderSeeder::class,
+                OrderDetailSeeder::class,
                 
                 // ScheduleSeeder::class,
             ]
