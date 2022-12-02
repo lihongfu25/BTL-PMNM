@@ -15,8 +15,8 @@ import {
     LinearProgress,
 } from "@mui/material";
 import { useDebounce } from "../../hook";
-import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
+import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import "../../styles/DataTable/dataTable.scss";
 
@@ -47,14 +47,14 @@ const CategoryManager = () => {
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
-    const debounceSearch = useDebounce(search, 500);
     const [data, setData] = React.useState([]);
-    const [isLoading, setIsLoading] = React.useState(false);
     const [openAddForm, setOpenAddForm] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
     const [openUpdateForm, setOpenUpdateForm] = React.useState(false);
     const [delId, setDelId] = React.useState();
     const [updateId, setUpdateId] = React.useState();
+    const debounceSearch = useDebounce(search, 500);
+    const [isLoading, setIsLoading] = React.useState(false);
     const [callApi, setCallApi] = React.useState(Math.random());
     const [snackbar, setSnackbar] = React.useState({
         isOpen: false,
@@ -95,7 +95,6 @@ const CategoryManager = () => {
     const handleChangePage = (e, value) => {
         setPage(value);
     };
-
     const handleCloseSnackbar = (e, reason) => {
         if (reason === "clickaway") {
             return;
@@ -153,6 +152,7 @@ const CategoryManager = () => {
 
     const onUpdate = (data) => {
         async function updateCategory() {
+            setOpenUpdateForm(false);
             try {
                 const res = await axios.put(
                     `//localhost:8000/api/categories/${updateId}`,
@@ -165,17 +165,14 @@ const CategoryManager = () => {
                     type: "success",
                     message: res.data.message,
                 });
-                setOpenUpdateForm(false);
-                setCallApi(Math.random());
             } catch (err) {
                 setSnackbar({
                     isOpen: true,
                     type: "error",
                     message: err.response.data.message,
                 });
-                setOpenUpdateForm(false);
-                setCallApi(Math.random());
             }
+            setCallApi(Math.random());
         }
         updateCategory();
     };
