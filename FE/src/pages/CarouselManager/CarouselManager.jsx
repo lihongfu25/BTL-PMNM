@@ -106,7 +106,6 @@ const ContactManager = () => {
             setPage(res[1].data.data.current_page);
             setTotalPage(res[1].data.data.last_page);
             setIsLoading(false);
-            console.log("call api...");
         }
         getData();
     }, [page, debounceSearch, callApi]);
