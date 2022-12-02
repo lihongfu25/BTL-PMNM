@@ -1,5 +1,5 @@
 import React from "react";
-import { useForm, Controller } from "react-hook-form";
+import axios from "axios";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -10,10 +10,15 @@ import {
     DialogActions,
     Link,
     Pagination,
+    Snackbar,
+    LinearProgress,
 } from "@mui/material";
+import { useDebounce } from "../../hook";
+import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import "../../styles/DataTable/dataTable.scss";
+import styles from "./contactManager.module.scss";
 
 const columns = [
     { field: "id", headerName: "Mã liên hệ", width: 100 },
@@ -21,96 +26,6 @@ const columns = [
     { field: "email", headerName: "Email", width: 160 },
     { field: "phone", headerName: "Số điện thoại", width: 160 },
     { field: "content", headerName: "Nội dung", width: 280 },
-];
-const rows = [
-    {
-        id: "1",
-        name: "Nguyễn Văn 1",
-        email: "nguyenvan1@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: false,
-    },
-    {
-        id: "2",
-        name: "Nguyễn Văn 2",
-        email: "nguyenvan2@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: true,
-    },
-    {
-        id: "3",
-        name: "Nguyễn Văn 3",
-        email: "nguyenvan3@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: false,
-    },
-    {
-        id: "4",
-        name: "Nguyễn Văn 4",
-        email: "nguyenvan4@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: false,
-    },
-    {
-        id: "5",
-        name: "Nguyễn Văn 5",
-        email: "nguyenvan5@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: true,
-    },
-    {
-        id: "6",
-        name: "Nguyễn Văn 6",
-        email: "nguyenvan6@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: false,
-    },
-    {
-        id: "7",
-        name: "Nguyễn Văn 7",
-        email: "nguyenvan7@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: true,
-    },
-    {
-        id: "8",
-        name: "Nguyễn Văn 8",
-        email: "nguyenvan8@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: true,
-    },
-    {
-        id: "9",
-        name: "Nguyễn Văn 9",
-        email: "nguyenvan9@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: false,
-    },
-    {
-        id: "10",
-        name: "Nguyễn Văn 8",
-        email: "nguyenvan8@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: true,
-    },
-    {
-        id: "11",
-        name: "Nguyễn Văn 9",
-        email: "nguyenvan9@gmail.com",
-        phone: "0123456789",
-        content: "Tôi cần hỗ trợ",
-        isFeedback: false,
-    },
 ];
 const StyledButton = styled(Button)({
     textTransform: "none",
@@ -126,47 +41,80 @@ const StyledDialog = styled(Dialog)({
 });
 const CarouselManager = () => {
     document.title = "Liên hệ | 360 Store";
+    const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
     const [data, setData] = React.useState([]);
-    const [dataRemaining, setDataRemaining] = React.useState([]);
     const [openFeedbackForm, setOpenFeedbackForm] = React.useState(false);
     const [feedbackId, setFeedbackId] = React.useState();
-    const {
-        control,
-        handleSubmit,
-        formState: { errors },
-        clearErrors,
-        setValue,
-    } = useForm();
+    const debounceSearch = useDebounce(search, 500);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [btnLoading, setBtnLoading] = React.useState(false);
+    const [callApi, setCallApi] = React.useState(Math.random());
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
+
     React.useEffect(() => {
-        setData(rows);
-    }, []);
-    React.useEffect(() => {
-        setDataRemaining(
-            data.filter(
-                (row) =>
-                    row.id.toLowerCase().includes(search.toLowerCase()) ||
-                    row.name.toLowerCase().includes(search.toLowerCase()) ||
-                    row.email.toLowerCase().includes(search.toLowerCase()),
-            ),
-        );
-    }, [data, search]);
+        async function getData() {
+            setIsLoading(true);
+            const res = await axios.get(
+                `//localhost:8000/api/contacts?keyword=${debounceSearch}&page=${page}`,
+            );
+            setData(res.data.data.data);
+            setPage(res.data.data.current_page);
+            setTotalPage(res.data.data.last_page);
+            setIsLoading(false);
+        }
+        getData();
+    }, [page, debounceSearch, callApi]);
+
     const handleChangePage = (e, value) => {
         setPage(value);
+    };
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
     };
     const handleOpenFeedbackForm = (row) => {
         setOpenFeedbackForm(true);
         setFeedbackId(row.id);
-        setValue("content", "");
     };
     const handleCloseFeedbackForm = () => {
         setOpenFeedbackForm(false);
-        clearErrors();
     };
-    const onSubmit = (data) => {
-        console.log({ id: feedbackId, ...data });
-        setOpenFeedbackForm(false);
+    const onSubmit = () => {
+        async function sendMail() {
+            setBtnLoading(true);
+            try {
+                const res = await axios.put(
+                    `//localhost:8000/api/contacts/${feedbackId}`,
+                    {
+                        is_feedback: true,
+                    },
+                );
+                setOpenFeedbackForm(false);
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+            } catch (err) {
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+                setOpenFeedbackForm(false);
+            }
+            setCallApi(Math.random());
+            setBtnLoading(false);
+        }
+        sendMail();
     };
 
     return (
@@ -237,7 +185,7 @@ const CarouselManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {dataRemaining.length === 0 ? (
+                            {isLoading ? (
                                 <tr>
                                     <td
                                         colSpan={
@@ -245,61 +193,62 @@ const CarouselManager = () => {
                                         }
                                         align='center'
                                     >
-                                        Chưa có bản ghi nào
+                                        <LinearProgress color='inherit' />
+                                    </td>
+                                </tr>
+                            ) : data.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
+                                        }
+                                        align='center'
+                                    >
+                                        Chưa có liên hệ nào
                                     </td>
                                 </tr>
                             ) : (
-                                dataRemaining
-                                    .filter(
-                                        (row, i) =>
-                                            i >= 10 * (page - 1) &&
-                                            i <= 10 * page - 1,
-                                    )
-                                    .map((row, index) => (
-                                        <tr
-                                            key={index}
-                                            className={
-                                                index % 2 === 0 ? "even" : "odd"
-                                            }
+                                data.map((row, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            index % 2 === 0 ? "even" : "odd"
+                                        }
+                                    >
+                                        <td>{row.id}</td>
+                                        <td>{row.full_name}</td>
+                                        <td>{row.email}</td>
+                                        <td>{row.phone}</td>
+                                        <td>{row.content}</td>
+                                        <td
+                                            className='go-to-detail'
+                                            align='center'
                                         >
-                                            <td>{row.id}</td>
-                                            <td>{row.name}</td>
-                                            <td>{row.email}</td>
-                                            <td>{row.phone}</td>
-                                            <td>{row.content}</td>
-                                            <td
-                                                className='go-to-detail'
-                                                align='center'
-                                            >
-                                                {!row.isFeedback && (
-                                                    <Link
-                                                        underline='hover'
-                                                        sx={{
-                                                            mr: "1rem",
-                                                        }}
-                                                        onClick={() =>
-                                                            handleOpenFeedbackForm(
-                                                                row,
-                                                            )
-                                                        }
-                                                    >
-                                                        Phản hồi
-                                                    </Link>
-                                                )}
-                                            </td>
-                                        </tr>
-                                    ))
+                                            {!row.is_feedback && (
+                                                <Link
+                                                    underline='hover'
+                                                    sx={{
+                                                        mr: "1rem",
+                                                    }}
+                                                    onClick={() =>
+                                                        handleOpenFeedbackForm(
+                                                            row,
+                                                        )
+                                                    }
+                                                >
+                                                    Phản hồi
+                                                </Link>
+                                            )}
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={
-                                            Math.floor(
-                                                dataRemaining.length / 10,
-                                            ) + 1
-                                        }
+                                        count={totalPage}
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
@@ -319,63 +268,64 @@ const CarouselManager = () => {
                     "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
                         width: "50rem",
                     },
+                    "& .mess": {
+                        m: 0,
+                        fontSize: "1.6rem",
+                        textAlign: "center",
+                    },
                 }}
             >
-                <Box
-                    component='form'
-                    noValidate
-                    onSubmit={handleSubmit(onSubmit)}
+                <DialogTitle>Phản hồi khách hàng</DialogTitle>
+                <DialogContent>
+                    <p className='mess'>
+                        Xác nhận gửi phản hồi đến khách hàng này ?
+                    </p>
+                </DialogContent>
+
+                <DialogActions
+                    sx={{
+                        px: "2.4rem",
+                    }}
                 >
-                    <DialogTitle>Phản hồi</DialogTitle>
-                    <DialogContent
-                        sx={{
-                            flexDirection: "column",
-                        }}
+                    <StyledButton variant='text' onClick={onSubmit}>
+                        {btnLoading ? (
+                            <div className={styles.spinner}>
+                                <span>Đ</span>
+                                <span>A</span>
+                                <span>N</span>
+                                <span>G</span>
+                                <span>G</span>
+                                <span>Ử</span>
+                                <span>I</span>
+                            </div>
+                        ) : (
+                            "Gửi"
+                        )}
+                    </StyledButton>
+                    <StyledButton
+                        variant='text'
+                        onClick={handleCloseFeedbackForm}
                     >
-                        <Controller
-                            name='content'
-                            control={control}
-                            rules={{
-                                required: "Vui lòng nhập trường này!",
-                            }}
-                            render={({ field }) => {
-                                return (
-                                    <TextField
-                                        label='Nội dung'
-                                        sx={{
-                                            mt: "1.5rem",
-                                            width: "100%",
-                                        }}
-                                        multiline
-                                        error={Boolean(errors.content)}
-                                        helperText={
-                                            errors?.content
-                                                ? errors.content.message
-                                                : ""
-                                        }
-                                        {...field}
-                                    />
-                                );
-                            }}
-                        />
-                    </DialogContent>
-                    <DialogActions
-                        sx={{
-                            px: "2.4rem",
-                        }}
-                    >
-                        <StyledButton variant='text' type='submit'>
-                            Gửi
-                        </StyledButton>
-                        <StyledButton
-                            variant='text'
-                            onClick={handleCloseFeedbackForm}
-                        >
-                            Hủy
-                        </StyledButton>
-                    </DialogActions>
-                </Box>
+                        Hủy
+                    </StyledButton>
+                </DialogActions>
             </StyledDialog>
+            <Snackbar
+                open={snackbar.isOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.type}
+                    sx={{
+                        width: "100%",
+                        fontSize: "1.6rem",
+                    }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
