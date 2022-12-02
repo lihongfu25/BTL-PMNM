@@ -31,5 +31,22 @@ const formatDate = (date) => {
 
     return [year, month, day].join("-");
 };
-export { currencyFormat, compactNumber, formatDate };
+const formatDateTime = (datetime) => {
+    var m = new Date(datetime);
+    var datetimeString =
+        m.getUTCFullYear() +
+        "/" +
+        ("0" + (m.getUTCMonth() + 1)).slice(-2) +
+        "/" +
+        ("0" + m.getUTCDate()).slice(-2) +
+        " " +
+        ("0" + m.getUTCHours()).slice(-2) +
+        ":" +
+        ("0" + m.getUTCMinutes()).slice(-2) +
+        ":" +
+        ("0" + m.getUTCSeconds()).slice(-2);
+
+    return datetimeString;
+};
+export { currencyFormat, compactNumber, formatDate, formatDateTime };
 export default GlobalStyles;
