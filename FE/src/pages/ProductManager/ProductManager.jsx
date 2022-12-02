@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
@@ -6,7 +7,6 @@ import {
     Box,
     Typography,
     Link,
-    Pagination,
     Dialog,
     DialogTitle,
     DialogContent,
@@ -19,7 +19,12 @@ import {
     Checkbox,
     ListItemText,
     FormHelperText,
+    Pagination,
+    Snackbar,
+    LinearProgress,
 } from "@mui/material";
+import { useDebounce } from "../../hook";
+import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import { Select } from "../../components/Select";
@@ -33,147 +38,28 @@ const columns = [
     { field: "quantity", headerName: "Số lượng", width: 140 },
     { field: "discount", headerName: "Giảm giá", width: 100 },
 ];
-
-const rows = [
-    {
-        id: "1",
-        category: "Nam",
-        name: "Sản phẩm 1",
-        price: 123456,
-        quantity: 1234,
-        discount: 0,
-    },
-    {
-        id: "2",
-        category: "Nam",
-        name: "Sản phẩm 2",
-        price: 123456,
-        quantity: 1234,
-        discount: 10,
-    },
-    {
-        id: "3",
-        category: "Nam",
-        name: "Sản phẩm 3",
-        price: 123456,
-        quantity: 1234,
-        discount: 5,
-    },
-    {
-        id: "4",
-        category: "Nữ",
-        name: "Sản phẩm 4",
-        price: 123456,
-        quantity: 1234,
-        discount: 0,
-    },
-    {
-        id: "5",
-        category: "Nữ",
-        name: "Sản phẩm 5",
-        price: 123456,
-        quantity: 1234,
-        discount: 5,
-    },
-    {
-        id: "6",
-        category: "Phụ Kiện",
-        name: "Sản phẩm 6",
-        price: 123456,
-        quantity: 1234,
-        discount: 60,
-    },
-    {
-        id: "7",
-        category: "Nam",
-        name: "Sản phẩm 7",
-        price: 123456,
-        quantity: 1234,
-        discount: 90,
-    },
-    {
-        id: "8",
-        category: "Nam",
-        name: "Sản phẩm 8",
-        price: 123456,
-        quantity: 1234,
-        discount: 55,
-    },
-    {
-        id: "9",
-        category: "Nữ",
-        name: "Sản phẩm 9",
-        price: 123456,
-        quantity: 1234,
-        discount: 33,
-    },
-    {
-        id: "10",
-        category: "Phụ Kiện",
-        name: "Sản phẩm 10",
-        price: 123456,
-        quantity: 1234,
-        discount: 15,
-    },
-    {
-        id: "11",
-        category: "Nữ",
-        name: "Sản phẩm 11",
-        price: 123456,
-        quantity: 1234,
-        discount: 40,
-    },
-];
-const categoryList = [
-    {
-        id: 1,
-        name: "Nam",
-    },
-    {
-        id: 2,
-        name: "Nữ",
-    },
-    {
-        id: 3,
-        name: "Phụ Kiện",
-    },
-];
-const sizeList = [
-    {
-        id: 1,
-        name: "S",
-    },
-    {
-        id: 2,
-        name: "M",
-    },
-    {
-        id: 3,
-        name: "L",
-    },
-    {
-        id: 4,
-        name: "XL",
-    },
-    {
-        id: 5,
-        name: "XXL",
-    },
-];
 const StyledButton = styled(Button)({
     textTransform: "none",
     padding: "0.2rem 1.2rem",
 });
 const ProductManager = () => {
     document.title = "Sản phẩm | 360 Store";
+    const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
     const [data, setData] = React.useState([]);
     const [categories, setCategories] = React.useState([]);
     const [sizes, setSizes] = React.useState([]);
     const [sizesSelected, setSizesSelected] = React.useState([]);
-    const [dataRemaining, setDataRemaining] = React.useState([]);
     const [openAddForm, setOpenAddForm] = React.useState(false);
+    const debounceSearch = useDebounce(search, 500);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const [callApi, setCallApi] = React.useState(Math.random());
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
 
     const { pathname } = useLocation();
     const navigate = useNavigate();
@@ -187,30 +73,41 @@ const ProductManager = () => {
         setError,
     } = useForm();
     React.useEffect(() => {
-        setData(rows);
-        setCategories(categoryList);
-        setSizes(sizeList);
-    }, []);
-    React.useEffect(() => {
-        setDataRemaining(
-            data.filter(
-                (row) =>
-                    row.id.toLowerCase().includes(search.toLowerCase()) ||
-                    row.category.toLowerCase().includes(search.toLowerCase()) ||
-                    row.name.toLowerCase().includes(search.toLowerCase()),
-            ),
-        );
-    }, [data, search]);
+        async function getData() {
+            setIsLoading(true);
+            const res = await Promise.all([
+                axios.get(`//localhost:8000/api/categories/all`),
+                axios.get("//localhost:8000/api/sizes"),
+                axios.get(
+                    `//localhost:8000/api/products?keyword=${debounceSearch}&page=${page}`,
+                ),
+            ]);
+            setCategories(res[0].data.data);
+            setSizes(res[1].data.data);
+            setData(res[2].data.data.data);
+            setPage(res[2].data.data.current_page);
+            setTotalPage(res[2].data.data.last_page);
+            setIsLoading(false);
+        }
+        getData();
+    }, [page, debounceSearch, callApi]);
+
     const handleChangePage = (e, value) => {
         setPage(value);
+    };
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
     };
     const handleOpenAddForm = () => {
         setOpenAddForm(true);
         setValue("name", "");
-        setValue("category", "");
+        setValue("category_id", "");
         setValue("price", "");
         setValue("quantity", "");
-        setValue("discount", "");
+        setValue("discount", 0);
         setValue("description", "");
         setSizesSelected([]);
     };
@@ -231,10 +128,44 @@ const ProductManager = () => {
     };
     const onAdd = (data) => {
         data.size = sizes
-            .filter((size) => sizesSelected.includes(size.name))
+            .filter((size) => sizesSelected.includes(size.description))
             .map((size) => size.id);
-        console.log(data);
-        setOpenAddForm(false);
+
+        async function createProduct() {
+            try {
+                const formData = new FormData();
+
+                Object.keys(data).forEach((item) => {
+                    formData.append(item, data[item]);
+                });
+                if (data.image)
+                    Array.from(data.image).forEach((img) =>
+                        formData.append("image[]", img),
+                    );
+                if (data.color)
+                    Array.from(data.color).forEach((value) =>
+                        formData.append("color[]", value),
+                    );
+                if (data.size)
+                    Array.from(data.size).forEach((value) =>
+                        formData.append("size[]", value),
+                    );
+                const res = await axios.post(
+                    `//localhost:8000/api/products`,
+                    formData,
+                );
+                setOpenAddForm(false);
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setCallApi(Math.random());
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        createProduct();
         setSizesSelected([]);
     };
     return (
@@ -314,7 +245,7 @@ const ProductManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {dataRemaining.length === 0 ? (
+                            {isLoading ? (
                                 <tr>
                                     <td
                                         colSpan={
@@ -322,58 +253,59 @@ const ProductManager = () => {
                                         }
                                         align='center'
                                     >
-                                        Chưa có bản ghi nào
+                                        <LinearProgress color='inherit' />
+                                    </td>
+                                </tr>
+                            ) : data.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
+                                        }
+                                        align='center'
+                                    >
+                                        Chưa có sản phẩm nào
                                     </td>
                                 </tr>
                             ) : (
-                                dataRemaining
-                                    .filter(
-                                        (row, i) =>
-                                            i >= 10 * (page - 1) &&
-                                            i <= 10 * page - 1,
-                                    )
-                                    .map((row, index) => (
-                                        <tr
-                                            key={index}
-                                            className={
-                                                index % 2 === 0 ? "even" : "odd"
-                                            }
+                                data.map((row, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            index % 2 === 0 ? "even" : "odd"
+                                        }
+                                    >
+                                        <td>{row.id}</td>
+                                        <td>{row.category.name}</td>
+                                        <td>{row.name}</td>
+                                        <td>{currencyFormat(row.price)}</td>
+                                        <td>{row.quantity}</td>
+                                        <td>{row.discount}</td>
+                                        <td
+                                            className='go-to-detail'
+                                            align='center'
                                         >
-                                            <td>{row.id}</td>
-                                            <td>{row.category}</td>
-                                            <td>{row.name}</td>
-                                            <td>{currencyFormat(row.price)}</td>
-                                            <td>{row.quantity}</td>
-                                            <td>{row.discount}</td>
-                                            <td
-                                                className='go-to-detail'
-                                                align='center'
+                                            <Link
+                                                underline='hover'
+                                                sx={{
+                                                    mr: "1rem",
+                                                }}
+                                                onClick={() =>
+                                                    handleGoToDetail(row.id)
+                                                }
                                             >
-                                                <Link
-                                                    underline='hover'
-                                                    sx={{
-                                                        mr: "1rem",
-                                                    }}
-                                                    onClick={() =>
-                                                        handleGoToDetail(row.id)
-                                                    }
-                                                >
-                                                    Xem
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))
+                                                Xem
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={
-                                            Math.floor(
-                                                dataRemaining.length / 10,
-                                            ) + 1
-                                        }
+                                        count={totalPage}
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
@@ -440,7 +372,7 @@ const ProductManager = () => {
                                 }}
                             />
                             <Controller
-                                name='category'
+                                name='category_id'
                                 control={control}
                                 rules={{
                                     required: "Vui lòng chọn danh mục!",
@@ -449,8 +381,10 @@ const ProductManager = () => {
                                     <Select
                                         label='Danh mục'
                                         options={categories}
-                                        isError={Boolean(errors.category)}
-                                        errorMessage={errors.category?.message}
+                                        isError={Boolean(errors.category_id)}
+                                        errorMessage={
+                                            errors.category_id?.message
+                                        }
                                         field={field}
                                     />
                                 )}
@@ -601,9 +535,7 @@ const ProductManager = () => {
                                             transform:
                                                 "translate(1.2rem, 0.8rem)",
                                         },
-                                    "& .css-10hburv-MuiTypography-root": {
-                                        fontSize: "1.6rem",
-                                    },
+
                                     "& .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input":
                                         {
                                             p: "1.2rem",
@@ -642,16 +574,24 @@ const ProductManager = () => {
                                     {sizes.map((size) => (
                                         <MenuItem
                                             key={size.id}
-                                            value={size.name}
+                                            value={size.description}
                                         >
                                             <Checkbox
                                                 checked={
                                                     sizesSelected.indexOf(
-                                                        size.name,
+                                                        size.description,
                                                     ) > -1
                                                 }
                                             />
-                                            <ListItemText primary={size.name} />
+                                            <ListItemText
+                                                primary={size.description}
+                                                sx={{
+                                                    "& .css-10hburv-MuiTypography-root":
+                                                        {
+                                                            fontSize: "1.4rem",
+                                                        },
+                                                }}
+                                            />
                                         </MenuItem>
                                     ))}
                                 </MuiSelect>
@@ -759,6 +699,22 @@ const ProductManager = () => {
                         </DialogActions>
                     </Box>
                 </Dialog>
+                <Snackbar
+                    open={snackbar.isOpen}
+                    autoHideDuration={5000}
+                    onClose={handleCloseSnackbar}
+                >
+                    <Alert
+                        onClose={handleCloseSnackbar}
+                        severity={snackbar.type}
+                        sx={{
+                            width: "100%",
+                            fontSize: "1.6rem",
+                        }}
+                    >
+                        {snackbar.message}
+                    </Alert>
+                </Snackbar>
             </Box>
         </Box>
     );

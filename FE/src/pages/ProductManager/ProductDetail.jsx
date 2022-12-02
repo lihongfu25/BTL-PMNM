@@ -1,6 +1,8 @@
 import React from "react";
 import clsx from "clsx";
+import axios from "axios";
 import { v4 as uuid } from "uuid";
+import { useForm } from "react-hook-form";
 import { useParams, Link } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import { Box, IconButton, Typography } from "@mui/material";
@@ -10,73 +12,6 @@ import { BsPlusLg, BsArrowLeftShort } from "react-icons/bs";
 import { Input } from "../../components/Input";
 import { Button } from "../../components/Button";
 import styles from "./productDetail.module.scss";
-import productImg1 from "../../assets/img/demo_porduct.jpg";
-import productImg2 from "../../assets/img/7.jpg";
-const product = {
-    id: 1,
-    name: "Áo thun hình vớ vẩn, Áo thun hình vớ va vớ vẩn",
-    price: 123000,
-    colors: [
-        {
-            id: 1,
-            url: "https://wallpapercave.com/wp/wp2552423.jpg",
-        },
-        {
-            id: 2,
-            url: "https://i.pinimg.com/originals/f9/11/d3/f911d38579709636499618b6b3d9b6f6.jpg",
-        },
-    ],
-    sizes: [
-        {
-            id: 1,
-            desc: "S",
-        },
-        {
-            id: 2,
-            desc: "M",
-        },
-        {
-            id: 3,
-            desc: "L",
-        },
-    ],
-    imgs: [
-        {
-            id: 1,
-            url: productImg1,
-        },
-        {
-            id: 2,
-            url: productImg2,
-        },
-        {
-            id: 3,
-            url: productImg1,
-        },
-        {
-            id: 4,
-            url: productImg2,
-        },
-        {
-            id: 5,
-            url: productImg1,
-        },
-        {
-            id: 6,
-            url: productImg2,
-        },
-        {
-            id: 7,
-            url: productImg1,
-        },
-        {
-            id: 8,
-            url: productImg2,
-        },
-    ],
-    discount: 20,
-    desc: "Đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả đây là đoạn mô tả",
-};
 const StyledButton = styled(Button)({
     textTransform: "none",
     minWidth: "12rem",
@@ -87,43 +22,62 @@ const StyledInput = styled(Input)({
         padding: "0.6rem 1.2rem",
     },
 });
-const allSizes = [
-    {
-        id: 1,
-        desc: "S",
-    },
-    {
-        id: 2,
-        desc: "M",
-    },
-    {
-        id: 3,
-        desc: "L",
-    },
-    {
-        id: 4,
-        desc: "XL",
-    },
-    {
-        id: 5,
-        desc: "XXL",
-    },
-];
 const ProductDetail = () => {
-    const { id } = useParams();
-    console.log(id);
+    const { product_id } = useParams();
     const [isEdit, setIsEdit] = React.useState(false);
-    const [desc, setDesc] = React.useState(product.desc);
-    const [colors, setColors] = React.useState(product.colors);
-    const [images, setImages] = React.useState(product.imgs);
-    const [sizes, setSizes] = React.useState(product.sizes);
+    const [product, setProduct] = React.useState({});
+    const [colors, setColors] = React.useState([]);
+    const [images, setImages] = React.useState([]);
+    const [allSize, setAllSize] = React.useState([]);
+    const [sizes, setSizes] = React.useState([]);
     const [colorImg, setColorImg] = React.useState();
     const [productImg, setProductImg] = React.useState();
+    const [callApi, setCallApi] = React.useState(Math.random());
     const colorRef = React.useRef();
     const imgRef = React.useRef();
+
+    React.useEffect(() => {
+        async function getData() {
+            const res = await Promise.all([
+                axios.get(`//localhost:8000/api/sizes`),
+                axios.get(`//localhost:8000/api/products/${product_id}`),
+            ]);
+            setAllSize(res[0].data.data);
+            setProduct(res[1].data.data);
+            setSizes(res[1].data.data.size);
+            setImages(
+                res[1].data.data.image.map((img) => ({
+                    ...img,
+                    url: "http://localhost:8000/" + img.url,
+                })),
+            );
+            setColors(
+                res[1].data.data.color.map((cr) => ({
+                    ...cr,
+                    url: "http://localhost:8000/" + cr.url,
+                })),
+            );
+        }
+        getData();
+    }, [callApi]);
+
+    document.title = product.name;
+
     React.useEffect(() => {
         if (colorImg) {
             const reader = new FileReader();
+            async function createColor() {
+                try {
+                    const formData = new FormData();
+                    formData.append("url", colorImg);
+                    formData.append("product_id", product.id);
+                    axios.post("//localhost:8000/api/colors", formData);
+                    setCallApi(Math.random());
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+            createColor();
             reader.onloadend = () => {
                 setColors((prevState) => [
                     ...prevState,
@@ -134,6 +88,18 @@ const ProductDetail = () => {
         }
         if (productImg) {
             const reader = new FileReader();
+            async function createProductImg() {
+                try {
+                    const formData = new FormData();
+                    formData.append("url", colorImg);
+                    formData.append("product_id", product.id);
+                    axios.post("//localhost:8000/api/images", formData);
+                    setCallApi(Math.random());
+                } catch (err) {
+                    console.log(err);
+                }
+            }
+            createProductImg();
             reader.onloadend = () => {
                 setImages((prevState) => [
                     ...prevState,
@@ -148,6 +114,7 @@ const ProductDetail = () => {
             setProductImg(null);
         };
     }, [colorImg, productImg]);
+
     const handleUpdate = () => {
         if (!isEdit) setIsEdit(true);
         else {
@@ -162,20 +129,71 @@ const ProductDetail = () => {
     };
     const handleDeteleColor = (id) => {
         setColors((prevState) => prevState.filter((color) => color.id !== id));
+        async function delColor() {
+            try {
+                await axios.delete(`//localhost:8000/api/colors/${id}`);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        delColor();
     };
     const handleToggleSize = (value) => {
         if (isEdit === true)
             setSizes((prevState) => {
                 if (
-                    prevState.filter((size) => size.id === value.id).length !==
-                    0
-                )
-                    return prevState.filter((size) => size.id !== value.id);
-                else return [...prevState, value];
+                    prevState.filter((size) => size.size_id === value.id)
+                        .length !== 0
+                ) {
+                    async function delProductColor() {
+                        try {
+                            await axios.post(
+                                `//localhost:8000/api/product-sizes/delete`,
+                                {
+                                    product_id: product.id,
+                                    size_id: value.id,
+                                },
+                            );
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                    delProductColor();
+                    return prevState.filter(
+                        (size) => size.size_id !== value.id,
+                    );
+                } else {
+                    async function addProductColor() {
+                        try {
+                            await axios.post(
+                                `//localhost:8000/api/product-sizes`,
+                                {
+                                    product_id: product.id,
+                                    size_id: value.id,
+                                },
+                            );
+                        } catch (err) {
+                            console.log(err);
+                        }
+                    }
+                    addProductColor();
+                    return [
+                        ...prevState,
+                        { product_id: product.id, size_id: value.id },
+                    ];
+                }
             });
     };
     const handleDeteleProductImg = (id) => {
         setImages((prevState) => prevState.filter((image) => image.id !== id));
+        async function delProductImg() {
+            try {
+                await axios.delete(`//localhost:8000/api/images/${id}`);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        delProductImg();
     };
 
     return (
@@ -217,10 +235,6 @@ const ProductDetail = () => {
                 <Box className={styles.infor}>
                     <div>
                         <div className={styles.group}>
-                            <label className={styles.label}>Mã sản phẩm</label>
-                            <p className={styles.text}>{product.id}</p>
-                        </div>
-                        <div className={styles.group}>
                             <label className={styles.label}>Tên sản phẩm</label>
                             {isEdit === true ? (
                                 <StyledInput value={product.name} />
@@ -252,8 +266,7 @@ const ProductDetail = () => {
                                 <textarea
                                     rows={10}
                                     className={styles.textarea}
-                                    value={desc}
-                                    onChange={(e) => setDesc(e.target.value)}
+                                    value={product.description}
                                 />
                             ) : (
                                 <p
@@ -263,7 +276,7 @@ const ProductDetail = () => {
                                         maxHeight: "23.4rem",
                                     }}
                                 >
-                                    {product.desc}
+                                    {product.description}
                                 </p>
                             )}
                         </div>
@@ -329,15 +342,15 @@ const ProductDetail = () => {
                         <div className={clsx(styles.group, styles.size)}>
                             <label className={styles.label}>Kích cỡ</label>
                             <ul className={styles.sizeList}>
-                                {allSizes.map((size, index) => (
+                                {allSize.map((size, index) => (
                                     <li
                                         key={index}
                                         className={clsx(styles.sizeItem, {
                                             [styles.active]:
                                                 sizes.filter(
                                                     (field) =>
-                                                        field.desc ===
-                                                        size.desc,
+                                                        field.size_id ===
+                                                        size.id,
                                                 ).length !== 0,
                                         })}
                                     >
@@ -346,7 +359,7 @@ const ProductDetail = () => {
                                                 handleToggleSize(size)
                                             }
                                         >
-                                            {size.desc}
+                                            {size.description}
                                         </button>
                                     </li>
                                 ))}
@@ -442,12 +455,14 @@ const ProductDetail = () => {
                     <StyledButton onClick={handleUpdate}>
                         {isEdit === true ? "Cập nhật" : "Sửa"}
                     </StyledButton>
-                    <StyledButton
-                        variant='text'
-                        onClick={() => handleCancel(product.id)}
-                    >
-                        {isEdit === true ? "Hủy" : "Xóa"}
-                    </StyledButton>
+                    {!isEdit && (
+                        <StyledButton
+                            variant='text'
+                            onClick={() => handleCancel(product.id)}
+                        >
+                            Xóa
+                        </StyledButton>
+                    )}
                 </Box>
             </Box>
         </Box>
