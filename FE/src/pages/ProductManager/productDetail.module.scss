@@ -1,6 +1,9 @@
 .infor {
     display: flex;
     box-sizing: border-box;
+    & > form {
+        width: 50%;
+    }
     & > div {
         width: 50%;
     }
@@ -12,7 +15,7 @@
     }
     .group {
         display: flex;
-        margin-bottom: 1.2rem;
+        // margin-bottom: 0.8rem;
         flex-direction: column;
         overflow-wrap: break-word;
         .label {
@@ -21,7 +24,7 @@
         }
         .text {
             margin: 0;
-            padding: 0.6rem 1.2rem;
+            padding: 0.55rem 1.2rem;
             color: #666;
             font-size: 1.6rem;
             &::-webkit-scrollbar {
