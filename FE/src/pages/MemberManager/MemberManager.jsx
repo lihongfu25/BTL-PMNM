@@ -122,7 +122,7 @@ const MemberManager = () => {
         async function deleteMember() {
             try {
                 const res = await axios.delete(
-                    `//localhost:8000/api/members/${memberInfor.id}?userRole=${user.role_id}`,
+                    `//localhost:8000/api/members/${memberInfor.id}?user_role=${user.role_id}`,
                 );
                 setSnackbar({
                     isOpen: true,
