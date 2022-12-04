@@ -31,7 +31,7 @@ const Recommend = ({ title, products }) => {
                 columns={{ xs: 4, sm: 8, md: 12 }}
             >
                 {products.map((product) => (
-                    <Grid xs={2} sm={3} key={product.productId} item>
+                    <Grid xs={2} sm={3} key={product.id} item>
                         <ProductItem product={product} />
                     </Grid>
                 ))}

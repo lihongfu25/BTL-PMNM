@@ -9,7 +9,7 @@ const ProductItem = ({ product }) => {
         img.style.height = img.clientWidth + "px";
     });
     const handleGetProductDetail = (e) => {
-        navigate(`/product/detail/${product.productId}`);
+        navigate(`/product/detail/${product.id}`);
     };
     return (
         <Box
@@ -75,7 +75,11 @@ const ProductItem = ({ product }) => {
                     overflow: "hidden",
                 }}
             >
-                <img className='product-img' alt='' src={product.img} />
+                <img
+                    className='product-img'
+                    alt=''
+                    src={"http://localhost:8000/" + product.image}
+                />
             </Box>
             <Box
                 sx={{
@@ -122,7 +126,7 @@ const ProductItem = ({ product }) => {
                 </p>
                 <Rating
                     className='product-rating'
-                    value={product.rating}
+                    value={product.rating || 0}
                     precision={0.1}
                     readOnly
                 />

@@ -1,107 +1,38 @@
 import React from "react";
+import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper";
-import { Box } from "@mui/material";
+import { Box, Skeleton, Stack } from "@mui/material";
 import { Recommend } from "../../components/Recommend";
-import productImg from "../../assets/img/demo_porduct.jpg";
-import slideImg from "../../assets/img/demo_slide.jpg";
 import "swiper/css";
 import "swiper/css/pagination";
 import "./slider.scss";
-const slides = [
-    {
-        id: 1,
-        image: slideImg,
-    },
-    {
-        id: 2,
-        image: slideImg,
-    },
-    {
-        id: 3,
-        image: slideImg,
-    },
-    {
-        id: 4,
-        image: slideImg,
-    },
-    {
-        id: 5,
-        image: slideImg,
-    },
-    {
-        id: 6,
-        image: slideImg,
-    },
-];
-const products = [
-    {
-        productId: 1,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 45,
-        rating: 4.7,
-        img: productImg,
-    },
-    {
-        productId: 2,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 0,
-        rating: 4.5,
-        img: productImg,
-    },
-    {
-        productId: 3,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 30,
-        rating: 4.3,
-        img: productImg,
-    },
-    {
-        productId: 4,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 0,
-        rating: 4.8,
-        img: productImg,
-    },
-    {
-        productId: 5,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 60,
-        rating: 5,
-        img: productImg,
-    },
-    {
-        productId: 6,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 0,
-        rating: 5,
-        img: productImg,
-    },
-    {
-        productId: 7,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 60,
-        rating: 5,
-        img: productImg,
-    },
-    {
-        productId: 8,
-        name: "Sản phẩm 1",
-        price: 123000,
-        discount: 0,
-        rating: 5,
-        img: productImg,
-    },
-];
 const Home = () => {
     document.title = "360 Store";
+    const [slides, setSlides] = React.useState([]);
+    const [ctimes, setCtimes] = React.useState([]);
+    const [ratings, setRatings] = React.useState([]);
+    const [discounts, setDiscounts] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    React.useEffect(() => {
+        async function getData() {
+            setIsLoading(true);
+            const res = await Promise.all([
+                axios.get(`//localhost:8000/api/carousels/all`),
+                axios.get(`//localhost:8000/api/products/get-limit/ctime`),
+                axios.get(`//localhost:8000/api/products/get-limit/rating`),
+                axios.get(`//localhost:8000/api/products/get-limit/discount`),
+            ]);
+            setSlides(res[0].data.data);
+            setCtimes(res[1].data.data);
+            setRatings(res[2].data.data);
+            setDiscounts(res[3].data.data);
+            setIsLoading(false);
+        }
+        getData();
+    }, []);
+
     React.useEffect(() => {
         const slideImgs = document.querySelectorAll(".swiper-slide-img");
         Array.from(slideImgs).forEach(
@@ -109,6 +40,7 @@ const Home = () => {
                 (slideImg.style.height = slideImg.clientWidth * 0.4 + "px"),
         );
     });
+
     return (
         <Box>
             <Box
@@ -136,20 +68,225 @@ const Home = () => {
                     modules={[Autoplay, Pagination]}
                     className='mySwiper2'
                 >
-                    {slides.map((img) => (
-                        <SwiperSlide key={img.id}>
-                            <img
-                                className='swiper-slide-img'
-                                alt=''
-                                src={img.image}
-                            />
-                        </SwiperSlide>
-                    ))}
+                    {isLoading ? (
+                        <Skeleton
+                            variant='rectangular'
+                            sx={{
+                                width: "100%",
+                                height: "76rem",
+                            }}
+                        />
+                    ) : (
+                        slides.map((img) => (
+                            <SwiperSlide key={img.id}>
+                                <img
+                                    className='swiper-slide-img'
+                                    alt=''
+                                    src={"http://localhost:8000/" + img.image}
+                                />
+                            </SwiperSlide>
+                        ))
+                    )}
                 </Swiper>
             </Box>
-            <Recommend title='Sản phẩm mới' products={products} />
-            <Recommend title='Sản phẩm hot' products={products} />
-            <Recommend title='Đang giảm giá' products={products} />
+            {isLoading ? (
+                <Box
+                    sx={{
+                        mt: "4rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Skeleton
+                        variant='text'
+                        sx={{
+                            fontSize: "2.4rem",
+                            width: "20%",
+                        }}
+                    />
+                    <Skeleton
+                        variant='text'
+                        sx={{
+                            fontSize: "4rem",
+                            width: "30%",
+                        }}
+                    />
+                    <Stack
+                        className='grid-wide'
+                        direction={{
+                            xs: "column",
+                            sm: "row",
+                        }}
+                        spacing={{ xs: 1, sm: 2, md: 4 }}
+                        sx={{
+                            mt: "4rem",
+                            "& > span": {
+                                flexGrow: 1,
+                            },
+                        }}
+                    >
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                    </Stack>
+                </Box>
+            ) : (
+                <Recommend title='Sản phẩm mới' products={ctimes} />
+            )}
+            {isLoading ? (
+                <Box
+                    sx={{
+                        mt: "4rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Skeleton
+                        variant='text'
+                        sx={{
+                            fontSize: "2.4rem",
+                            width: "20%",
+                        }}
+                    />
+                    <Skeleton
+                        variant='text'
+                        sx={{
+                            fontSize: "4rem",
+                            width: "30%",
+                        }}
+                    />
+                    <Stack
+                        className='grid-wide'
+                        direction={{
+                            xs: "column",
+                            sm: "row",
+                        }}
+                        spacing={{ xs: 1, sm: 2, md: 4 }}
+                        sx={{
+                            mt: "4rem",
+                            "& > span": {
+                                flexGrow: 1,
+                            },
+                        }}
+                    >
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                    </Stack>
+                </Box>
+            ) : (
+                <Recommend title='Sản phẩm hot' products={ratings} />
+            )}
+            {isLoading ? (
+                <Box
+                    sx={{
+                        mt: "4rem",
+                        display: "flex",
+                        flexDirection: "column",
+                        alignItems: "center",
+                    }}
+                >
+                    <Skeleton
+                        variant='text'
+                        sx={{
+                            fontSize: "2.4rem",
+                            width: "20%",
+                        }}
+                    />
+                    <Skeleton
+                        variant='text'
+                        sx={{
+                            fontSize: "4rem",
+                            width: "30%",
+                        }}
+                    />
+                    <Stack
+                        className='grid-wide'
+                        direction={{
+                            xs: "column",
+                            sm: "row",
+                        }}
+                        spacing={{ xs: 1, sm: 2, md: 4 }}
+                        sx={{
+                            my: "4rem",
+                            "& > span": {
+                                flexGrow: 1,
+                            },
+                        }}
+                    >
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                        <Skeleton
+                            variant='rounded'
+                            sx={{
+                                height: "30rem",
+                            }}
+                        />
+                    </Stack>
+                </Box>
+            ) : (
+                <Recommend title='Đang giảm giá' products={discounts} />
+            )}
         </Box>
     );
 };

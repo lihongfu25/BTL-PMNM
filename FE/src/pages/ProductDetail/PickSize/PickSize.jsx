@@ -8,13 +8,13 @@ const PickSize = ({ sizes, value, setValue }) => {
             <Box>
                 {sizes.map((size) => (
                     <button
-                        key={size.sizeId}
+                        key={size.size.id}
                         className={`size-item useFont-Nunito ${
-                            size.sizeId === value.sizeId ? "selected" : ""
+                            size.size.description === value ? "selected" : ""
                         }`}
-                        onClick={() => setValue(size)}
+                        onClick={() => setValue(size.size.description)}
                     >
-                        {size.desc}
+                        {size.size.description}
                     </button>
                 ))}
             </Box>

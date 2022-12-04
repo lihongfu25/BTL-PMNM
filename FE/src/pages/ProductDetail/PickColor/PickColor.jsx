@@ -8,13 +8,13 @@ const PickColor = ({ colors, value, setValue }) => {
             <Box>
                 {colors.map((color) => (
                     <span
-                        key={color.colorId}
+                        key={color.id}
                         className={`color-item ${
-                            color.colorId === value.colorId ? "selected" : ""
+                            color.id === value.id ? "selected" : ""
                         }`}
                         onClick={() => setValue(color)}
                         style={{
-                            backgroundImage: `url(${color.url})`,
+                            backgroundImage: `url(http://localhost:8000/${color.url})`,
                         }}
                     ></span>
                 ))}

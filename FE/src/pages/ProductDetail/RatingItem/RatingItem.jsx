@@ -1,5 +1,6 @@
 import React from "react";
 import { Box, Divider, Rating } from "@mui/material";
+import { formatDateTime } from "../../../styles/GlobalStyles";
 const RatingItem = ({ data }) => {
     return (
         <>
@@ -19,7 +20,10 @@ const RatingItem = ({ data }) => {
                         },
                     }}
                 >
-                    <img alt='' src={data.avatar} />
+                    <img
+                        alt=''
+                        src={"http://localhost:8000/" + data.member.avatar}
+                    />
                 </Box>
                 <Box
                     sx={{
@@ -42,10 +46,14 @@ const RatingItem = ({ data }) => {
                         },
                     }}
                 >
-                    <p className='ratingItem-Username'>{data.username}</p>
+                    <p className='ratingItem-Username'>
+                        {data.member.username || data.member.email}
+                    </p>
                     <Rating value={data.star} />
-                    <p className='ratingItem-Datetime'>{data.date}</p>
-                    <p className='ratingItem-Desc'>{data.desc}</p>
+                    <p className='ratingItem-Datetime'>
+                        {formatDateTime(data.created_at)}
+                    </p>
+                    <p className='ratingItem-Desc'>{data.description}</p>
                 </Box>
             </Box>
             <Divider />
