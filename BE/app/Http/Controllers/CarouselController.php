@@ -55,9 +55,20 @@ class CarouselController extends Controller
      * @param  \App\Models\Carousel  $carousel
      * @return \Illuminate\Http\Response
      */
-    public function show(Carousel $carousel)
+    public function show($slug)
     {
-        //
+
+            if ($slug === 'all')
+                $carousel = Carousel::where('status', '=' ,'Đang hoạt động')->orderBy('created_at', 'desc')->limit(6)->get();
+            else {
+                $category = Category::where("slug", "LIKE", "%" . $slug . "%")->get()->pluck('id')->toArray();
+                $carousel = Carousel::where('status', '=' ,'Đang hoạt động')->where('status', '=' ,'Đang hoạt động')
+                ->whereIn('category_id', $category)->orderBy('created_at', 'desc')->limit(6)->get();
+            }
+               
+        return response()->json([
+            'data' => $carousel,
+        ], 200);
     }
 
     /**
