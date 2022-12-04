@@ -70,7 +70,6 @@ const ProductManager = () => {
         formState: { errors },
         clearErrors,
         setValue,
-        setError,
     } = useForm();
     React.useEffect(() => {
         async function getData() {
@@ -127,9 +126,10 @@ const ProductManager = () => {
         navigate(`${pathname}/${id}`);
     };
     const onAdd = (data) => {
-        data.size = sizes
-            .filter((size) => sizesSelected.includes(size.description))
-            .map((size) => size.id);
+        if (sizes.length !== 0)
+            data.size = sizes
+                .filter((size) => sizesSelected.includes(size.description))
+                .map((size) => size.id);
 
         async function createProduct() {
             try {
@@ -562,10 +562,6 @@ const ProductManager = () => {
                                     multiple
                                     value={sizesSelected}
                                     onChange={handleSelectSize}
-                                    onBlur={() => {
-                                        if (sizesSelected.length !== 0)
-                                            clearErrors("size");
-                                    }}
                                     input={<OutlinedInput label='Kích cỡ' />}
                                     renderValue={(selected) =>
                                         selected.join(", ")
@@ -677,17 +673,7 @@ const ProductManager = () => {
                                 px: "2.4rem",
                             }}
                         >
-                            <StyledButton
-                                variant='text'
-                                type='submit'
-                                onClick={() => {
-                                    if (sizesSelected.length === 0)
-                                        setError("size", {
-                                            type: "required",
-                                            message: "Vui lòng chọn kích cỡ!",
-                                        });
-                                }}
-                            >
+                            <StyledButton variant='text' type='submit'>
                                 Thêm
                             </StyledButton>
                             <StyledButton

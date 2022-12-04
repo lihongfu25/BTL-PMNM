@@ -13,4 +13,9 @@ class ProductSize extends Model
         'size_id',
     ];
     public $timestamps = false;
+
+    public function size()
+    {
+        return $this->belongsTo(Size::class);
+    }
 }

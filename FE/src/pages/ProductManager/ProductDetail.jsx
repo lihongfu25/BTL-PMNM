@@ -3,23 +3,36 @@ import clsx from "clsx";
 import axios from "axios";
 import { v4 as uuid } from "uuid";
 import { useForm } from "react-hook-form";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import { Box, IconButton, Typography } from "@mui/material";
+import {
+    Box,
+    IconButton,
+    Typography,
+    Snackbar,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogActions,
+} from "@mui/material";
 import { FaTimes } from "react-icons/fa";
 import { BsPlusLg, BsArrowLeftShort } from "react-icons/bs";
 
+import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import styles from "./productDetail.module.scss";
 const StyledButton = styled(Button)({
     textTransform: "none",
     minWidth: "12rem",
     marginRight: "2rem",
+    padding: "0.4rem 1.2rem",
 });
 const ProductDetail = () => {
-    const { product_id } = useParams();
+    const { id } = useParams();
     const [isEdit, setIsEdit] = React.useState(false);
+    const [openDelForm, setOpenDelForm] = React.useState(false);
     const [product, setProduct] = React.useState({});
+    const [categories, setCategories] = React.useState([]);
     const [colors, setColors] = React.useState([]);
     const [images, setImages] = React.useState([]);
     const [allSize, setAllSize] = React.useState([]);
@@ -27,34 +40,42 @@ const ProductDetail = () => {
     const [colorImg, setColorImg] = React.useState();
     const [productImg, setProductImg] = React.useState();
     const [callApi, setCallApi] = React.useState(Math.random());
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
+
     const colorRef = React.useRef();
     const imgRef = React.useRef();
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         async function getData() {
             const res = await Promise.all([
                 axios.get(`//localhost:8000/api/sizes`),
-                axios.get(`//localhost:8000/api/products/${product_id}`),
+                axios.get(`//localhost:8000/api/categories/all`),
+                axios.get(`//localhost:8000/api/products/${id}`),
             ]);
             setAllSize(res[0].data.data);
-            setProduct(res[1].data.data);
-            setSizes(res[1].data.data.size);
+            setCategories(res[1].data.data);
+            setProduct(res[2].data.data);
+            setSizes(res[2].data.data.size);
             setImages(
-                res[1].data.data.image.map((img) => ({
+                res[2].data.data.image.map((img) => ({
                     ...img,
                     url: "http://localhost:8000/" + img.url,
                 })),
             );
             setColors(
-                res[1].data.data.color.map((cr) => ({
+                res[2].data.data.color.map((cr) => ({
                     ...cr,
                     url: "http://localhost:8000/" + cr.url,
                 })),
             );
         }
         getData();
-    }, [callApi]);
-
+    }, [callApi, id]);
     const {
         register,
         handleSubmit,
@@ -113,19 +134,32 @@ const ProductDetail = () => {
             setColorImg(null);
             setProductImg(null);
         };
-    }, [colorImg, productImg]);
+    }, [colorImg, productImg, product.id]);
 
-    const handleUpdate = () => {
-        if (!isEdit) setIsEdit(true);
-        else {
-            setIsEdit(false);
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
         }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
     };
-    const handleCancel = (id) => {
-        if (!isEdit) console.log("Xóa: ", id);
-        else {
-            setIsEdit(false);
+    const handleDeleteProduct = (id) => {
+        async function delProduct() {
+            try {
+                await axios.delete(
+                    `//localhost:8000/api/products/${product.id}`,
+                );
+                setOpenDelForm(false);
+                navigate("/manager/products");
+            } catch (err) {
+                setOpenDelForm(false);
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+            }
         }
+        delProduct();
     };
     const handleDeteleColor = (id) => {
         setColors((prevState) => prevState.filter((color) => color.id !== id));
@@ -197,9 +231,31 @@ const ProductDetail = () => {
     };
 
     const onSubmit = (data) => {
-        console.log(data);
+        async function updateProduct() {
+            try {
+                const res = await axios.put(
+                    `//localhost:8000/api/products/${product.id}`,
+                    {
+                        ...data,
+                    },
+                );
+                setIsEdit(false);
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+            } catch (err) {
+                setIsEdit(false);
+                setSnackbar({
+                    isOpen: true,
+                    type: "error",
+                    message: err.response.data.message,
+                });
+            }
+        }
+        updateProduct();
     };
-
     return (
         <Box
             sx={{
@@ -238,16 +294,16 @@ const ProductDetail = () => {
             >
                 <Box className={styles.infor}>
                     <Box
-                        component='form'
+                        component={isEdit ? "form" : "div"}
                         noValidate
                         onSubmit={handleSubmit(onSubmit)}
                         sx={{
+                            mr: "4rem",
                             "& .form-group": {
                                 display: "flex",
-                                p: "0 2.4rem 0 1.2rem",
                                 "& .form-label": {
                                     mr: "3rem",
-                                    textAlign: "end",
+                                    fontWeight: 700,
                                     color: "#495057",
                                     minWidth: "12rem",
                                     fontSize: "1.6rem",
@@ -257,7 +313,7 @@ const ProductDetail = () => {
                                     resize: "none",
                                     outline: "none",
                                     color: "#495057",
-                                    p: "0.6rem 1rem",
+                                    p: "0.4rem 1rem",
                                     fontSize: "1.6rem",
                                     fontFamily: "Nunito",
                                     borderRadius: "0.3rem",
@@ -281,20 +337,22 @@ const ProductDetail = () => {
                         }}
                     >
                         <div className={styles.group}>
-                            <label className={styles.label}>Tên sản phẩm</label>
-                            {isEdit === true ? (
+                            <div
+                                className={`form-group ${
+                                    errors.name ? "error" : ""
+                                }`}
+                            >
+                                <label className='form-label'>
+                                    Tên sản phẩm:
+                                </label>
                                 <div
-                                    className={`form-group ${
-                                        errors.name ? "error" : ""
-                                    }`}
+                                    style={{
+                                        flexGrow: 1,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
                                 >
-                                    <div
-                                        style={{
-                                            flexGrow: 1,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                        }}
-                                    >
+                                    {isEdit === true ? (
                                         <input
                                             className='form-input'
                                             placeholder='Tên sản phẩm'
@@ -303,69 +361,71 @@ const ProductDetail = () => {
                                                 required: true,
                                             })}
                                         />
-                                        {errors?.name?.type === "required" && (
-                                            <span className='form-message'>
-                                                Vui lòng nhập vào tên sản phẩm
-                                            </span>
-                                        )}
-                                    </div>
+                                    ) : (
+                                        <p className={styles.text}>
+                                            {product.name}
+                                        </p>
+                                    )}
+                                    {errors?.name?.type === "required" && (
+                                        <span className='form-message'>
+                                            Vui lòng nhập vào tên sản phẩm
+                                        </span>
+                                    )}
                                 </div>
-                            ) : (
-                                <p className={styles.text}>{product.name}</p>
-                            )}
+                            </div>
                         </div>
                         <div className={styles.group}>
-                            <label className={styles.label}>Danh mục</label>
-                            {isEdit === true ? (
+                            <div
+                                className={`form-group ${
+                                    errors.category_id ? "error" : ""
+                                }`}
+                            >
+                                <label className='form-label'>Danh mục:</label>
                                 <div
-                                    className={`form-group ${
-                                        errors.category_id ? "error" : ""
-                                    }`}
+                                    style={{
+                                        flexGrow: 1,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
                                 >
-                                    <div
-                                        style={{
-                                            flexGrow: 1,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                        }}
-                                    >
-                                        <input
+                                    {isEdit === true ? (
+                                        <select
                                             className='form-input'
-                                            placeholder='Tên sản phẩm'
                                             defaultValue={product.category_id}
-                                            {...register("category_id", {
-                                                required: true,
-                                            })}
-                                        />
-                                        {errors?.category_id?.type ===
-                                            "required" && (
-                                            <span className='form-message'>
-                                                Vui lòng nhập vào tên sản phẩm
-                                            </span>
-                                        )}
-                                    </div>
+                                            {...register("category_id")}
+                                        >
+                                            {categories.map((category) => (
+                                                <option
+                                                    key={category.id}
+                                                    value={category.id}
+                                                >
+                                                    {category.name}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    ) : (
+                                        <p className={styles.text}>
+                                            {product.category_name}
+                                        </p>
+                                    )}
                                 </div>
-                            ) : (
-                                <p className={styles.text}>
-                                    {product.category.name}
-                                </p>
-                            )}
+                            </div>
                         </div>
                         <div className={styles.group}>
-                            <label className={styles.label}>Đơn giá</label>
-                            {isEdit === true ? (
+                            <div
+                                className={`form-group ${
+                                    errors.price ? "error" : ""
+                                }`}
+                            >
+                                <label className='form-label'>Đơn giá</label>
                                 <div
-                                    className={`form-group ${
-                                        errors.price ? "error" : ""
-                                    }`}
+                                    style={{
+                                        flexGrow: 1,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
                                 >
-                                    <div
-                                        style={{
-                                            flexGrow: 1,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                        }}
-                                    >
+                                    {isEdit === true ? (
                                         <input
                                             className='form-input'
                                             placeholder='Đơn giá'
@@ -375,38 +435,41 @@ const ProductDetail = () => {
                                                 pattern: /^\d+$/u,
                                             })}
                                         />
-                                        {errors?.price?.type === "required" && (
-                                            <span className='form-message'>
-                                                Vui lòng nhập vào đơn giá của
-                                                sản phẩm
-                                            </span>
-                                        )}
-                                        {errors?.price?.type === "pattern" && (
-                                            <span className='form-message'>
-                                                Đơn giá của sản phẩm chỉ chứa số
-                                            </span>
-                                        )}
-                                    </div>
+                                    ) : (
+                                        <p className={styles.text}>
+                                            {product.price}
+                                        </p>
+                                    )}
+
+                                    {errors?.price?.type === "required" && (
+                                        <span className='form-message'>
+                                            Vui lòng nhập vào đơn giá của sản
+                                            phẩm
+                                        </span>
+                                    )}
+                                    {errors?.price?.type === "pattern" && (
+                                        <span className='form-message'>
+                                            Đơn giá của sản phẩm chỉ chứa số
+                                        </span>
+                                    )}
                                 </div>
-                            ) : (
-                                <p className={styles.text}>{product.price}</p>
-                            )}
+                            </div>
                         </div>
                         <div className={styles.group}>
-                            <label className={styles.label}>Số lượng</label>
-                            {isEdit === true ? (
+                            <div
+                                className={`form-group ${
+                                    errors.quantity ? "error" : ""
+                                }`}
+                            >
+                                <label className='form-label'>Số lượng:</label>
                                 <div
-                                    className={`form-group ${
-                                        errors.quantity ? "error" : ""
-                                    }`}
+                                    style={{
+                                        flexGrow: 1,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
                                 >
-                                    <div
-                                        style={{
-                                            flexGrow: 1,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                        }}
-                                    >
+                                    {isEdit === true ? (
                                         <input
                                             className='form-input'
                                             placeholder='Số lượng'
@@ -416,42 +479,40 @@ const ProductDetail = () => {
                                                 pattern: /^\d+$/u,
                                             })}
                                         />
-                                        {errors?.quantity?.type ===
-                                            "required" && (
-                                            <span className='form-message'>
-                                                Vui lòng nhập vào số lượng sản
-                                                phẩm đang có
-                                            </span>
-                                        )}
-                                        {errors?.quantity?.type ===
-                                            "pattern" && (
-                                            <span className='form-message'>
-                                                Số lượng hàng chỉ chứa số
-                                            </span>
-                                        )}
-                                    </div>
+                                    ) : (
+                                        <p className={styles.text}>
+                                            {product.quantity}
+                                        </p>
+                                    )}
+                                    {errors?.quantity?.type === "required" && (
+                                        <span className='form-message'>
+                                            Vui lòng nhập vào số lượng sản phẩm
+                                            đang có
+                                        </span>
+                                    )}
+                                    {errors?.quantity?.type === "pattern" && (
+                                        <span className='form-message'>
+                                            Số lượng hàng chỉ chứa số
+                                        </span>
+                                    )}
                                 </div>
-                            ) : (
-                                <p className={styles.text}>
-                                    {product.quantity}
-                                </p>
-                            )}
+                            </div>
                         </div>
                         <div className={styles.group}>
-                            <label className={styles.label}>Giảm giá</label>
-                            {isEdit === true ? (
+                            <div
+                                className={`form-group ${
+                                    errors.discount ? "error" : ""
+                                }`}
+                            >
+                                <label className='form-label'>Giảm giá:</label>
                                 <div
-                                    className={`form-group ${
-                                        errors.discount ? "error" : ""
-                                    }`}
+                                    style={{
+                                        flexGrow: 1,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
                                 >
-                                    <div
-                                        style={{
-                                            flexGrow: 1,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                        }}
-                                    >
+                                    {isEdit === true ? (
                                         <input
                                             className='form-input'
                                             placeholder='Giảm giá'
@@ -462,93 +523,100 @@ const ProductDetail = () => {
                                                 max: 100,
                                             })}
                                         />
-                                        {errors?.discount?.type === "min" && (
-                                            <span className='form-message'>
-                                                Không có khuyến mãi vui lòng bỏ
-                                                qua
-                                            </span>
-                                        )}
-                                        {errors?.discount?.type === "max" && (
-                                            <span className='form-message'>
-                                                Mức ưu đãi lớn nhất có thể là
-                                                100%
-                                            </span>
-                                        )}
-                                        {errors?.discount?.type ===
-                                            "pattern" && (
-                                            <span className='form-message'>
-                                                Nhập vào số phần trăm giảm giá
-                                                là một số thực dương
-                                            </span>
-                                        )}
-                                    </div>
+                                    ) : (
+                                        <p className={styles.text}>
+                                            {product.discount}%
+                                        </p>
+                                    )}
+                                    {errors?.discount?.type === "min" && (
+                                        <span className='form-message'>
+                                            Không có khuyến mãi vui lòng bỏ qua
+                                        </span>
+                                    )}
+                                    {errors?.discount?.type === "max" && (
+                                        <span className='form-message'>
+                                            Mức ưu đãi lớn nhất có thể là 100%
+                                        </span>
+                                    )}
+                                    {errors?.discount?.type === "pattern" && (
+                                        <span className='form-message'>
+                                            Nhập vào số phần trăm giảm giá là
+                                            một số thực dương
+                                        </span>
+                                    )}
                                 </div>
-                            ) : (
-                                <p className={styles.text}>
-                                    {product.discount}
-                                </p>
-                            )}
+                            </div>
                         </div>
                         <div className={styles.group}>
-                            <label className={styles.label}>Mô tả</label>
-                            {isEdit === true ? (
+                            <div
+                                className={`form-group ${
+                                    errors.description ? "error" : ""
+                                }`}
+                            >
+                                <label className='form-label'>Mô tả:</label>
                                 <div
-                                    className={`form-group ${
-                                        errors.description ? "error" : ""
-                                    }`}
+                                    style={{
+                                        flexGrow: 1,
+                                        display: "flex",
+                                        flexDirection: "column",
+                                    }}
                                 >
-                                    <div
-                                        style={{
-                                            flexGrow: 1,
-                                            display: "flex",
-                                            flexDirection: "column",
-                                        }}
-                                    >
+                                    {isEdit === true ? (
                                         <textarea
                                             className='form-input'
                                             placeholder='Mô tả'
-                                            rows='2'
+                                            rows='4'
                                             defaultValue={product.description}
                                             {...register("description", {
                                                 required: true,
                                             })}
                                         />
+                                    ) : (
+                                        <p
+                                            className={styles.text}
+                                            style={{
+                                                overflowY: "scroll",
+                                                height: "9rem",
+                                            }}
+                                        >
+                                            {product.description}
+                                        </p>
+                                    )}
 
-                                        {errors?.description?.type ===
-                                            "required" && (
-                                            <span className='form-message'>
-                                                Vui lòng nhập vào mô tả sản phẩm
-                                            </span>
-                                        )}
-                                    </div>
+                                    {errors?.description?.type ===
+                                        "required" && (
+                                        <span className='form-message'>
+                                            Vui lòng nhập vào mô tả sản phẩm
+                                        </span>
+                                    )}
                                 </div>
-                            ) : (
-                                <p
-                                    className={styles.text}
-                                    style={{
-                                        overflowY: "scroll",
-                                        height: "4rem",
-                                    }}
-                                >
-                                    {product.description}
-                                </p>
-                            )}
+                            </div>
                         </div>
                         <Box
                             sx={{
-                                mt: "4rem",
+                                mt: "2rem",
+                                ml: "15rem",
                             }}
                         >
-                            <StyledButton type='submit' onClick={handleUpdate}>
-                                {isEdit === true ? "Cập nhật" : "Sửa"}
-                            </StyledButton>
-                            {!isEdit && (
-                                <StyledButton
-                                    variant='text'
-                                    onClick={() => handleCancel(product.id)}
-                                >
-                                    Xóa
+                            {isEdit && (
+                                <StyledButton type='submit'>
+                                    Cập nhật
                                 </StyledButton>
+                            )}
+                            {!isEdit && (
+                                <>
+                                    <StyledButton
+                                        onClick={() => setIsEdit(true)}
+                                    >
+                                        Sửa
+                                    </StyledButton>
+                                    <StyledButton
+                                        variant='text'
+                                        onClick={() => setOpenDelForm(true)}
+                                    >
+                                        Xóa
+                                    </StyledButton>
+                                </>
                             )}
                         </Box>
                     </Box>
@@ -723,6 +791,63 @@ const ProductDetail = () => {
                     </div>
                 </Box>
             </Box>
+            <Dialog
+                className='del-form'
+                open={openDelForm}
+                onClose={() => setOpenDelForm(false)}
+                sx={{
+                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                        maxWidth: "40rem",
+                    },
+                    "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root": {
+                        fontSize: "2rem",
+                    },
+                    "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root":
+                        {
+                            fontSize: "1.6rem",
+                        },
+                    "& .mess": {
+                        m: 0,
+                        fontSize: "1.6rem",
+                        textAlign: "center",
+                    },
+                }}
+            >
+                <DialogTitle>Xóa sản phẩm</DialogTitle>
+                <DialogContent>
+                    <p className='mess'>
+                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa sản
+                        phẩm có mã <strong>{product.id}</strong> ?
+                    </p>
+                </DialogContent>
+                <DialogActions>
+                    <StyledButton variant='text' onClick={handleDeleteProduct}>
+                        Đồng ý
+                    </StyledButton>
+                    <StyledButton
+                        variant='text'
+                        onClick={() => setOpenDelForm(false)}
+                    >
+                        Hủy
+                    </StyledButton>
+                </DialogActions>
+            </Dialog>
+            <Snackbar
+                open={snackbar.isOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.type}
+                    sx={{
+                        width: "100%",
+                        fontSize: "1.6rem",
+                    }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

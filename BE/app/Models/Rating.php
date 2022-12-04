@@ -14,4 +14,9 @@ class Rating extends Model
         'star',
         'description',
     ];
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
+    }
 }

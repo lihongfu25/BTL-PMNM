@@ -7,6 +7,7 @@ use App\Models\Image;
 use App\Models\Color;
 use App\Models\Category;
 use App\Models\ProductSize;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
 
@@ -49,11 +50,12 @@ class ProductController extends Controller
         $colorAdd['product_id'] = $product->id;
         $sizeAdd['product_id'] = $product->id;
 
-        if ($request->has('size'))
+        if ($request->has('size')) {
             $size = $request->size;
-        foreach ($size as $key => $value) {
-            $sizeAdd['size_id'] = $value;
-            ProductSize::create($sizeAdd);
+            foreach ($size as $key => $value) {
+                $sizeAdd['size_id'] = $value;
+                ProductSize::create($sizeAdd);
+            }
         }
 
         if ($request->hasFile('image'))
@@ -89,16 +91,48 @@ class ProductController extends Controller
      */
     public function show($productId)
     {
-        $product = Product::with('size', 'color', 'image', 'category')->first();
+        $product = Product::with('size', 'color', 'image', 'category', 'rating')->where('id', $productId)->first();
 
         if (!$product)
             return response()->json(['message' => 'Không tìm thấy sản phẩm!'], 404);
+        $product->category_name = $product->category->name;
 
         return response()->json([
             'data' => $product,
         ], 200);
     }
 
+    public function get_limit($slug)
+    {
+        switch($slug) {
+            case 'ctime':
+                $product = DB::table('products')->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image')
+                ->groupByRaw('products.id')->orderBy('products.created_at', 'desc')->limit(8)->get();
+                break;
+            case 'rating': 
+                $product = DB::table('products')->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, avg(star) as rating, images.url as image')
+                ->groupByRaw('products.id')->orderBy('rating', 'desc')->limit(8)->get();
+                break;
+            case 'discount':
+                $product = DB::table('products')->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image')
+                ->groupByRaw('products.id')->orderBy('products.discount', 'desc')->limit(8)->get();
+                break;
+            default:
+                $product = DB::table('products')->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image')
+                ->groupByRaw('products.id')->orderBy('products.created_at', 'desc')->limit(8)->get();
+        }
+        return response()->json([
+            'data' => $product,
+        ], 200);
+    }
     /**
      * Update the specified resource in storage.
      *
@@ -106,9 +140,17 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateProductRequest $request, Product $product)
+    public function update(UpdateProductRequest $request, $productId)
     {
-        //
+        $product = Product::find($productId);
+
+        if (!$product)
+            return response()->json(['message' => 'Không tìm thấy sản phẩm!'], 404);
+
+        $product->update($request->all());
+        return response()->json([
+                    'message' => "Cập nhật thành công!",
+                ], 201);
     }
 
     /**
@@ -117,8 +159,16 @@ class ProductController extends Controller
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy($productId)
     {
-        //
+        $product = Product::find($productId);
+
+        if (!$product)
+            return response()->json(['message' => 'Không tìm thấy sản phẩm cần xóa!'], 404);
+
+        $product->delete();
+        return response()->json([
+            'message' => "Xóa thành công!",
+        ], 200);
     }
 }

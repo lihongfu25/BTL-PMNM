@@ -25,6 +25,46 @@ class ProductSeeder extends Seeder
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 1,
                 ],
+                [
+                    'name' => 'Áo thun nữ',
+                    'price' => 321456,
+                    'quantity' => 1000,
+                    'discount' => 0,
+                    'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
+                    'category_id' => 2,
+                ],
+                [
+                    'name' => 'Áo khoác nam',
+                    'price' => 321456,
+                    'quantity' => 1000,
+                    'discount' => 20,
+                    'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
+                    'category_id' => 1,
+                ],
+                [
+                    'name' => 'Áo khoác nữ',
+                    'price' => 321456,
+                    'quantity' => 1000,
+                    'discount' => 0,
+                    'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
+                    'category_id' => 2,
+                ],
+                [
+                    'name' => 'Đồng hồ cơ automatic',
+                    'price' => 321456,
+                    'quantity' => 1000,
+                    'discount' => 0,
+                    'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
+                    'category_id' => 3,
+                ],
+                [
+                    'name' => 'Kính râm thời trang',
+                    'price' => 60000,
+                    'quantity' => 1000,
+                    'discount' => 0,
+                    'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
+                    'category_id' => 3,
+                ],
             ]
         );
     }

@@ -7,15 +7,10 @@
     & > div {
         width: 50%;
     }
-    & > div:nth-of-type(1) {
-        margin-right: 2rem;
-    }
-    & > div:nth-of-type(2) {
-        margin-left: 2rem;
-    }
+
     .group {
         display: flex;
-        // margin-bottom: 0.8rem;
+        margin-bottom: 1.2rem;
         flex-direction: column;
         overflow-wrap: break-word;
         .label {

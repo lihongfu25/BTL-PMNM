@@ -18,12 +18,48 @@ class ColorSeeder extends Seeder
         DB::table('colors')->insert(
             [
                 [
-                    'url' => 'images/44537ae5bed8ccf91347de0a06aa1363.jpg',
+                    'url' => 'images/black_color.jpg',
                     'product_id' => 1,
                 ],
                 [
-                    'url' => 'images/44537ae5bed8ccf91347de0a06aa1363.png',
+                    'url' => 'images/white_color.png',
                     'product_id' => 1,
+                ],
+                [
+                    'url' => 'images/black_color.jpg',
+                    'product_id' => 2,
+                ],
+                [
+                    'url' => 'images/white_color.png',
+                    'product_id' => 2,
+                ],
+                [
+                    'url' => 'images/black_color.jpg',
+                    'product_id' => 3,
+                ],
+                [
+                    'url' => 'images/black_color.jpg',
+                    'product_id' => 4,
+                ],
+                [
+                    'url' => 'images/white_color.png',
+                    'product_id' => 4,
+                ],
+                [
+                    'url' => 'images/black_color.jpg',
+                    'product_id' => 5,
+                ],
+                [
+                    'url' => 'images/white_color.png',
+                    'product_id' => 5,
+                ],
+                [
+                    'url' => 'images/black_color.jpg',
+                    'product_id' => 6,
+                ],
+                [
+                    'url' => 'images/white_color.png',
+                    'product_id' => 6,
                 ]
             ]
         );

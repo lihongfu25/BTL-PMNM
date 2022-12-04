@@ -20,7 +20,7 @@ class Product extends Model
 
     public function size()
     {
-        return $this->hasMany(ProductSize::class);
+        return $this->hasMany(ProductSize::class)->with('size');
     }
     public function color()
     {
@@ -33,5 +33,9 @@ class Product extends Model
     public function category()
     {
         return $this->belongsTo(Category::class, 'category_id', 'id');
+    }
+    public function rating()
+    {
+        return $this->hasMany(Rating::class)->with('member');
     }
 }
