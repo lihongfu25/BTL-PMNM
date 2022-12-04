@@ -18,7 +18,7 @@ return new class extends Migration
             $table->unsignedBigInteger('product_id');
             $table->primary(['order_id', 'product_id']);
             $table->string('color');
-            $table->string('size');
+            $table->string('size')->nullable()->default(null);
             $table->integer('quantity');
             $table->double('total_price');
 
