@@ -151,9 +151,9 @@ class MemberController extends Controller
      */
     public function update_password(UpdateMemberRequest $request, $memberId)
     {
-        $memberFind = Member::where('id', $memberId)->where('password', $request->get('old_password'))->first();
+        $memberFind = Member::where('id', $memberId)->first();
 
-        if (!$memberFind)
+        if (!Hash::check($request->old_password, $memberFind->password))
             return response()->json(['message' => 'Mật khẩu cũ không chính xác'], 404);
         
         $memberFind->password = bcrypt($request->get('new_password'));
