@@ -217,7 +217,7 @@ const ManagerLayout = ({ children }) => {
                     sx={{
                         flexGrow: 1,
                         backgroundColor: "#f5f7fb",
-                        p: "2.8rem 4rem",
+                        p: "1.6rem 4rem",
                     }}
                 >
                     <Outlet />
