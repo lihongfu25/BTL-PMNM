@@ -42,8 +42,13 @@ const Profile = () => {
         handleSubmit,
         formState: { errors },
         setValue,
+        setError,
     } = useForm({
         defaultValues: {
+            full_name: user.full_name,
+            email: user.email,
+            phone: user.phone,
+            address: user.address,
             avatar: user.avatar,
             date_of_birth: user.date_of_birth,
             gender: user.gender,
@@ -69,7 +74,7 @@ const Profile = () => {
             };
             reader.readAsDataURL(image);
         } else {
-            setPreview(user.avatar);
+            setPreview(`//localhost:8000/${user.avatar}`);
         }
     }, [image, user]);
     const handleCloseSnackbar = (e, reason) => {
@@ -106,8 +111,12 @@ const Profile = () => {
                     type: "success",
                     message: res.data.message,
                 });
+                dispatch(userUpdateProfile(res.data.data));
             } catch (err) {
-                console.log(err);
+                setError("username", {
+                    type: "validate",
+                    message: err.response.data.message,
+                });
             }
         }
         updateProfile();
@@ -115,12 +124,6 @@ const Profile = () => {
     const onChangePass = (data) => {
         async function updatePassword() {
             try {
-                const formData = new FormData();
-
-                Object.keys(data).forEach((item) => {
-                    formData.append(item, data[item]);
-                });
-                if (data.image) formData.append("image", data.image);
                 const res = await axios.post(
                     `//localhost:8000/api/members/password/${user.id}`,
                     {
@@ -448,6 +451,11 @@ const Profile = () => {
                                             bao gồm chữ cái thường hoặc số
                                         </span>
                                     )}
+                                    {errors?.username?.type === "validate" && (
+                                        <span className='form-message'>
+                                            Tên đăng nhập đã tồn tại
+                                        </span>
+                                    )}
                                     {(errors?.username?.type === "minLength" ||
                                         errors?.username?.type ===
                                             "maxLength") && (
@@ -475,7 +483,6 @@ const Profile = () => {
                                 <input
                                     className='form-input'
                                     placeholder='Họ tên'
-                                    defaultValue={user.full_name}
                                     {...register("full_name", {
                                         required: true,
                                     })}
@@ -503,7 +510,6 @@ const Profile = () => {
                                 <input
                                     className='form-input'
                                     placeholder='Email'
-                                    defaultValue={user.email}
                                     {...register("email", {
                                         required: true,
                                         pattern:
@@ -538,7 +544,6 @@ const Profile = () => {
                                 <input
                                     className='form-input'
                                     placeholder='Số điện thoại'
-                                    defaultValue={user.phone}
                                     {...register("phone", {
                                         required: true,
                                         pattern: /^\d+$/,
@@ -578,7 +583,6 @@ const Profile = () => {
                                 <input
                                     className='form-input'
                                     placeholder='Địa chỉ'
-                                    defaultValue={user.address}
                                     {...register("address", {
                                         required: true,
                                     })}
