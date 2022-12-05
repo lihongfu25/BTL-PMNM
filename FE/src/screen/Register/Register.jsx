@@ -161,6 +161,10 @@ const Register = () => {
                         value: 10,
                         message: "Có vẻ bạn đã nhập sai số điện thoại",
                     },
+                    minLength: {
+                        value: 10,
+                        message: "Có vẻ bạn đã nhập sai số điện thoại",
+                    },
                 }}
                 render={({ field }) => (
                     <StyledTextField
