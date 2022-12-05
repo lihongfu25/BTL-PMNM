@@ -75,7 +75,7 @@ const CategoryManager = () => {
         control: control2,
         handleSubmit: handleSubmit2,
         formState: { errors: errors2 },
-        setValue2,
+        setValue: setValue2,
     } = useForm();
 
     React.useEffect(() => {
