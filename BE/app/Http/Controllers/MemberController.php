@@ -44,13 +44,6 @@ class MemberController extends Controller
 
         $body = $request->all();
         $body['password'] = bcrypt($body['password']);
-        if ($request->hasFile('avatar')) {
-            $ext = $request->file('avatar')->extension();
-            $generate_unique_file_name = md5(time()) . '.' . $ext;
-            $request->file('avatar')->move('images', $generate_unique_file_name, 'local');
-
-            $body['avatar'] = 'images/' . $generate_unique_file_name;
-        }
 
         Member::create($body);
 
