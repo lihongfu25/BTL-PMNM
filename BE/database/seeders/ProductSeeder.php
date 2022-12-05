@@ -65,6 +65,22 @@ class ProductSeeder extends Seeder
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 3,
                 ],
+                [
+                    'name' => 'Đồng hồ cơ automatic 2',
+                    'price' => 320000,
+                    'quantity' => 1000,
+                    'discount' => 15,
+                    'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
+                    'category_id' => 3,
+                ],
+                [
+                    'name' => 'Kính râm thời trang 2',
+                    'price' => 70000,
+                    'quantity' => 1000,
+                    'discount' => 10,
+                    'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
+                    'category_id' => 3,
+                ],
             ]
         );
     }

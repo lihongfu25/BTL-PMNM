@@ -34,6 +34,21 @@ class ImageSeeder extends Seeder
                 ],
                 [
                     'url' => 'images/8ef0dcb6ca4a9e6842c4fc384b48e7d7.jpg',
+                    'product_id' => 1,
+
+                ],
+                [
+                    'url' => 'images/8ef0dcb6ca4a9e6842c4fc384b48e7d71.jpg',
+                    'product_id' => 1,
+
+                ],
+                [
+                    'url' => 'images/8ef0dcb6ca4a9e6842c4fc384b48e7d72.jpg',
+                    'product_id' => 1,
+
+                ],
+                [
+                    'url' => 'images/8ef0dcb6ca4a9e6842c4fc384b48e7d7.jpg',
                     'product_id' => 2,
 
                 ],
@@ -130,6 +145,45 @@ class ImageSeeder extends Seeder
                 [
                     'url' => 'images/kinhram_4.jpg',
                     'product_id' => 6,
+                ],
+                [
+                    'url' => 'images/dongho_2.jpg',
+                    'product_id' => 7,
+
+                ],
+                [
+                    'url' => 'images/dongho_3.jpg',
+                    'product_id' => 7,
+
+                ],
+                [
+                    'url' => 'images/dongho_4.jpg',
+                    'product_id' => 7,
+
+                ],
+                [
+                    'url' => 'images/dongho_5.jpg',
+                    'product_id' => 7,
+
+                ],
+                [
+                    'url' => 'images/kinhram_1.jpg',
+                    'product_id' => 8,
+
+                ],
+                [
+                    'url' => 'images/kinhram_2.jpg',
+                    'product_id' => 8,
+
+                ],
+                [
+                    'url' => 'images/kinhram_3.jpg',
+                    'product_id' => 8,
+
+                ],
+                [
+                    'url' => 'images/kinhram_4.jpg',
+                    'product_id' => 8,
                 ]
             ]
         );
