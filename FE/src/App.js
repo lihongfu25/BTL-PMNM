@@ -20,8 +20,6 @@ function App() {
                     },
                 });
                 dispatch(userUpdateProfile(res.data));
-                if (res.data.role_id !== "r2") navigate("/manager/dashboard");
-                dispatch(managerChangeTab("dashboard"));
             } catch (err) {
                 console.log(err.response);
             }
