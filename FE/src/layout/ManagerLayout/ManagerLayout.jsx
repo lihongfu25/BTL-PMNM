@@ -28,6 +28,7 @@ import { clearToken } from "../../redux/store/tokenSlice";
 import { userLogout } from "../../redux/store/userSlice";
 import logo from "../../assets/img/logo.png";
 import "./manager.scss";
+import { clearCart } from "../../pages/Cart/cartSlice";
 
 const tabs = [
     {
@@ -73,6 +74,10 @@ const ManagerLayout = ({ children }) => {
     const dispatch = useDispatch();
     const navigate = useNavigate();
 
+    React.useEffect(() => {
+        if (user.role_id === "r2") navigate("/");
+    }, [pathname, user, navigate]);
+
     const handleChangeTab = (slug) => {
         navigate(`/manager/${slug}`);
         dispatch(managerChangeTab(slug));
@@ -80,6 +85,7 @@ const ManagerLayout = ({ children }) => {
     const handleLogout = () => {
         dispatch(clearToken());
         dispatch(userLogout());
+        dispatch(clearCart());
         navigate("/login");
     };
     return (
