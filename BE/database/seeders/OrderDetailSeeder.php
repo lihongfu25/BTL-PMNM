@@ -41,6 +41,30 @@ class OrderDetailSeeder extends Seeder
                     'color' => 'images/44537ae5bed8ccf91347de0a06aa1363.jpg',
                     'quantity' => 2,
                     'total_price' => 209100,
+                ],
+                [
+                    'order_id' => 4,
+                    'product_id' => 1,
+                    'size' => 'M',
+                    'color' => 'images/44537ae5bed8ccf91347de0a06aa1363.jpg',
+                    'quantity' => 2,
+                    'total_price' => 209100,
+                ],
+                [
+                    'order_id' => 1,
+                    'product_id' => 3,
+                    'size' => 'M',
+                    'color' => 'images/44537ae5bed8ccf91347de0a06aa1363.jpg',
+                    'quantity' => 2,
+                    'total_price' => 514330,
+                ],
+                [
+                    'order_id' => 7,
+                    'product_id' => 3,
+                    'size' => 'L',
+                    'color' => 'images/44537ae5bed8ccf91347de0a06aa1363.jpg',
+                    'quantity' => 2,
+                    'total_price' => 514330,
                 ]
             ]
         );

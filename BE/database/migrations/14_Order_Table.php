@@ -16,6 +16,8 @@ return new class extends Migration
         Schema::create('orders', function (Blueprint $table) {
             $table->id();
             $table->string('status')->default('wait');
+            $table->text('note')->nullable()->default(null);
+            $table->boolean('is_rated')->default(false);
             $table->timestamps();
             $table->unsignedBigInteger('member_id');
 

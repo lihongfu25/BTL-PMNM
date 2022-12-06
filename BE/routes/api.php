@@ -13,6 +13,8 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ColorController;
 use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProductSizeController;
+use App\Http\Controllers\CartController;
+use App\Http\Controllers\OrderController;
 
 /*
 |--------------------------------------------------------------------------
@@ -47,6 +49,15 @@ Route::apiResource('/colors', ColorController::class);
 Route::apiResource('/images', ImageController::class);
 Route::apiResource('/product-sizes', ProductSizeController::class)->except('destroy');
 Route::post('/product-sizes/delete', [ProductSizeController::class, 'destroy']);
+Route::apiResource('/carts', CartController::class);
+Route::apiResource('/orders', OrderController::class)->except('update');
+Route::get('/orders/by-member-id/{memberId}', [OrderController::class, 'get_by_memberId']);
+Route::post('/orders/status/{orderId}', [OrderController::class, 'update_status']);
+Route::post('/orders/request-cancel/{orderId}', [OrderController::class, 'request_cancel']);
+Route::post('/orders/cancel/{orderId}', [OrderController::class, 'cancel']);
+Route::post('/orders/rating/{orderId}', [OrderController::class, 'rating']);
+
+
 
 
 

@@ -11,5 +11,14 @@ class Order extends Model
     protected $fillable = [
         'member_id',
         'status',
+        'note',
     ];
+
+    public function member()
+    {
+        return $this->belongsTo(Member::class);
+    }
+    public function order_detail() {
+        return $this->hasMany(OrderDetail::class)->with('product');
+    }
 }
