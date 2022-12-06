@@ -5,9 +5,12 @@ namespace App\Http\Controllers;
 use App\Models\Member;
 use App\Models\Cart;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreMemberRequest;
 use App\Http\Requests\UpdateMemberRequest;
+
+use Session;
 
 class MemberController extends Controller
 {
@@ -58,6 +61,49 @@ class MemberController extends Controller
             'message' => "Tạo mới thành công!",
         ], 201);
     }
+
+    public function forgot_password(StoreMemberRequest $request)
+    {
+        $email = $request->get('email');
+        $password = $request->get('password');
+        $member = Member::where('email', $email)->first();
+
+        if (!$member)
+            return response()->json(['message' => "Không tìm thấy tài khoản liên kết với email này"], 409);
+
+        Mail::send('emails.sendPass', compact('request', 'member'), function($email) use($request, $member) {
+            $email->subject("360 Store - Đặt lại mật khẩu");
+            $email->to($request->email, $member->full_name ,$request->password);
+        });
+
+        $member->password = bcrypt($password);
+        $member->save();
+
+        return response()->json([
+            'message' => "Đã gửi mail thành công!",
+        ], 200);
+    }
+
+    public function verify_email(StoreMemberRequest $request)
+    {
+        $email = $request->get('email');
+        $code = $request->get('code');
+        $unique_email = Member::where('email', $email)->first();
+
+        if ($unique_email)
+            return response()->json(['message' => "Email này đã được đăng ký bởi tài khoản khác!"], 409);
+
+        
+        Mail::send('emails.sendCode', compact('request'), function($email) use($request) {
+            $email->subject("360 Store - Đăng ký thành viên");
+            $email->to($request->email, $request->code);
+        });
+        return response()->json([
+            'code' => $code,
+            'message' => "Đã gửi mail thành công!",
+        ], 200);
+    }
+
 
     /**
      * Display the specified resource.
