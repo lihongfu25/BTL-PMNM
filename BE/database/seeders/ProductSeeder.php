@@ -24,6 +24,7 @@ class ProductSeeder extends Seeder
                     'discount' => 15,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 1,
+                    'created_at' => '2022-10-20'
                 ],
                 [
                     'name' => 'Áo thun nữ',
@@ -32,6 +33,7 @@ class ProductSeeder extends Seeder
                     'discount' => 0,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 2,
+                    'created_at' => '2022-10-22'
                 ],
                 [
                     'name' => 'Áo khoác nam',
@@ -40,6 +42,7 @@ class ProductSeeder extends Seeder
                     'discount' => 20,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 1,
+                    'created_at' => '2022-10-19'
                 ],
                 [
                     'name' => 'Áo khoác nữ',
@@ -48,6 +51,7 @@ class ProductSeeder extends Seeder
                     'discount' => 0,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 2,
+                    'created_at' => '2022-10-21'
                 ],
                 [
                     'name' => 'Đồng hồ cơ automatic',
@@ -56,6 +60,7 @@ class ProductSeeder extends Seeder
                     'discount' => 0,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 3,
+                    'created_at' => '2022-09-20'
                 ],
                 [
                     'name' => 'Kính râm thời trang',
@@ -64,6 +69,7 @@ class ProductSeeder extends Seeder
                     'discount' => 0,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 3,
+                    'created_at' => '2022-09-21'
                 ],
                 [
                     'name' => 'Đồng hồ cơ automatic 2',
@@ -72,6 +78,7 @@ class ProductSeeder extends Seeder
                     'discount' => 15,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 3,
+                    'created_at' => '2022-11-20'
                 ],
                 [
                     'name' => 'Kính râm thời trang 2',
@@ -80,6 +87,7 @@ class ProductSeeder extends Seeder
                     'discount' => 10,
                     'description' => 'Đây là một đoạn mô tả về sản phẩm của chúng tôi',
                     'category_id' => 3,
+                    'created_at' => '2022-12-04'
                 ],
             ]
         );

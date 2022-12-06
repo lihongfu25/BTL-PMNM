@@ -1,4 +1,5 @@
 import React from "react";
+import axios from "axios";
 import {
     useNavigate,
     useLocation,
@@ -155,111 +156,41 @@ const products = [
 ];
 const Search = ({ title }) => {
     const [searchParams] = useSearchParams();
-
     document.title =
         title || 'Kết quả tìm kiếm "' + searchParams.get("keyword") + '"';
+
     const [data, setData] = React.useState([]);
-    const [dataRemaining, setDataRemaining] = React.useState([]);
     const [filterPrice, setFilterPrice] = React.useState({});
     const [filterCategory, setFilterCategory] = React.useState([]);
     const [sorting, setSorting] = React.useState("Liên Quan");
-    const [page, setPage] = React.useState(parseInt(searchParams.get("page")));
+    const [page, setPage] = React.useState(1);
+    const [totalPage, setTotalPage] = React.useState();
 
-    const navigate = useNavigate();
     const { search } = useLocation();
 
     React.useEffect(() => {
-        setData(products);
-        setDataRemaining(products);
-    }, []);
-    React.useEffect(() => {
-        // console.log(searchParams.get("keyword"));
-        // console.log(searchParams.get("sortBy"));
-        // console.log(searchParams.get("order"));
-        // console.log(searchParams.get("page"));
-        // console.log(searchParams.get("category"));
-        setPage(parseInt(searchParams.get("page")));
-        window.scrollTo(0, 0);
-    }, [search, searchParams]);
-    React.useEffect(() => {
-        // const listedPrice =
-        //     (product.price * (100 - product.discount)) / 100;
-        // console.log(listedPrice);
-        // if (filterPrice.min !== undefined)
-        //     return listedPrice >= filterPrice.min;
-        // else if (filterPrice.max !== undefined)
-        //     return listedPrice <= filterPrice.max;
-        // else if (
-        //     filterPrice.min !== undefined &&
-        //     filterPrice.max !== undefined
-        // )
-        //     return (
-        //         listedPrice >= filterPrice.min &&
-        //         listedPrice <= filterPrice.max
-        //     );
-        // else return product;
-        if (searchParams.get("sortBy") === "price") {
-            if (filterCategory.length === 0)
-                navigate({
-                    search: createSearchParams({
-                        keyword: searchParams.get("keyword"),
-                        sortBy: searchParams.get("sortBy"),
-                        order: searchParams.get("order"),
-                        page: searchParams.get("page"),
-                    }).toString(),
-                });
-            else {
-                navigate({
-                    search: createSearchParams({
-                        keyword: searchParams.get("keyword"),
-                        category: filterCategory.join("&"),
-                        sortBy: searchParams.get("sortBy"),
-                        order: searchParams.get("order"),
-                        page: searchParams.get("page"),
-                    }).toString(),
-                });
-            }
-        } else {
-            if (filterCategory.length === 0)
-                navigate({
-                    search: createSearchParams({
-                        keyword: searchParams.get("keyword"),
-                        sortBy: searchParams.get("sortBy"),
-                        page: searchParams.get("page"),
-                    }).toString(),
-                });
-            else {
-                navigate({
-                    search: createSearchParams({
-                        keyword: searchParams.get("keyword"),
-                        category: filterCategory.join("&"),
-                        sortBy: searchParams.get("sortBy"),
-                        order: searchParams.get("order"),
-                        page: searchParams.get("page"),
-                    }).toString(),
-                });
-            }
+        async function getData() {
+            const res = await axios.post(
+                `//localhost:8000/api/products/get-by-keyword`,
+                {
+                    keyword: searchParams.get("keyword"),
+                    order_by: sorting,
+                    category: filterCategory,
+                    min_price: filterPrice.min,
+                    max_price: filterPrice.max,
+                    page: page,
+                },
+            );
+            setData(res.data.data.data);
+            setTotalPage(res.data.data.last_page);
         }
-    }, [filterCategory, filterPrice, searchParams, navigate]);
+        getData();
+
+        window.scrollTo(0, 0);
+    }, [search, searchParams, page, sorting, filterCategory, filterPrice]);
 
     const handleChangePage = (e, value) => {
         setPage(value);
-        searchParams.get("sortBy") === "price"
-            ? navigate({
-                  search: createSearchParams({
-                      keyword: searchParams.get("keyword"),
-                      sortBy: searchParams.get("sortBy"),
-                      order: searchParams.get("order"),
-                      page: value,
-                  }).toString(),
-              })
-            : navigate({
-                  search: createSearchParams({
-                      keyword: searchParams.get("keyword"),
-                      sortBy: searchParams.get("sortBy"),
-                      page: value,
-                  }).toString(),
-              });
     };
     return (
         <Box
@@ -458,14 +389,6 @@ const Search = ({ title }) => {
                                 }
                                 onClick={(e) => {
                                     setSorting("Liên Quan");
-                                    navigate({
-                                        search: createSearchParams({
-                                            keyword:
-                                                searchParams.get("keyword"),
-                                            sortBy: "relevancy",
-                                            page: 1,
-                                        }).toString(),
-                                    });
                                 }}
                             >
                                 Liên Quan
@@ -476,14 +399,6 @@ const Search = ({ title }) => {
                                 }
                                 onClick={(e) => {
                                     setSorting("Mới Nhất");
-                                    navigate({
-                                        search: createSearchParams({
-                                            keyword:
-                                                searchParams.get("keyword"),
-                                            sortBy: "ctime",
-                                            page: 1,
-                                        }).toString(),
-                                    });
                                 }}
                             >
                                 Mới Nhất
@@ -494,14 +409,6 @@ const Search = ({ title }) => {
                                 }
                                 onClick={(e) => {
                                     setSorting("Bán Chạy");
-                                    navigate({
-                                        search: createSearchParams({
-                                            keyword:
-                                                searchParams.get("keyword"),
-                                            sortBy: "sales",
-                                            page: 1,
-                                        }).toString(),
-                                    });
                                 }}
                             >
                                 Bán Chạy
@@ -600,17 +507,6 @@ const Search = ({ title }) => {
                                         value='ascending'
                                         onClick={(e) => {
                                             setSorting(e.target.value);
-                                            navigate({
-                                                search: createSearchParams({
-                                                    keyword:
-                                                        searchParams.get(
-                                                            "keyword",
-                                                        ),
-                                                    sortBy: "price",
-                                                    order: "asc",
-                                                    page: 1,
-                                                }).toString(),
-                                            });
                                         }}
                                     >
                                         Giá: Thấp đến Cao
@@ -624,17 +520,6 @@ const Search = ({ title }) => {
                                         value='descending'
                                         onClick={(e) => {
                                             setSorting(e.target.value);
-                                            navigate({
-                                                search: createSearchParams({
-                                                    keyword:
-                                                        searchParams.get(
-                                                            "keyword",
-                                                        ),
-                                                    sortBy: "price",
-                                                    order: "desc",
-                                                    page: 1,
-                                                }).toString(),
-                                            });
                                         }}
                                     >
                                         Giá: Cao đến Thấp
@@ -650,7 +535,7 @@ const Search = ({ title }) => {
                                 mt: "0rem!important",
                             }}
                         >
-                            {dataRemaining.map((product) => (
+                            {data.map((product) => (
                                 <Grid xs={2} sm={3} key={product.id} item>
                                     <ProductItem product={product} />
                                 </Grid>
@@ -669,7 +554,7 @@ const Search = ({ title }) => {
                             }}
                         >
                             <Pagination
-                                count={10}
+                                count={totalPage}
                                 variant='outlined'
                                 shape='rounded'
                                 page={page}

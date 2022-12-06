@@ -40,7 +40,6 @@ const Header = () => {
                     pathname: "search",
                     search: createSearchParams({
                         keyword: search,
-                        page: 1,
                     }).toString(),
                 });
                 setSearch("");

@@ -7,6 +7,7 @@ use App\Models\Image;
 use App\Models\Color;
 use App\Models\Category;
 use App\Models\ProductSize;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreProductRequest;
 use App\Http\Requests\UpdateProductRequest;
@@ -83,6 +84,7 @@ class ProductController extends Controller
         ], 201);
     }
 
+
     /**
      * Display the specified resource.
      *
@@ -101,6 +103,82 @@ class ProductController extends Controller
             'data' => $product,
         ], 200);
     }
+
+    public function get_by_keyword(Request $request)
+    {
+        $keyword = $request->keyword;
+        $category = $request->category;
+
+        if (count($category) !== 0)
+            $category_select = Category::whereIn('name', $category)->get()->pluck('id')->toArray();
+        else  $category_select = Category::all()->pluck('id')->toArray();
+
+        if ($request->min_price && $request->max_price) {
+            $min = $request->min_price;
+            $max = $request->max_price;
+        }
+        else if ($request->min_price) {
+            $min = $request->min_price;
+            $max = 1000000000;
+        }
+        else if ($request->max_price) {
+            $max = $request->max_price;
+            $min = 0;
+        }
+        else {
+            $min = 0;
+            $max = 1000000000;
+        }
+        
+        switch($request->order_by) {
+            case 'Mới Nhất':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image')
+                ->whereIn('category_id', $category_select)->where('price', '>=', $min)->where('price', '<=', $max)->where('products.name', "like", "%" . $keyword . "%")
+                ->groupByRaw('products.id')->orderBy('products.created_at', 'desc')->paginate(10);
+                break;
+            case 'Bán Chạy':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('order_details', 'products.id', '=', 'order_details.product_id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image, sum(order_details.quantity) as sale')
+                ->whereIn('category_id', $category_select)->where('price', '>=', $min)->where('price', '<=', $max)->where('products.name', "like", "%" . $keyword . "%")
+                ->groupByRaw('products.id')->orderBy('sale', 'desc')->paginate(10);
+                break;
+            case 'ascending':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, (products.price * (1-products.discount/100)) as price_discount, products.created_at, avg(star) as rating, images.url as image')
+                ->whereIn('category_id', $category_select)->where('price', '>=', $min)->where('price', '<=', $max)->where('products.name', "like", "%" . $keyword . "%")
+                ->groupByRaw('products.id')->orderBy('price_discount')->paginate(10);
+                break;
+            case 'descending':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, (products.price * (1-products.discount/100)) as price_discount, products.created_at, avg(star) as rating, images.url as image')
+                ->whereIn('category_id', $category_select)->where('price', '>=', $min)->where('price', '<=', $max)->where('products.name', "like", "%" . $keyword . "%")
+                ->groupByRaw('products.id')->orderBy('price_discount', 'desc')->paginate(10);
+                break;
+            default:
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image')
+                ->whereIn('category_id', $category_select)->where('price', '>=', $min)->where('price', '<=', $max)->where('products.name', "like", "%" . $keyword . "%")
+                ->groupByRaw('products.id')->paginate(10);
+        }
+
+        return response()->json([
+            'data' => $product,
+        ], 200);
+    }
+
+    
 
     public function get_limit($slug)
     {

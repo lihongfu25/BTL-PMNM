@@ -44,6 +44,8 @@ Route::post('/members/password/{memberId}', [MemberController::class, 'update_pa
 Route::apiResource('/contacts', ContactController::class);
 Route::apiResource('/products', ProductController::class);
 Route::get('/products/get-limit/{slug}', [ProductController::class, 'get_limit']);
+Route::post('/products/get-by-keyword', [ProductController::class, 'get_by_keyword']);
+Route::post('/products/get-by-category', [ProductController::class, 'get_by_category']);
 Route::apiResource('/sizes', SizeController::class);
 Route::apiResource('/colors', ColorController::class);
 Route::apiResource('/images', ImageController::class);
