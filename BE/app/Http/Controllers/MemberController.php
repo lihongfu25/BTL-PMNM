@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Member;
+use App\Models\Cart;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use App\Http\Requests\StoreMemberRequest;
@@ -51,7 +52,6 @@ class MemberController extends Controller
 
         $token = $member->createToken($member["id"])->plainTextToken;
 
-
         return response()->json([
             'data' => $member,
             'access_token' => $token,
@@ -91,9 +91,12 @@ class MemberController extends Controller
             ], 401);
         }
 
+        $cart = Cart::with('product')->where('member_id', $member["id"])->get();
+
         $token = $member->createToken($member["id"])->plainTextToken;
 
         $response = [
+            'cart' => $cart,
             'data' => $member,
             'access_token' => $token,
             'message' => 'Đăng nhập thành công!'

@@ -47,8 +47,8 @@ const MemberManager = () => {
     const [roles, setRoles] = React.useState([]);
     const [openDetail, setOpenDetail] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
-    const [isLoading, setIsLoading] = React.useState(false);
     const [memberInfor, setMemberInfor] = React.useState({});
+    const [isLoading, setIsLoading] = React.useState(false);
     const debounceSearch = useDebounce(search, 500);
     const [callApi, setCallApi] = React.useState(Math.random());
     const [snackbar, setSnackbar] = React.useState({
