@@ -118,8 +118,11 @@ const ProductItem = ({ product }) => {
                     <span className='new-price'>
                         {product.discount !== 0
                             ? currencyFormat(
-                                  (product.price * (100 - product.discount)) /
-                                      100,
+                                  Math.ceil(
+                                      (product.price *
+                                          (100 - product.discount)) /
+                                          100,
+                                  ),
                               )
                             : currencyFormat(product.price)}
                     </span>
