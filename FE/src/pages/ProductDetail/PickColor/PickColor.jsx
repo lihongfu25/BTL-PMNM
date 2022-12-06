@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import "./pickColor.scss";
-const PickColor = ({ colors, value, setValue }) => {
+const PickColor = ({ colors, value, setValue, isError }) => {
     return (
         <Box className='product-Color useFont-Nunito'>
             <span>Màu:</span>
@@ -19,6 +19,11 @@ const PickColor = ({ colors, value, setValue }) => {
                     ></span>
                 ))}
             </Box>
+            {isError && (
+                <span className='error-message'>
+                    Vui lòng chọn màu sắc trước
+                </span>
+            )}
         </Box>
     );
 };

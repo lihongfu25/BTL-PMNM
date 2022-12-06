@@ -1,7 +1,7 @@
 import React from "react";
 import { Box } from "@mui/material";
 import "./pickSize.scss";
-const PickSize = ({ sizes, value, setValue }) => {
+const PickSize = ({ sizes, value, setValue, isError }) => {
     return (
         <Box className='product-Size useFont-Nunito'>
             <span>Kích cỡ:</span>
@@ -18,6 +18,11 @@ const PickSize = ({ sizes, value, setValue }) => {
                     </button>
                 ))}
             </Box>
+            {isError && (
+                <span className='error-message'>
+                    Vui lòng chọn kích thước trước
+                </span>
+            )}
         </Box>
     );
 };

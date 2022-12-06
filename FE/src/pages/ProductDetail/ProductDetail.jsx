@@ -1,8 +1,9 @@
 import React from "react";
 import axios from "axios";
+import { useSelector, useDispatch } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -14,11 +15,13 @@ import {
 } from "@mui/material";
 import { BsDash, BsPlus, BsCheck2 } from "react-icons/bs";
 import { FaCartPlus } from "react-icons/fa";
-import { PickColor } from "./PickColor";
+
 import { PickSize } from "./PickSize";
+import { PickColor } from "./PickColor";
+import { RatingItem } from "./RatingItem";
 import { Button } from "../../components/Button";
 import { ProductItem } from "../../components/ProductItem";
-import { RatingItem } from "./RatingItem";
+import { setCart } from "../Cart/cartSlice";
 import { currencyFormat } from "../../styles/GlobalStyles";
 import "swiper/css";
 import "swiper/css/free-mode";
@@ -52,6 +55,8 @@ const StyledTypography = styled(Typography)({
 });
 const ProductDetail = () => {
     let { productId } = useParams();
+    const user = useSelector((state) => state.user);
+
     const [thumbsSwiper, setThumbsSwiper] = React.useState(null);
     const [product, setProduct] = React.useState();
     const [relateds, setRelateds] = React.useState();
@@ -59,6 +64,11 @@ const ProductDetail = () => {
     const [colorSelected, setColorSelected] = React.useState({});
     const [sizeSelected, setSizeSelected] = React.useState({});
     const [quantity, setQuantity] = React.useState(1);
+    const [errors, setErrors] = React.useState({});
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     React.useEffect(() => {
         async function getProduct() {
@@ -91,10 +101,63 @@ const ProductDetail = () => {
 
     const handleChooseColor = (color) => {
         setColorSelected(color);
+        setErrors((prevState) => ({ ...prevState, color: false }));
     };
     const handleChooseSize = (size) => {
         setSizeSelected(size);
+        setErrors((prevState) => ({ ...prevState, size: false }));
     };
+
+    const handleSubmitOrder = () => {
+        if (
+            Object.keys(colorSelected).length === 0 ||
+            (product?.size && Object.keys(sizeSelected).length === 0)
+        ) {
+            if (Object.keys(colorSelected).length === 0)
+                setErrors((prevState) => ({ ...prevState, color: true }));
+            if (product?.size && Object.keys(sizeSelected).length === 0)
+                setErrors((prevState) => ({ ...prevState, size: true }));
+        } else
+            console.log({
+                member_id: user.id,
+                product_id: product.id,
+                color: colorSelected.url,
+                size: sizeSelected,
+                quantity: quantity,
+                status: "wait",
+                total_price: Math.ceil(
+                    quantity * (1 - product.discount / 100) * product.price,
+                ),
+            });
+    };
+
+    const handleSubmitCart = () => {
+        if (!user.id) navigate("/login");
+        else if (
+            Object.keys(colorSelected).length === 0 ||
+            (product?.size && Object.keys(sizeSelected).length === 0)
+        ) {
+            if (Object.keys(colorSelected).length === 0)
+                setErrors((prevState) => ({ ...prevState, color: true }));
+            if (product?.size && Object.keys(sizeSelected).length === 0)
+                setErrors((prevState) => ({ ...prevState, size: true }));
+        } else {
+            async function addToCart() {
+                setIsLoading(true);
+                const res = await axios.post("//localhost:8000/api/carts", {
+                    member_id: user.id,
+                    product_id: product.id,
+                    color: colorSelected.url,
+                    size: sizeSelected,
+                    quantity: quantity,
+                });
+                dispatch(setCart(res.data.data));
+                setIsLoading(false);
+            }
+            addToCart();
+        }
+    };
+
     return (
         <Box
             className='grid-wide'
@@ -226,9 +289,12 @@ const ProductDetail = () => {
                                 <span className='new-price'>
                                     {product.discount !== 0
                                         ? currencyFormat(
-                                              (product.price *
-                                                  (100 - product.discount)) /
-                                                  100,
+                                              Math.ceil(
+                                                  (product.price *
+                                                      (100 -
+                                                          product.discount)) /
+                                                      100,
+                                              ),
                                           )
                                         : currencyFormat(product.price)}
                                 </span>
@@ -248,6 +314,7 @@ const ProductDetail = () => {
                             colors={product.color}
                             value={colorSelected}
                             setValue={handleChooseColor}
+                            isError={errors.color}
                         />
                     ) : (
                         <Skeleton
@@ -262,6 +329,7 @@ const ProductDetail = () => {
                             sizes={product.size}
                             value={sizeSelected}
                             setValue={handleChooseSize}
+                            isError={errors.size}
                         />
                     )}
                     {product ? (
@@ -303,6 +371,7 @@ const ProductDetail = () => {
                                 </Typography>
                                 <StyledButton
                                     variant='outlined'
+                                    disabled={quantity === product.quantity}
                                     onClick={() =>
                                         setQuantity(
                                             (prevState) => prevState + 1,
@@ -356,18 +425,32 @@ const ProductDetail = () => {
                             <>
                                 <Button
                                     sx={{
+                                        minWidth: "22rem",
                                         marginRight: "4rem",
                                     }}
+                                    onClick={handleSubmitCart}
                                 >
-                                    <FaCartPlus
-                                        style={{
-                                            marginRight: "1rem",
-                                            fontSize: "1.8rem",
-                                        }}
-                                    />
-                                    Thêm vào giỏ hàng
+                                    {isLoading ? (
+                                        <div className='loader'>
+                                            <div className='scanner'>
+                                                <span>Đang thêm...</span>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        <>
+                                            <FaCartPlus
+                                                style={{
+                                                    marginRight: "1rem",
+                                                    fontSize: "1.8rem",
+                                                }}
+                                            />
+                                            Thêm vào giỏ hàng
+                                        </>
+                                    )}
                                 </Button>
-                                <Button>Mua ngay</Button>
+                                <Button onClick={handleSubmitOrder}>
+                                    Mua ngay
+                                </Button>
                             </>
                         ) : (
                             <>
