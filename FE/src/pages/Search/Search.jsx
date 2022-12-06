@@ -1,11 +1,6 @@
 import React from "react";
 import axios from "axios";
-import {
-    useNavigate,
-    useLocation,
-    createSearchParams,
-    useSearchParams,
-} from "react-router-dom";
+import { useLocation, useSearchParams } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -16,12 +11,13 @@ import {
     Button,
     Typography,
     Pagination,
+    Stack,
+    Skeleton,
 } from "@mui/material";
 import { NumericFormat } from "react-number-format";
 import { BsCaretDownFill } from "react-icons/bs";
 import { ProductItem } from "../../components/ProductItem";
 import { Input } from "../../components/Input";
-import productImg from "../../assets/img/demo_porduct.jpg";
 const StyledFormControlLable = styled(FormControlLabel)({
     "& .css-ahj2mt-MuiTypography-root": {
         color: "#777",
@@ -56,104 +52,6 @@ const StyledInput = styled(Input)({
         padding: "0.4rem 0.8rem",
     },
 });
-const products = [
-    {
-        id: "1",
-        name: "Sản phẩm 1",
-        price: 115000,
-        discount: 45,
-        sold: 60,
-        description: "abc xyz",
-        rating: 4.7,
-        img: productImg,
-        date: "2022/11/02",
-        category: "Nam",
-    },
-    {
-        id: "2",
-        name: "Sản phẩm 2",
-        price: 100000,
-        discount: 0,
-        sold: 50,
-        description: "abc xyz",
-        rating: 4.5,
-        img: productImg,
-        date: "2022/11/21",
-        category: "Nữ",
-    },
-    {
-        id: "3",
-        name: "Sản phẩm 3",
-        price: 112000,
-        discount: 30,
-        sold: 65,
-        description: "abc xyz",
-        rating: 4.3,
-        img: productImg,
-        date: "2022/11/20",
-        category: "Nam",
-    },
-    {
-        id: "4",
-        name: "Sản phẩm 4",
-        price: 152000,
-        discount: 0,
-        sold: 110,
-        description: "abc xyz",
-        rating: 4.8,
-        img: productImg,
-        date: "2022/10/24",
-        category: "Phụ Kiện",
-    },
-    {
-        id: "5",
-        name: "Sản phẩm 5",
-        price: 120000,
-        discount: 60,
-        sold: 3,
-        description: "abc xyz",
-        rating: 5,
-        img: productImg,
-        date: "2022/10/25",
-        category: "Nữ",
-    },
-    {
-        id: "6",
-        name: "Sản phẩm 6",
-        price: 123000,
-        discount: 0,
-        sold: 12,
-        description: "abc xyz",
-        rating: 5,
-        img: productImg,
-        date: "2022/10/23",
-        category: "Phụ Kiện",
-    },
-    {
-        id: "7",
-        name: "Sản phẩm 7",
-        price: 123000,
-        discount: 60,
-        sold: 100,
-        description: "abc xyz",
-        rating: 5,
-        img: productImg,
-        date: "2022/10/21",
-        category: "Nam",
-    },
-    {
-        id: "8",
-        name: "Sản phẩm 8",
-        price: 132000,
-        discount: 0,
-        sold: 120,
-        description: "abc xyz",
-        rating: 5,
-        img: productImg,
-        date: "2022/10/22",
-        category: "Nam",
-    },
-];
 const Search = ({ title }) => {
     const [searchParams] = useSearchParams();
     document.title =
@@ -165,11 +63,13 @@ const Search = ({ title }) => {
     const [sorting, setSorting] = React.useState("Liên Quan");
     const [page, setPage] = React.useState(1);
     const [totalPage, setTotalPage] = React.useState();
+    const [isLoading, setIsLoading] = React.useState(false);
 
     const { search } = useLocation();
 
     React.useEffect(() => {
         async function getData() {
+            setIsLoading(true);
             const res = await axios.post(
                 `//localhost:8000/api/products/get-by-keyword`,
                 {
@@ -182,7 +82,9 @@ const Search = ({ title }) => {
                 },
             );
             setData(res.data.data.data);
+            setPage(res.data.current_page);
             setTotalPage(res.data.data.last_page);
+            setIsLoading(false);
         }
         getData();
 
@@ -535,11 +437,53 @@ const Search = ({ title }) => {
                                 mt: "0rem!important",
                             }}
                         >
-                            {data.map((product) => (
-                                <Grid xs={2} sm={3} key={product.id} item>
-                                    <ProductItem product={product} />
-                                </Grid>
-                            ))}
+                            {isLoading ? (
+                                <Stack
+                                    className='grid-wide'
+                                    direction={{
+                                        xs: "column",
+                                        sm: "row",
+                                    }}
+                                    spacing={{ xs: 1, sm: 2, md: 4 }}
+                                    sx={{
+                                        mt: "4rem",
+                                        "& > span": {
+                                            flexGrow: 1,
+                                        },
+                                    }}
+                                >
+                                    <Skeleton
+                                        variant='rounded'
+                                        sx={{
+                                            height: "30rem",
+                                        }}
+                                    />
+                                    <Skeleton
+                                        variant='rounded'
+                                        sx={{
+                                            height: "30rem",
+                                        }}
+                                    />
+                                    <Skeleton
+                                        variant='rounded'
+                                        sx={{
+                                            height: "30rem",
+                                        }}
+                                    />
+                                    <Skeleton
+                                        variant='rounded'
+                                        sx={{
+                                            height: "30rem",
+                                        }}
+                                    />
+                                </Stack>
+                            ) : (
+                                data.map((product) => (
+                                    <Grid xs={2} sm={3} key={product.id} item>
+                                        <ProductItem product={product} />
+                                    </Grid>
+                                ))
+                            )}
                         </Grid>
                         <Box
                             sx={{
