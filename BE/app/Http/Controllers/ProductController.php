@@ -178,7 +178,53 @@ class ProductController extends Controller
         ], 200);
     }
 
-    
+    public function get_by_category(Request $request)
+    {
+
+        $category = Category::where('slug', $request->category)->first();
+
+        switch($request->order_by) {
+            case 'Mới Nhất':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image')
+                ->where('category_id', $category->id)->groupByRaw('products.id')->orderBy('products.created_at', 'desc')->paginate(10);
+                break;
+            case 'Bán Chạy':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('order_details', 'products.id', '=', 'order_details.product_id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image, sum(order_details.quantity) as sale')
+                ->where('category_id', $category->id)->groupByRaw('products.id')->orderBy('sale', 'desc')->paginate(10);
+                break;
+            case 'ascending':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, (products.price * (1-products.discount/100)) as price_discount, products.created_at, avg(star) as rating, images.url as image')
+                ->where('category_id', $category->id)->groupByRaw('products.id')->orderBy('price_discount')->paginate(10);
+                break;
+            case 'descending':
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, (products.price * (1-products.discount/100)) as price_discount, products.created_at, avg(star) as rating, images.url as image')
+                ->where('category_id', $category->id)->groupByRaw('products.id')->orderBy('price_discount', 'desc')->paginate(10);
+                break;
+            default:
+                $product = DB::table('products')->join('categories', 'products.category_id', '=', 'categories.id')
+                ->leftJoin('images', 'products.id', '=', 'images.product_id')
+                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, products.created_at, avg(star) as rating, images.url as image')
+                ->where('category_id', $category->id)->groupByRaw('products.id')->paginate(10);
+        }
+
+        return response()->json([
+            'data' => $product,
+        ], 200);
+    }
 
     public function get_limit($slug)
     {
