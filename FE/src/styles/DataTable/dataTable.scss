@@ -59,5 +59,18 @@
                 }
             }
         }
+        th,
+        td {
+            font-size: 1.6rem;
+        }
+        th {
+            color: #495057;
+            text-align: start;
+            padding: 0.6rem 2rem;
+        }
+        td {
+            color: #ee4f2f;
+            padding: 0.6rem 0;
+        }
     }
 }

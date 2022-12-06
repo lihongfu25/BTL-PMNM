@@ -1,80 +1,25 @@
 import React from "react";
+import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
-import { Box, Typography, Link, Pagination } from "@mui/material";
-import { TextField } from "../../components/TextField";
+import {
+    Box,
+    Typography,
+    Link,
+    Pagination,
+    LinearProgress,
+} from "@mui/material";
+
+import { useDebounce } from "../../hook";
 import { Select } from "../../components/Select";
+import { TextField } from "../../components/TextField";
 import "../../styles/DataTable/dataTable.scss";
+import { formatDateTime } from "../../styles/GlobalStyles";
 
 const columns = [
     { field: "id", headerName: "Mã đơn hàng", width: 120 },
     { field: "memberName", headerName: "Khách hàng", width: 200 },
     { field: "memberAddress", headerName: "Địa chỉ", width: 200 },
     { field: "date", headerName: "Ngày lập", width: 160 },
-];
-const rows = [
-    {
-        id: "1",
-        memberName: "Nguyễn Văn A",
-        memberAddress: "Hà Nội",
-        date: "2022-10-20",
-        status: "wait",
-    },
-    {
-        id: "2",
-        memberName: "Trần Văn B",
-        memberAddress: "Hà Nội",
-        date: "2022-10-21",
-        status: "wait",
-    },
-    {
-        id: "3",
-        memberName: "Phạm Văn C",
-        memberAddress: "Hà Nội",
-        date: "2022-10-22",
-        status: "prepare",
-    },
-    {
-        id: "4",
-        memberName: "Lê Văn D",
-        memberAddress: "Hà Nội",
-        date: "2022-10-29",
-        status: "delivering",
-    },
-    {
-        id: "5",
-        memberName: "Vũ Văn E",
-        memberAddress: "Hà Nội",
-        date: "2022-11-20",
-        status: "wait",
-    },
-    {
-        id: "6",
-        memberName: "Đoàn Văn F",
-        memberAddress: "Hà Nội",
-        date: "2022-10-22",
-        status: "delivering",
-    },
-    {
-        id: "7",
-        memberName: "Nguyễn Thị G",
-        memberAddress: "Hà Nội",
-        date: "2022-09-20",
-        status: "delivered",
-    },
-    {
-        id: "8",
-        memberName: "Trần Thị H",
-        memberAddress: "Hà Nội",
-        date: "2022-10-10",
-        status: "delivered",
-    },
-    {
-        id: "9",
-        memberName: "Phạm Thị I",
-        memberAddress: "Hà Nội",
-        date: "2022-10-02",
-        status: "request cancel",
-    },
 ];
 const statuses = [
     {
@@ -90,7 +35,7 @@ const statuses = [
         name: "Đang giao",
     },
     {
-        id: "deliverd",
+        id: "delivered",
         name: "Đã giao",
     },
     {
@@ -101,31 +46,28 @@ const statuses = [
 
 const OrderManager = () => {
     document.title = "Đơn hàng | 360 Store";
+    const [totalPage, setTotalPage] = React.useState(1);
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
     const [filterStatus, setFilterStatus] = React.useState("wait");
     const [data, setData] = React.useState([]);
-    const [dataRemaining, setDataRemaining] = React.useState([]);
+    const [isLoading, setIsLoading] = React.useState(false);
+    const debounceSearch = useDebounce(search, 500);
     const { pathname } = useLocation();
     const navigate = useNavigate();
     React.useEffect(() => {
-        setData(rows);
-    }, []);
-    React.useEffect(() => {
-        setDataRemaining(
-            data.filter(
-                (row) =>
-                    row.status === filterStatus &&
-                    (row.id.toLowerCase().includes(search.toLowerCase()) ||
-                        row.memberName
-                            .toLowerCase()
-                            .includes(search.toLowerCase()) ||
-                        row.memberAddress
-                            .toLowerCase()
-                            .includes(search.toLowerCase())),
-            ),
-        );
-    }, [data, search, filterStatus]);
+        async function getData() {
+            setIsLoading(true);
+            const res = await axios(
+                `//localhost:8000/api/orders?keyword=${debounceSearch}&status=${filterStatus}&page=${page}`,
+            );
+            setData(res.data.data.data);
+            setPage(res.data.data.current_page);
+            setTotalPage(res.data.data.last_page);
+            setIsLoading(false);
+        }
+        getData();
+    }, [page, debounceSearch, filterStatus]);
     const handleChangePage = (e, value) => {
         setPage(value);
     };
@@ -211,7 +153,7 @@ const OrderManager = () => {
                             </tr>
                         </thead>
                         <tbody className='table-body'>
-                            {dataRemaining.length === 0 ? (
+                            {isLoading ? (
                                 <tr>
                                     <td
                                         colSpan={
@@ -219,56 +161,59 @@ const OrderManager = () => {
                                         }
                                         align='center'
                                     >
-                                        Chưa có bản ghi nào
+                                        <LinearProgress color='inherit' />
+                                    </td>
+                                </tr>
+                            ) : data.length === 0 ? (
+                                <tr>
+                                    <td
+                                        colSpan={
+                                            Object.keys(columns).length + 1
+                                        }
+                                        align='center'
+                                    >
+                                        Chưa có đơn hàng nào
                                     </td>
                                 </tr>
                             ) : (
-                                dataRemaining
-                                    .filter(
-                                        (row, i) =>
-                                            i >= 10 * (page - 1) &&
-                                            i <= 10 * page - 1,
-                                    )
-                                    .map((row, index) => (
-                                        <tr
-                                            key={index}
-                                            className={
-                                                index % 2 === 0 ? "even" : "odd"
-                                            }
+                                data.map((row, index) => (
+                                    <tr
+                                        key={index}
+                                        className={
+                                            index % 2 === 0 ? "even" : "odd"
+                                        }
+                                    >
+                                        <td>{row.id}</td>
+                                        <td>{row.member.full_name}</td>
+                                        <td>{row.member.address}</td>
+                                        <td>
+                                            {formatDateTime(row.created_at)}
+                                        </td>
+                                        <td
+                                            className='go-to-detail'
+                                            align='center'
                                         >
-                                            <td>{row.id}</td>
-                                            <td>{row.memberName}</td>
-                                            <td>{row.memberAddress}</td>
-                                            <td>{row.date}</td>
-                                            <td
-                                                className='go-to-detail'
-                                                align='center'
+                                            <Link
+                                                underline='hover'
+                                                sx={{
+                                                    mr: "1rem",
+                                                }}
+                                                onClick={() =>
+                                                    handleGoToDetail(row.id)
+                                                }
                                             >
-                                                <Link
-                                                    underline='hover'
-                                                    sx={{
-                                                        mr: "1rem",
-                                                    }}
-                                                    onClick={() =>
-                                                        handleGoToDetail(row.id)
-                                                    }
-                                                >
-                                                    Xem
-                                                </Link>
-                                            </td>
-                                        </tr>
-                                    ))
+                                                Xem
+                                            </Link>
+                                        </td>
+                                    </tr>
+                                ))
                             )}
                         </tbody>
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
                                     <Pagination
-                                        count={
-                                            Math.floor(
-                                                dataRemaining.length / 10,
-                                            ) + 1
-                                        }
+                                        count={totalPage}
                                         variant='outlined'
                                         shape='rounded'
                                         page={page}
