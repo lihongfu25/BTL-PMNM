@@ -12,6 +12,7 @@ import { TextField } from "../../components/TextField";
 import { setToken } from "../../redux/store/tokenSlice";
 import { userUpdateProfile } from "../../redux/store/userSlice";
 import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
+import { setCart } from "../../pages/Cart/cartSlice";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 const StyledTextField = styled(TextField)({
     width: "100%",
@@ -32,7 +33,7 @@ const Login = () => {
             if (userRole !== "r2") {
                 dispatch(managerChangeTab("dashboard"));
                 navigate("/manager/dashboard");
-            } else navigate("/");
+            } else navigate(-1);
         }
     }, [isLogin, userRole, navigate, dispatch]);
     const {
@@ -56,6 +57,7 @@ const Login = () => {
                     "authTokens",
                     JSON.stringify(res.data.access_token),
                 );
+                dispatch(setCart(res.data.cart));
                 dispatch(
                     setToken({
                         isLogin: true,

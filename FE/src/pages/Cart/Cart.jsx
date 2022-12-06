@@ -1,10 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
 import { Button } from "../../components/Button";
 import { CartItem } from "./CartItem";
 import { currencyFormat } from "../../styles/GlobalStyles";
-import productImg from "../../assets/img/demo_porduct.jpg";
 
 const StyledTypography = styled(Typography)({
     fontWeight: 700,
@@ -20,46 +20,10 @@ const StyledButton = styled(Button)({
     textTransform: "none",
     minWidth: "12rem",
 });
-const carts = [
-    {
-        id: "1",
-        name: "Sản phẩm 1",
-        img: productImg,
-        size: "M",
-        color: {
-            colorId: 1,
-            url: "https://wallpapercave.com/wp/wp2552423.jpg",
-        },
-        price: 123000,
-        quantity: 1,
-    },
-    {
-        id: "2",
-        name: "Sản phẩm 2",
-        img: productImg,
-        size: "M",
-        color: {
-            id: 1,
-            url: "https://wallpapercave.com/wp/wp2552423.jpg",
-        },
-        price: 123000,
-        quantity: 3,
-    },
-    {
-        id: "3",
-        name: "Sản phẩm 3",
-        img: productImg,
-        size: "M",
-        color: {
-            id: 1,
-            url: "https://wallpapercave.com/wp/wp2552423.jpg",
-        },
-        price: 123000,
-        quantity: 1,
-    },
-];
+
 const Cart = () => {
     document.title = "Giỏ hàng | 360 Store";
+    const carts = useSelector((state) => state.cart.carts);
     return (
         <Box
             className='grid-wide'
@@ -98,81 +62,100 @@ const Cart = () => {
                     <h3 className='textColor'>Cart</h3>
                 </Box>
             </Box>
-            <Box
-                sx={{
-                    mt: "4rem",
-                    p: "1rem 2rem",
-                    display: "flex",
-                    borderRadius: "0.4rem",
-                    boxShadow: "0 0 20px 1px #e5e5e5",
-                }}
-            >
-                <StyledBox
-                    sx={{
-                        flexGrow: 1,
-                    }}
-                >
-                    <StyledTypography
+            {carts.length === 0 ? (
+                "chua co sna pham"
+            ) : (
+                <>
+                    <Box
                         sx={{
-                            textAlign: "left",
+                            mt: "4rem",
+                            p: "1rem 2rem",
+                            display: "flex",
+                            borderRadius: "0.4rem",
+                            boxShadow: "0 0 20px 1px #e5e5e5",
                         }}
                     >
-                        Sản phẩm
-                    </StyledTypography>
-                </StyledBox>
-                <StyledBox>
-                    <StyledTypography>Đơn giá</StyledTypography>
-                </StyledBox>
-                <StyledBox>
-                    <StyledTypography>Số lượng</StyledTypography>
-                </StyledBox>
-                <StyledBox>
-                    <StyledTypography>Số tiền</StyledTypography>
-                </StyledBox>
-                <Box
-                    sx={{
-                        width: "15rem",
-                    }}
-                ></Box>
-            </Box>
-            {carts.map((cartItem) => (
-                <CartItem key={cartItem.id} product={cartItem} />
-            ))}
-            <Box
-                sx={{
-                    p: "2rem 4rem",
-                    mt: "1.6rem",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "space-between",
-                    boxShadow: "0 0 20px 1px #e5e5e5",
-                }}
-            >
-                <Typography
-                    sx={{
-                        color: "#495057",
-                        fontSize: "2rem",
-                        fontFamily: "Nunito",
-                        "& .total-Count,& .total-Price": {
-                            fontWeight: 700,
-                        },
-                    }}
-                >
-                    Tổng thanh toán(
-                    <span className='total-Count'>{carts.length}</span> sản
-                    phẩm):{" "}
-                    <span className='total-Price'>
-                        {currencyFormat(
-                            carts.reduce(
-                                (total, cartItem) =>
-                                    total + cartItem.price * cartItem.quantity,
-                                0,
-                            ),
-                        )}
-                    </span>
-                </Typography>
-                <StyledButton>Đặt hàng</StyledButton>
-            </Box>
+                        <StyledBox
+                            sx={{
+                                flexGrow: 1,
+                            }}
+                        >
+                            <StyledTypography
+                                sx={{
+                                    textAlign: "left",
+                                }}
+                            >
+                                Sản phẩm
+                            </StyledTypography>
+                        </StyledBox>
+                        <StyledBox>
+                            <StyledTypography>Đơn giá</StyledTypography>
+                        </StyledBox>
+                        <StyledBox>
+                            <StyledTypography>Số lượng</StyledTypography>
+                        </StyledBox>
+                        <StyledBox>
+                            <StyledTypography>Số tiền</StyledTypography>
+                        </StyledBox>
+                        <Box
+                            sx={{
+                                width: "15rem",
+                            }}
+                        ></Box>
+                    </Box>
+                    {carts.map((cartItem) => (
+                        <CartItem key={cartItem.id} value={cartItem} />
+                    ))}
+                    <Box
+                        sx={{
+                            p: "2rem 4rem",
+                            mt: "1.6rem",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                            boxShadow: "0 0 20px 1px #e5e5e5",
+                        }}
+                    >
+                        <Typography
+                            sx={{
+                                color: "#495057",
+                                fontSize: "2rem",
+                                fontFamily: "Nunito",
+                                "& .total-Count,& .total-Price": {
+                                    fontWeight: 700,
+                                },
+                            }}
+                        >
+                            Tổng thanh toán(
+                            <span className='total-Count'>
+                                {carts.reduce(
+                                    (total, cart) => total + cart.quantity,
+                                    0,
+                                )}
+                            </span>{" "}
+                            sản phẩm):{" "}
+                            <span className='total-Price'>
+                                {currencyFormat(
+                                    carts.reduce(
+                                        (total, cart) =>
+                                            total +
+                                            Math.ceil(
+                                                (cart.product.price *
+                                                    (100 -
+                                                        cart.product
+                                                            .discount)) /
+                                                    100,
+                                            ) *
+                                                cart.quantity,
+                                        0,
+                                    ),
+                                )}
+                            </span>
+                        </Typography>
+                        <StyledButton>Đặt hàng</StyledButton>
+                    </Box>
+                </>
+            )}
         </Box>
     );
 };

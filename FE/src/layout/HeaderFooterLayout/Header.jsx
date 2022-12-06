@@ -9,11 +9,12 @@ import {
 import { FaShoppingCart } from "react-icons/fa";
 import { BsSearch } from "react-icons/bs";
 import { styled } from "@mui/material/styles";
-import { Box, IconButton, Menu, MenuItem } from "@mui/material";
+import { Box, IconButton, Menu, MenuItem, Badge } from "@mui/material";
 import { clearToken } from "../../redux/store/tokenSlice";
 import { userLogout } from "../../redux/store/userSlice";
 import logo from "../../assets/img/logo.png";
 import "./header.scss";
+import { clearCart } from "../../pages/Cart/cartSlice";
 const StyledLink = styled(Link)({
     color: "#495057",
     fontSize: "1.6rem",
@@ -22,6 +23,8 @@ const StyledLink = styled(Link)({
 const Header = () => {
     const isLogin = useSelector((state) => state.token.isLogin);
     const user = useSelector((state) => state.user);
+    const cart = useSelector((state) => state.cart.carts);
+
     const [checked, setChecked] = React.useState(false);
     const [search, setSearch] = React.useState("");
     const [anchorEl, setAnchorEl] = React.useState(null);
@@ -58,6 +61,7 @@ const Header = () => {
         setAnchorEl(null);
         dispatch(clearToken());
         dispatch(userLogout());
+        dispatch(clearCart());
     };
     const handleCloseMenuUser = () => {
         setAnchorEl(null);
@@ -143,7 +147,23 @@ const Header = () => {
                         fontSize: "2.4rem",
                     }}
                 >
-                    <FaShoppingCart />
+                    {cart.length !== 0 ? (
+                        <Badge
+                            badgeContent={cart.length}
+                            color='primary'
+                            sx={{
+                                "& .css-106c1u2-MuiBadge-badge": {
+                                    color: "#fff",
+                                    fontSize: "1.2rem",
+                                    backgroundColor: "#333",
+                                },
+                            }}
+                        >
+                            <FaShoppingCart />
+                        </Badge>
+                    ) : (
+                        <FaShoppingCart />
+                    )}
                 </StyledLink>
                 <IconButton
                     onClick={handleClickUser}

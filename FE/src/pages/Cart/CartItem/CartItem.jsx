@@ -1,9 +1,17 @@
 import React from "react";
+import axios from "axios";
+import { useDispatch, useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import { BsDash, BsPlus } from "react-icons/bs";
 import { Box, Button as MuiButton, Typography } from "@mui/material";
+
 import { Button } from "../../../components/Button";
 import { currencyFormat } from "../../../styles/GlobalStyles";
+import {
+    setCart as setCartStore,
+    cartIncreaseQuantity,
+    cartReducedQuantity,
+} from "../cartSlice";
 const StyledBox = styled(Box)({
     minWidth: "21rem",
     textAlign: "center",
@@ -23,11 +31,48 @@ const StyledButton = styled(MuiButton)({
         border: "1px solid #ccc",
     },
 });
-const CartItem = ({ product }) => {
-    const [quantity, setQuantity] = React.useState(product.quantity);
+const CartItem = ({ value }) => {
+    const [cart, setCart] = React.useState(value);
+    const [quantity, setQuantity] = React.useState(value.quantity);
 
-    const handleDeleteItemFromCart = () => {
-        console.log("xoá");
+    const userId = useSelector((state) => state.user.id);
+
+    const dispatch = useDispatch();
+
+    const handleDelete = () => {
+        async function delCart() {
+            const res = await axios.delete(
+                `//localhost:8000/api/carts/${cart.id}?member_id=${userId}`,
+            );
+            dispatch(setCartStore(res.data.data));
+        }
+        delCart();
+    };
+
+    const handleIncrease = () => {
+        setQuantity((prevState) => prevState + 1);
+        dispatch(cartIncreaseQuantity(cart.id));
+        async function increase() {
+            const res = await axios.put(
+                `//localhost:8000/api/carts/${cart.id}`,
+                { quantity: quantity + 1 },
+            );
+            setCart(res.data.data);
+        }
+        increase();
+    };
+
+    const handleReduced = () => {
+        setQuantity((prevState) => prevState - 1);
+        dispatch(cartReducedQuantity(cart.id));
+        async function reduced() {
+            const res = await axios.put(
+                `//localhost:8000/api/carts/${cart.id}`,
+                { quantity: quantity - 1 },
+            );
+            setCart(res.data.data);
+        }
+        reduced();
     };
     return (
         <Box
@@ -53,7 +98,12 @@ const CartItem = ({ product }) => {
                         },
                     }}
                 >
-                    <img alt='' src={product.img} />
+                    <img
+                        alt=''
+                        src={
+                            "http://localhost:8000/" + cart.product.image[0].url
+                        }
+                    />
                 </Box>
                 <Box
                     sx={{
@@ -84,29 +134,66 @@ const CartItem = ({ product }) => {
                                 height: "1.6rem",
                                 display: "inline-block",
                                 borderRadius: "50%",
-                                backgroundImage: `url(${product.color.url})`,
+                                backgroundImage: `url(http://localhost:8000/${cart.color})`,
                                 backgroundPosition: "center",
                             },
                         },
                     }}
                 >
-                    <h3>{product.name}</h3>
+                    <h3>{cart.product.name}</h3>
                     <h6>
-                        Size:
-                        <span className='product-size'>{product.size}</span> /
+                        {cart.size && (
+                            <>
+                                Size:
+                                <span className='product-size'>
+                                    {cart.size}
+                                </span>{" "}
+                                /
+                            </>
+                        )}
                         Màu:<span className='product-color'></span>
                     </h6>
                 </Box>
             </StyledBox>
             <StyledBox>
-                <StyledTypography>
-                    {currencyFormat(product.price)}
+                <StyledTypography
+                    sx={{
+                        ".old-price": {
+                            mr: "1rem",
+                            color: "#b2b2b2",
+                            textDecoration: "line-through",
+                        },
+                    }}
+                >
+                    {cart.product.discount !== 0 && (
+                        <span className='old-price'>
+                            {currencyFormat(cart.product.price)}
+                        </span>
+                    )}
+                    <span className='new-price'>
+                        {cart.product.discount !== 0
+                            ? currencyFormat(
+                                  Math.ceil(
+                                      (cart.product.price *
+                                          (100 - cart.product.discount)) /
+                                          100,
+                                  ),
+                              )
+                            : currencyFormat(cart.product.price)}
+                    </span>
                 </StyledTypography>
             </StyledBox>
             <StyledBox
                 sx={{
                     position: "relative",
                     flexDirection: "column",
+                    "& .quantityError": {
+                        position: "absolute",
+                        bottom: 0,
+                        color: "#d32f2f",
+                        fontSize: "1.4rem",
+                        whiteSpace: "nowrap",
+                    },
                 }}
             >
                 <Box
@@ -125,9 +212,7 @@ const CartItem = ({ product }) => {
                     <StyledButton
                         variant='outlined'
                         disabled={quantity === 1}
-                        onClick={() =>
-                            setQuantity((prevState) => prevState - 1)
-                        }
+                        onClick={handleReduced}
                     >
                         <BsDash />
                     </StyledButton>
@@ -143,17 +228,27 @@ const CartItem = ({ product }) => {
                     </StyledTypography>
                     <StyledButton
                         variant='outlined'
-                        onClick={() =>
-                            setQuantity((prevState) => prevState + 1)
-                        }
+                        disabled={quantity === cart.product.quantity}
+                        onClick={handleIncrease}
                     >
                         <BsPlus />
                     </StyledButton>
                 </Box>
+                {quantity === cart.product.quantity && (
+                    <span className='quantityError'>
+                        Đã đạt đến giới hạn số lượng hàng có sẵn!
+                    </span>
+                )}
             </StyledBox>
             <StyledBox>
                 <StyledTypography>
-                    {currencyFormat(product.price * quantity)}
+                    {currencyFormat(
+                        Math.ceil(
+                            (cart.product.price *
+                                (100 - cart.product.discount)) /
+                                100,
+                        ) * quantity,
+                    )}
                 </StyledTypography>
             </StyledBox>
             <Box
@@ -164,7 +259,7 @@ const CartItem = ({ product }) => {
                 }}
             >
                 <Button
-                    onClick={handleDeleteItemFromCart}
+                    onClick={handleDelete}
                     variant='text'
                     sx={{
                         textTransform: "none",

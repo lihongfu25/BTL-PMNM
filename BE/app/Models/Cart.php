@@ -18,4 +18,9 @@ class Cart extends Model
     ];
 
     public $timestamps = false;
+
+    public function product()
+    {
+        return $this->belongsTo(Product::class)->with('image');
+    }
 }
