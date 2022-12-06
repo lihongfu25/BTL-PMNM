@@ -10,6 +10,7 @@ import {
     Button,
     Pagination as MuiPagination,
     Skeleton,
+    Stack,
 } from "@mui/material";
 
 import { BsCaretDownFill } from "react-icons/bs";
@@ -46,8 +47,11 @@ const Category = () => {
     const [slides, setSlides] = React.useState([]);
     const [sorting, setSorting] = React.useState("Liên Quan");
     const [loadSlides, setLoadSlides] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
 
     React.useEffect(() => {
+        window.scroll(0, 0);
+        setSorting("Liên Quan");
         async function getSlides() {
             setLoadSlides(true);
             const res = await axios.get(
@@ -57,10 +61,11 @@ const Category = () => {
             setLoadSlides(false);
         }
         getSlides();
-    }, []);
+    }, [slug]);
 
     React.useEffect(() => {
         async function getData() {
+            setIsLoading(true);
             const res = await axios.post(
                 `//localhost:8000/api/products/get-by-category`,
                 {
@@ -69,6 +74,7 @@ const Category = () => {
                     page: page,
                 },
             );
+            setIsLoading(false);
             setData(res.data.data.data);
             setPage(res.data.data.current_page);
             setTotalPage(res.data.data.last_page);
@@ -297,11 +303,53 @@ const Category = () => {
                         mt: "0rem!important",
                     }}
                 >
-                    {data.map((product) => (
-                        <Grid xs={2} sm={3} key={product.id} item>
-                            <ProductItem product={product} />
-                        </Grid>
-                    ))}
+                    {isLoading ? (
+                        <Stack
+                            className='grid-wide'
+                            direction={{
+                                xs: "column",
+                                sm: "row",
+                            }}
+                            spacing={{ xs: 1, sm: 2, md: 4 }}
+                            sx={{
+                                mt: "4rem",
+                                "& > span": {
+                                    flexGrow: 1,
+                                },
+                            }}
+                        >
+                            <Skeleton
+                                variant='rounded'
+                                sx={{
+                                    height: "30rem",
+                                }}
+                            />
+                            <Skeleton
+                                variant='rounded'
+                                sx={{
+                                    height: "30rem",
+                                }}
+                            />
+                            <Skeleton
+                                variant='rounded'
+                                sx={{
+                                    height: "30rem",
+                                }}
+                            />
+                            <Skeleton
+                                variant='rounded'
+                                sx={{
+                                    height: "30rem",
+                                }}
+                            />
+                        </Stack>
+                    ) : (
+                        data.map((product) => (
+                            <Grid xs={2} sm={3} key={product.id} item>
+                                <ProductItem product={product} />
+                            </Grid>
+                        ))
+                    )}
                 </Grid>
                 <Box
                     sx={{
