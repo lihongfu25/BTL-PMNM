@@ -5,6 +5,7 @@ import { Box, Typography } from "@mui/material";
 import { Button } from "../../components/Button";
 import { CartItem } from "./CartItem";
 import { currencyFormat } from "../../styles/GlobalStyles";
+import EmptyCart from "./EmptyCart";
 
 const StyledTypography = styled(Typography)({
     fontWeight: 700,
@@ -63,7 +64,7 @@ const Cart = () => {
                 </Box>
             </Box>
             {carts.length === 0 ? (
-                "chua co sna pham"
+                <EmptyCart />
             ) : (
                 <>
                     <Box
