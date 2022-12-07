@@ -60,6 +60,22 @@ class ColorSeeder extends Seeder
                 [
                     'url' => 'images/white_color.png',
                     'product_id' => 6,
+                ],
+                [
+                    'url' => 'images/black_color.jpg',
+                    'product_id' => 7,
+                ],
+                [
+                    'url' => 'images/white_color.png',
+                    'product_id' => 7,
+                ],
+                [
+                    'url' => 'images/black_color.jpg',
+                    'product_id' => 8,
+                ],
+                [
+                    'url' => 'images/white_color.png',
+                    'product_id' => 8,
                 ]
             ]
         );
