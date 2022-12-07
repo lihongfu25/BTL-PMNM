@@ -62,7 +62,7 @@ const ProductDetail = () => {
     const [relateds, setRelateds] = React.useState();
     const [avgRating, setAvgRating] = React.useState(0);
     const [colorSelected, setColorSelected] = React.useState({});
-    const [sizeSelected, setSizeSelected] = React.useState({});
+    const [sizeSelected, setSizeSelected] = React.useState();
     const [quantity, setQuantity] = React.useState(1);
     const [errors, setErrors] = React.useState({});
     const [isLoading, setIsLoading] = React.useState(false);
@@ -111,11 +111,15 @@ const ProductDetail = () => {
     const handleSubmitOrder = () => {
         if (
             Object.keys(colorSelected).length === 0 ||
-            (product?.size && Object.keys(sizeSelected).length === 0)
+            (product?.size.length !== 0 &&
+                Object.keys(sizeSelected).length === 0)
         ) {
             if (Object.keys(colorSelected).length === 0)
                 setErrors((prevState) => ({ ...prevState, color: true }));
-            if (product?.size && Object.keys(sizeSelected).length === 0)
+            if (
+                product?.size.length !== 0 &&
+                Object.keys(sizeSelected).length === 0
+            )
                 setErrors((prevState) => ({ ...prevState, size: true }));
         } else
             console.log({
@@ -135,22 +139,37 @@ const ProductDetail = () => {
         if (!user.id) navigate("/login");
         else if (
             Object.keys(colorSelected).length === 0 ||
-            (product?.size && Object.keys(sizeSelected).length === 0)
+            (product?.size.length !== 0 &&
+                Object.keys(sizeSelected).length === 0)
         ) {
             if (Object.keys(colorSelected).length === 0)
                 setErrors((prevState) => ({ ...prevState, color: true }));
-            if (product?.size && Object.keys(sizeSelected).length === 0)
+            if (
+                product?.size.length !== 0 &&
+                Object.keys(sizeSelected).length === 0
+            )
                 setErrors((prevState) => ({ ...prevState, size: true }));
         } else {
+            const data = sizeSelected
+                ? {
+                      member_id: user.id,
+                      product_id: product.id,
+                      color: colorSelected.url,
+                      size: sizeSelected,
+                      quantity: quantity,
+                  }
+                : {
+                      member_id: user.id,
+                      product_id: product.id,
+                      color: colorSelected.url,
+                      quantity: quantity,
+                  };
             async function addToCart() {
                 setIsLoading(true);
-                const res = await axios.post("//localhost:8000/api/carts", {
-                    member_id: user.id,
-                    product_id: product.id,
-                    color: colorSelected.url,
-                    size: sizeSelected,
-                    quantity: quantity,
-                });
+                const res = await axios.post(
+                    "//localhost:8000/api/carts",
+                    data,
+                );
                 dispatch(setCart(res.data.data));
                 setIsLoading(false);
             }
