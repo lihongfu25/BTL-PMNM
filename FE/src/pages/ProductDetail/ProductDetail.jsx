@@ -28,6 +28,7 @@ import "swiper/css/free-mode";
 import "swiper/css/navigation";
 import "swiper/css/thumbs";
 import "./productDetail.scss";
+import CreateOrderModal from "../Cart/CreateOrderModal/CreateOrderModal";
 const StyledButton = styled(MuiButton)({
     padding: 0,
     minWidth: 0,
@@ -66,6 +67,9 @@ const ProductDetail = () => {
     const [quantity, setQuantity] = React.useState(1);
     const [errors, setErrors] = React.useState({});
     const [isLoading, setIsLoading] = React.useState(false);
+    const [openCreateOrder, setOpenCreateOrder] = React.useState({
+        isOpen: false,
+    });
 
     const dispatch = useDispatch();
     const navigate = useNavigate();
@@ -109,7 +113,8 @@ const ProductDetail = () => {
     };
 
     const handleSubmitOrder = () => {
-        if (
+        if (!user.id) navigate("/login");
+        else if (
             Object.keys(colorSelected).length === 0 ||
             (product?.size.length !== 0 &&
                 Object.keys(sizeSelected).length === 0)
@@ -121,18 +126,26 @@ const ProductDetail = () => {
                 Object.keys(sizeSelected).length === 0
             )
                 setErrors((prevState) => ({ ...prevState, size: true }));
-        } else
-            console.log({
-                member_id: user.id,
-                product_id: product.id,
-                color: colorSelected.url,
-                size: sizeSelected,
-                quantity: quantity,
-                status: "wait",
-                total_price: Math.ceil(
-                    quantity * (1 - product.discount / 100) * product.price,
-                ),
+        } else {
+            setOpenCreateOrder({
+                isOpen: true,
+                data: [
+                    {
+                        member_id: user.id,
+                        product_id: product.id,
+                        color: colorSelected.url,
+                        size: sizeSelected,
+                        quantity: quantity,
+                        total_price: Math.ceil(
+                            quantity *
+                                (1 - product.discount / 100) *
+                                product.price,
+                        ),
+                        product,
+                    },
+                ],
             });
+        }
     };
 
     const handleSubmitCart = () => {
@@ -185,6 +198,12 @@ const ProductDetail = () => {
                 flexGrow: 1,
             }}
         >
+            <CreateOrderModal
+                products={openCreateOrder.data}
+                isOpen={openCreateOrder.isOpen}
+                onClose={() => setOpenCreateOrder({ isOpen: false })}
+            />
+
             <Grid
                 className='product-Info'
                 container
