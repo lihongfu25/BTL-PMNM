@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Member;
 use App\Models\Rating;
+use App\Models\OrderDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
@@ -36,7 +38,35 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        
+        $all = $request->all();
+        $cart_items = $all['cart_items'];
+
+        // remove cart_items
+        unset($all['cart_items']);
+
+        DB::beginTransaction();
+
+        try {
+            $order = Order::create($all);
+
+            foreach ($cart_items as $cart_item) {
+                $cart_item['order_id'] = $order->id;
+                OrderDetail::create($cart_item);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return response()->json([
+                'message' => 'Tạo đơn hàng thất bại!',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Tạo đơn hàng thành công!'
+        ], 201);
     }
 
     public function rating(StoreOrderRequest $request, $orderId)
