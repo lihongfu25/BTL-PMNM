@@ -53,6 +53,7 @@ Route::apiResource('/colors', ColorController::class);
 Route::apiResource('/images', ImageController::class);
 Route::apiResource('/product-sizes', ProductSizeController::class)->except('destroy');
 Route::post('/product-sizes/delete', [ProductSizeController::class, 'destroy']);
+Route::delete('/carts/delete-all', [CartController::class, 'destroyAll']);
 Route::apiResource('/carts', CartController::class);
 Route::apiResource('/orders', OrderController::class)->except('update');
 Route::get('/orders/by-member-id/{memberId}', [OrderController::class, 'get_by_memberId']);
