@@ -35,7 +35,7 @@ const EmptyCart = () => {
                 <img
                     className='empty-cart-img'
                     alt=''
-                    src='http://localhost:8000/images/empty_cart.png'
+                    src='http://13.228.71.235/images/empty_cart.png'
                 />
                 <p className='empty-cart-text'>Chưa có sản phẩm</p>
             </Box>

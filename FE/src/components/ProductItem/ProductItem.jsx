@@ -78,7 +78,7 @@ const ProductItem = ({ product }) => {
                 <img
                     className='product-img'
                     alt=''
-                    src={"http://localhost:8000/" + product.image}
+                    src={"http://13.228.71.235/" + product.image}
                 />
             </Box>
             <Box

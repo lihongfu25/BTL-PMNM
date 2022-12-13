@@ -22,7 +22,7 @@ const RatingItem = ({ data }) => {
                 >
                     <img
                         alt=''
-                        src={"http://localhost:8000/" + data.member.avatar}
+                        src={"http://13.228.71.235/" + data.member.avatar}
                     />
                 </Box>
                 <Box

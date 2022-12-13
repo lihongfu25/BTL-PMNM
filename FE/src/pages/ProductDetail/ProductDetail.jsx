@@ -224,7 +224,7 @@ const ProductDetail = () => {
                                 <SwiperSlide key={img.id}>
                                     <img
                                         alt=''
-                                        src={"http://localhost:8000/" + img.url}
+                                        src={"http://13.228.71.235/" + img.url}
                                         style={{
                                             width: "100%",
                                         }}
@@ -258,7 +258,7 @@ const ProductDetail = () => {
                                       <img
                                           alt=''
                                           src={
-                                              "http://localhost:8000/" + img.url
+                                              "http://13.228.71.235/" + img.url
                                           }
                                       />
                                   </SwiperSlide>

@@ -207,7 +207,7 @@ const ManagerLayout = ({ children }) => {
                         justifyContent: "flex-end",
                     }}
                 >
-                    <Avatar alt='' src={`//localhost:8000/${user.avatar}`} />
+                    <Avatar alt='' src={`//13.228.71.235/${user.avatar}`} />
                     <Typography
                         sx={{
                             ml: "1.2rem",

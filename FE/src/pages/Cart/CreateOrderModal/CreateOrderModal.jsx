@@ -270,7 +270,7 @@ export default function CreateOrderModal({
                                                             styles.orderDetailColor
                                                         }
                                                         style={{
-                                                            backgroundImage: `url(http://localhost:8000/${orderDetail?.color})`,
+                                                            backgroundImage: `url(http://13.228.71.235/${orderDetail?.color})`,
                                                         }}
                                                     ></span>
                                                 </td>

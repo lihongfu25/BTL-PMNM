@@ -83,7 +83,7 @@ const Home = () => {
                                 <img
                                     className='swiper-slide-img'
                                     alt=''
-                                    src={"http://localhost:8000/" + img.image}
+                                    src={"http://13.228.71.235/" + img.image}
                                 />
                             </SwiperSlide>
                         ))
