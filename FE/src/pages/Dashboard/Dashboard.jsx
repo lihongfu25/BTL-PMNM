@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { Box, Grid, Skeleton } from "@mui/material";
 import {
     Chart as ChartJS,
@@ -69,12 +68,12 @@ const Dashboard = () => {
         async function getData() {
             setIsLoading(true);
             const res = await Promise.all([
-                axios.get(`//localhost:8000/api/dashboard/sold`),
-                axios.get(`//localhost:8000/api/dashboard/category`),
-                axios.get(`//localhost:8000/api/dashboard/revenue`),
-                axios.get(`//localhost:8000/api/dashboard/order`),
-                axios.get(`//localhost:8000/api/dashboard/contact`),
-                axios.get(`//localhost:8000/api/dashboard/member`),
+                axiosClient.get(`/dashboard/sold`),
+                axiosClient.get(`/dashboard/category`),
+                axiosClient.get(`/dashboard/revenue`),
+                axiosClient.get(`/dashboard/order`),
+                axiosClient.get(`/dashboard/contact`),
+                axiosClient.get(`/dashboard/member`),
             ]);
 
             setSolds(res[0].data);
