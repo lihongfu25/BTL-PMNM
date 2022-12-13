@@ -1,17 +1,18 @@
 import React from "react";
-import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import { Box, FormControlLabel, Checkbox, Typography } from "@mui/material";
 
+import axiosClient from "../../api/axiosClient";
 import { Button } from "../../components/Button";
 import { Loading } from "../../components/Loading";
 import { TextField } from "../../components/TextField";
 import { setToken } from "../../redux/store/tokenSlice";
 import { userUpdateProfile } from "../../redux/store/userSlice";
 import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
+import { setCart } from "../../pages/Cart/cartSlice";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 const StyledTextField = styled(TextField)({
     width: "100%",
@@ -32,7 +33,7 @@ const Login = () => {
             if (userRole !== "r2") {
                 dispatch(managerChangeTab("dashboard"));
                 navigate("/manager/dashboard");
-            } else navigate("/");
+            } else navigate(-1);
         }
     }, [isLogin, userRole, navigate, dispatch]);
     const {
@@ -46,16 +47,14 @@ const Login = () => {
         async function login() {
             setIsLoading(true);
             try {
-                const res = await axios.post(
-                    `//localhost:8000/api/members/login`,
-                    {
-                        ...data,
-                    },
-                );
+                const res = await axiosClient.post(`/members/login`, {
+                    ...data,
+                });
                 localStorage.setItem(
                     "authTokens",
                     JSON.stringify(res.data.access_token),
                 );
+                dispatch(setCart(res.data.cart));
                 dispatch(
                     setToken({
                         isLogin: true,

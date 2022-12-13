@@ -1,26 +1,63 @@
 import React from "react";
-import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { Link, useNavigate } from "react-router-dom";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { useForm, Controller } from "react-hook-form";
 import { Box } from "@mui/material";
 
+import axiosClient from "../../api/axiosClient";
 import { Button } from "../../components/Button";
+import { Loading } from "../../components/Loading";
 import { TextField } from "../../components/TextField";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 
 const ForgotPassword = () => {
     document.title = "Quên mật khẩu | 360 Store";
+    const isLogin = useSelector((state) => state.token.isLogin);
     const [sended, setSended] = React.useState(false);
     const [notExist, setNotExist] = React.useState(false);
+    const [isLoading, setIsLoading] = React.useState(false);
+
+    const navigate = useNavigate();
+
     const {
         control,
         handleSubmit,
         formState: { errors },
     } = useForm();
+
+    React.useEffect(() => {
+        if (isLogin) navigate("/");
+    }, [isLogin, navigate]);
+
+    const randomPass = () => {
+        let chars =
+            "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let passwordLength = 12;
+        let password = "";
+        for (var i = 0; i <= passwordLength; i++) {
+            var randomNumber = Math.floor(Math.random() * chars.length);
+            password += chars.substring(randomNumber, randomNumber + 1);
+        }
+        return password;
+    };
     const onSubmit = (data) => {
-        console.log(data);
-        // setSended(true);
-        setNotExist(true);
+        async function reset() {
+            setIsLoading(true);
+            try {
+                await axiosClient.post(`/members/forgot-password`, {
+                    email: data.email,
+                    password: randomPass(),
+                });
+                setSended(true);
+                setNotExist(false);
+            } catch (err) {
+                setNotExist(true);
+                console.log(err);
+            }
+            setIsLoading(false);
+        }
+        reset();
     };
     const handleBackLoginForm = () => {
         setSended(false);
@@ -42,7 +79,7 @@ const ForgotPassword = () => {
             onSubmit={handleSubmit(onSubmit)}
         >
             <Link
-                to='/auth/login'
+                to='/login'
                 className='navLink-Icon navLink textColor linkNoneUnderline'
                 onClick={handleBackLoginForm}
             >
@@ -60,9 +97,8 @@ const ForgotPassword = () => {
                     {sended
                         ? "Kiểm tra Email của bạn và đặt lại mật khẩu."
                         : notExist
-                        ? `Không tìm thấy tài khoản liên kết với email đã nhập`
-                        : "Nhập Email của bạn và hướng dẫn sẽ được gửi cho bạn!"}
-                    {}
+                        ? `Không tìm thấy tài khoản nào liên kết với email đã nhập!`
+                        : "Nhập Email của bạn và chúng tôi sẽ cấp lại mật khẩu mới cho bạn!"}
                 </p>
             </Box>
             <Controller
@@ -96,7 +132,7 @@ const ForgotPassword = () => {
                     mt: "1rem",
                 }}
             >
-                Tiếp theo
+                {isLoading ? <Loading /> : "Tiếp theo"}
             </Button>
         </Box>
     );

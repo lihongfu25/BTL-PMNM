@@ -1,11 +1,11 @@
 import React from "react";
-import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import { Box, FormControlLabel, Checkbox } from "@mui/material";
 
+import axiosClient from "../../api/axiosClient";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
 import { Loading } from "../../components/Loading";
@@ -20,6 +20,8 @@ const StyledTextField = styled(TextField)({
 });
 const Register = () => {
     document.title = "Đăng ký | 360 Store";
+    const [searchParams] = useSearchParams();
+
     const isLogin = useSelector((state) => state.token.isLogin);
     const userRole = useSelector((state) => state.user.role_id);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -28,8 +30,11 @@ const Register = () => {
         control,
         handleSubmit,
         formState: { errors },
-        setError,
-    } = useForm();
+    } = useForm({
+        defaultValues: {
+            email: searchParams.get("email"),
+        },
+    });
 
     const navigate = useNavigate();
     const dispatch = useDispatch();
@@ -46,7 +51,7 @@ const Register = () => {
         async function register() {
             setIsLoading(true);
             try {
-                const res = await axios.post("//localhost:8000/api/members", {
+                const res = await axiosClient.post("/members", {
                     ...data,
                 });
                 localStorage.setItem(
@@ -61,10 +66,7 @@ const Register = () => {
                 );
                 dispatch(userUpdateProfile(res.data.data));
             } catch (err) {
-                setError("email", {
-                    type: "validate",
-                    message: err.response.data.message,
-                });
+                console.log(err);
             }
             setIsLoading(false);
         }
@@ -85,8 +87,9 @@ const Register = () => {
             noValidate
         >
             <h6 className='heading textColor useFont-Nunito'>
-                Đăng ký thành viên
+                Thông tin thành viên
             </h6>
+
             <Controller
                 name='full_name'
                 control={control}
@@ -109,26 +112,7 @@ const Register = () => {
                     />
                 )}
             />
-            <Controller
-                name='email'
-                control={control}
-                defaultValue=''
-                rules={{
-                    required: "Vui lòng nhập trường này",
-                    pattern: {
-                        value: /^([a-z0-9_.-]+)@([\da-z.-]+).([a-z.]{2,6})$/,
-                        message: "Vui lòng nhập vào email của bạn",
-                    },
-                }}
-                render={({ field }) => (
-                    <StyledTextField
-                        label='Email'
-                        error={Boolean(errors.email)}
-                        helperText={errors?.email ? errors.email.message : ""}
-                        {...field}
-                    />
-                )}
-            />
+
             <Controller
                 name='address'
                 control={control}
@@ -158,6 +142,10 @@ const Register = () => {
                         message: "Số điện thoại chỉ chưa số",
                     },
                     maxLength: {
+                        value: 10,
+                        message: "Có vẻ bạn đã nhập sai số điện thoại",
+                    },
+                    minLength: {
                         value: 10,
                         message: "Có vẻ bạn đã nhập sai số điện thoại",
                     },

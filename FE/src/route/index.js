@@ -3,7 +3,7 @@ import { HeaderFooterLayout } from "../layout/HeaderFooterLayout";
 import { AccountLayout } from "../layout/AccountLayout";
 import { ManagerLayout } from "../layout/ManagerLayout";
 import { Login } from "../screen/Login";
-import { Register } from "../screen/Register";
+import { Register, VerifyEmail } from "../screen/Register";
 import { ForgotPassword } from "../screen/ForgotPassword";
 
 import {
@@ -35,6 +35,14 @@ export const routes = [
     },
     {
         path: "/register",
+        element: (
+            <LoginLogoutLayout>
+                <VerifyEmail />
+            </LoginLogoutLayout>
+        ),
+    },
+    {
+        path: "/register/create-infor",
         element: (
             <LoginLogoutLayout>
                 <Register />
