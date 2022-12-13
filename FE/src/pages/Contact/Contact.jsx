@@ -1,9 +1,9 @@
 import React from "react";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { useForm } from "react-hook-form";
 import { Box, Typography, Snackbar } from "@mui/material";
 
+import axiosClient from "../../api/axiosClient";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import contactUs from "../../assets/img/contact_us.jpg";
@@ -30,7 +30,7 @@ const Contact = () => {
         async function sendContact() {
             setIsLoading(true);
             try {
-                const res = await axios.post("//localhost:8000/api/contacts", {
+                const res = await axiosClient.post("/contacts", {
                     ...data,
                 });
                 if (res.status === 201) {

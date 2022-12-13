@@ -12,10 +12,11 @@ import {
     DialogTitle,
     Snackbar,
 } from "@mui/material";
+
+import axiosClient from "../../api/axiosClient";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
 import { userUpdateProfile } from "../../redux/store/userSlice";
-import axios from "axios";
 const StyledBox = styled(Box)({
     display: "grid",
     gap: "1.5rem",
@@ -74,7 +75,7 @@ const Profile = () => {
             };
             reader.readAsDataURL(image);
         } else {
-            setPreview(`//localhost:8000/${user.avatar}`);
+            setPreview(`http://13.228.71.235/${user.avatar}`);
         }
     }, [image, user]);
     const handleCloseSnackbar = (e, reason) => {
@@ -102,8 +103,8 @@ const Profile = () => {
                     formData.append(item, data[item]);
                 });
                 if (data.image) formData.append("image", data.image);
-                const res = await axios.post(
-                    `//localhost:8000/api/members/${user.id}`,
+                const res = await axiosClient.post(
+                    `/members/${user.id}`,
                     formData,
                 );
                 setSnackbar({
@@ -124,8 +125,8 @@ const Profile = () => {
     const onChangePass = (data) => {
         async function updatePassword() {
             try {
-                const res = await axios.post(
-                    `//localhost:8000/api/members/password/${user.id}`,
+                const res = await axiosClient.post(
+                    `/members/password/${user.id}`,
                     {
                         ...data,
                     },
@@ -264,25 +265,11 @@ const Profile = () => {
                                     placeholder='Mật khẩu cũ'
                                     {...register2("old_password", {
                                         required: true,
-                                        pattern:
-                                            /^(?=.*[a-zA-Z])(?=.*[@$!%*#?&])(?=.*[0-9])[A-Za-z0-9@$!%*#?&]{8,}$/,
-                                        minLength: 8,
                                     })}
                                 />
                                 {errors2.old_password?.type === "required" && (
                                     <span className='form-message'>
                                         Vui lòng nhập vào mật khẩu cũ
-                                    </span>
-                                )}
-                                {errors2.old_password?.type === "pattern" && (
-                                    <span className='form-message'>
-                                        Mật khẩu phải bao gồm chữ cái, chữ số và
-                                        ký tự đặc biệt
-                                    </span>
-                                )}
-                                {errors2.old_password?.type === "minLength" && (
-                                    <span className='form-message'>
-                                        Mật khẩu phải có tối thiểu 8 ký tự
                                     </span>
                                 )}
                                 {errors2.old_password?.type === "validate" && (
