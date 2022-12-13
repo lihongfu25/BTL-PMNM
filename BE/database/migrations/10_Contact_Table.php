@@ -20,6 +20,7 @@ return new class extends Migration
             $table->string("phone");
             $table->text("content");
             $table->boolean("is_feedback")->default(false);
+            $table->timestamps();
 
             $table->unsignedBigInteger('member_id')->nullable()->default(null);
             $table->foreign('member_id')->references('id')->on('members')->onDelete('set null');

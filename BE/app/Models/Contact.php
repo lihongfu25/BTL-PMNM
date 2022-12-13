@@ -15,7 +15,6 @@ class Contact extends Model
         'content',
         'member_id'
     ];
-    public $timestamps = false;
 
     public function member()
     {
