@@ -101,4 +101,13 @@ class CartController extends Controller
             'message' => "Xóa thành công!",
         ], 200);
     }
+
+    public function destroyAll()
+    {
+        Cart::where("member_id", request()->member_id)->delete();
+
+        return response()->json([
+            'message' => "Xóa thành công!",
+        ], 200);
+    }
 }

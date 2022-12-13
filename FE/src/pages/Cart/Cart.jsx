@@ -1,11 +1,13 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import { Box, Typography } from "@mui/material";
 import { Button } from "../../components/Button";
 import { CartItem } from "./CartItem";
 import { currencyFormat } from "../../styles/GlobalStyles";
 import EmptyCart from "./EmptyCart";
+import CreateOrderModal from "./CreateOrderModal/CreateOrderModal";
+import { setCart as setCartStore } from "../Cart/cartSlice";
 
 const StyledTypography = styled(Typography)({
     fontWeight: 700,
@@ -23,6 +25,8 @@ const StyledButton = styled(Button)({
 });
 
 const Cart = () => {
+    const dispatch = useDispatch();
+    const [openCreateOrder, setOpenCreateOrder] = React.useState(false);
     document.title = "Giỏ hàng | 360 Store";
     const carts = useSelector((state) => state.cart.carts);
     return (
@@ -153,7 +157,15 @@ const Cart = () => {
                                 )}
                             </span>
                         </Typography>
-                        <StyledButton>Đặt hàng</StyledButton>
+                        <StyledButton onClick={() => setOpenCreateOrder(true)}>
+                            Đặt hàng
+                        </StyledButton>
+                        <CreateOrderModal
+                            products={carts}
+                            isOpen={openCreateOrder}
+                            onClose={() => setOpenCreateOrder(false)}
+                            updateCartsRedux={() => dispatch(setCartStore([]))}
+                        />
                     </Box>
                 </>
             )}

@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import {
     Box,
@@ -9,6 +8,7 @@ import {
     LinearProgress,
 } from "@mui/material";
 
+import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
 import { Select } from "../../components/Select";
 import { TextField } from "../../components/TextField";
@@ -58,8 +58,8 @@ const OrderManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axios(
-                `//localhost:8000/api/orders?keyword=${debounceSearch}&status=${filterStatus}&page=${page}`,
+            const res = await axiosClient.get(
+                `/orders?keyword=${debounceSearch}&status=${filterStatus}&page=${page}`,
             );
             setData(res.data.data.data);
             setPage(res.data.data.current_page);

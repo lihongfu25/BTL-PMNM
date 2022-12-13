@@ -26,8 +26,6 @@ class Member extends Model
         'password'
     ];
     
-    public $timestamps = false;
-
     public function role()
     {
         return $this->belongsTo(Role::class, 'role_id', 'role_id');

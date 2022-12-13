@@ -40,7 +40,7 @@ const formatDateTime = (datetime) => {
         "/" +
         ("0" + m.getUTCDate()).slice(-2) +
         " " +
-        ("0" + m.getUTCHours()).slice(-2) +
+        ("0" + (m.getUTCHours() + 7)).slice(-2) +
         ":" +
         ("0" + m.getUTCMinutes()).slice(-2) +
         ":" +

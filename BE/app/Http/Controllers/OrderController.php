@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use App\Models\Member;
 use App\Models\Rating;
+use App\Models\Product;
+use App\Models\OrderDetail;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Requests\StoreOrderRequest;
 use App\Http\Requests\UpdateOrderRequest;
@@ -36,7 +39,35 @@ class OrderController extends Controller
      */
     public function store(StoreOrderRequest $request)
     {
-        
+        $all = $request->all();
+        $cart_items = $all['cart_items'];
+
+        // remove cart_items
+        unset($all['cart_items']);
+
+        DB::beginTransaction();
+
+        try {
+            $order = Order::create($all);
+
+            foreach ($cart_items as $cart_item) {
+                $cart_item['order_id'] = $order->id;
+                OrderDetail::create($cart_item);
+            }
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return response()->json([
+                'message' => 'Tạo đơn hàng thất bại!',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        DB::commit();
+
+        return response()->json([
+            'message' => 'Tạo đơn hàng thành công!'
+        ], 201);
     }
 
     public function rating(StoreOrderRequest $request, $orderId)
@@ -107,9 +138,32 @@ class OrderController extends Controller
 
         if (!$orderFind)
             return response()->json(['message' => 'Không tìm thấy đơn hàng cần sửa!'], 404);
+
+        DB::beginTransaction();
+
+        try {
+            if ($request->status === 'prepare') {
+            $products = DB::table('orders')->join('order_details', 'orders.id', '=', 'order_details.order_id')
+                        ->join('products', 'products.id', '=', 'order_details.product_id')->selectRaw('products.id, order_details.quantity as dash')
+                        ->where('orders.id', $orderFind->id)->get();
         
-        $orderFind->status = $request->status;
-        $orderFind->save();
+            foreach($products as $product) {
+                $productFind = Product::where('id', $product->id)->first();
+                $productFind->quantity = $productFind->quantity - $product->dash;
+                $productFind->save();
+            }
+            $orderFind->status = $request->status;
+        }
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return response()->json([
+                'message' => 'Cập nhật thất bại!',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+        
+        DB::commit();
 
         if ($request->status === 'wait')
             return response()->json([

@@ -1,18 +1,9 @@
 .infor {
-    display: flex;
     box-sizing: border-box;
+
     .container {
-        width: 50%;
-        padding: 2rem;
-        min-height: 40rem;
         border-radius: 0.4rem;
         background-color: #fff;
-    }
-    & > div:nth-of-type(1) {
-        margin-right: 2rem;
-    }
-    & > div:nth-of-type(2) {
-        margin-left: 2rem;
     }
 
     .group {
@@ -22,12 +13,14 @@
         overflow-wrap: break-word;
         .label {
             margin-bottom: 0.4rem;
-            font-size: 1.8rem;
+            font-size: 1.5rem;
+            color: black;
+            font-weight: 500;
         }
         .text {
             margin: 0;
             color: #666;
-            font-size: 1.6rem;
+            font-size: 1.7rem;
             &::-webkit-scrollbar {
                 display: none;
             }
