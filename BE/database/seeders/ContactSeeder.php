@@ -24,6 +24,7 @@ class ContactSeeder extends Seeder
                     'content' => 'I need helppppppp',
                     'is_feedback' => true,
                     'member_id' => null,
+                    'created_at' => '2022-10-12'
                 ],
                 [
                     'full_name' => 'Lê Hồng Phú',
@@ -32,6 +33,7 @@ class ContactSeeder extends Seeder
                     'content' => 'Can diu hép me',
                     'is_feedback' => false,
                     'member_id' => 2,
+                    'created_at' => '2022-12-10'
                 ],
                 [
                     'full_name' => 'Nguyễn Văn B',
@@ -40,6 +42,7 @@ class ContactSeeder extends Seeder
                     'content' => 'I need helppppppp',
                     'is_feedback' => false,
                     'member_id' => null,
+                    'created_at' => '2022-12-01'
                 ],
                 [
                     'full_name' => 'Nguyễn Văn C',
@@ -48,6 +51,7 @@ class ContactSeeder extends Seeder
                     'content' => 'I need helppppppp',
                     'is_feedback' => false,
                     'member_id' => null,
+                    'created_at' => '2022-12-05'
                 ],
             ]
         );

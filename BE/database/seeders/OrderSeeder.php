@@ -66,6 +66,20 @@ class OrderSeeder extends Seeder
                     'note' => null,
                     'is_rated' => false,
                     'created_at' => '2022-09-19'
+                ],
+                [
+                    'member_id' => 2,
+                    'status' => 'wait',
+                    'note' => null,
+                    'is_rated' => false,
+                    'created_at' => '2022-12-12'
+                ],
+                [
+                    'member_id' => 4,
+                    'status' => 'wait',
+                    'note' => null,
+                    'is_rated' => false,
+                    'created_at' => '2022-12-12'
                 ]
             ]
         );
