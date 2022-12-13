@@ -99,7 +99,7 @@ const CartItem = ({ value }) => {
                     <img
                         alt=''
                         src={
-                            "http://localhost:8000/" + cart.product.image[0].url
+                            "http://13.228.71.235/" + cart.product.image[0].url
                         }
                     />
                 </Box>
@@ -135,7 +135,7 @@ const CartItem = ({ value }) => {
                                 border: "1px solid #fff",
                                 backgroundPosition: "center",
                                 boxShadow: "#333f48 0 0 0 1px",
-                                backgroundImage: `url(http://localhost:8000/${cart.color})`,
+                                backgroundImage: `url(http://13.228.71.235/${cart.color})`,
                             },
                         },
                     }}

@@ -14,7 +14,7 @@ const PickColor = ({ colors, value, setValue, isError }) => {
                         }`}
                         onClick={() => setValue(color)}
                         style={{
-                            backgroundImage: `url(http://localhost:8000/${color.url})`,
+                            backgroundImage: `url(http://13.228.71.235/${color.url})`,
                         }}
                     ></span>
                 ))}

@@ -146,7 +146,7 @@ const ContactManager = () => {
         setValue2("category_id", row.category_id);
         setValue2("status", row.status);
         setPreview(
-            "http://localhost:8000/" +
+            "http://13.228.71.235/" +
                 data.filter((carousel) => carousel.id === row.id)[0].image,
         );
     };

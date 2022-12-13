@@ -64,13 +64,13 @@ const ProductDetail = () => {
             setImages(
                 res[2].data.data.image.map((img) => ({
                     ...img,
-                    url: "http://localhost:8000/" + img.url,
+                    url: "http://13.228.71.235/" + img.url,
                 })),
             );
             setColors(
                 res[2].data.data.color.map((cr) => ({
                     ...cr,
-                    url: "http://localhost:8000/" + cr.url,
+                    url: "http://13.228.71.235/" + cr.url,
                 })),
             );
         }

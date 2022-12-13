@@ -177,7 +177,7 @@ const Header = () => {
                     }}
                 >
                     <img
-                        src={`//localhost:8000/${user.avatar}`}
+                        src={`http://13.228.71.235/${user.avatar}`}
                         alt='user'
                         style={{
                             width: "3.2rem",
