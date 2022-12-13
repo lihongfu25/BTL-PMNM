@@ -15,6 +15,7 @@ use App\Http\Controllers\ImageController;
 use App\Http\Controllers\ProductSizeController;
 use App\Http\Controllers\CartController;
 use App\Http\Controllers\OrderController;
+use App\Http\Controllers\DashboardController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,6 +32,13 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::get('/dashboard/sold', [DashboardController::class, 'statistical_sold']);
+Route::get('/dashboard/category', [DashboardController::class, 'statistical_category']);
+Route::get('/dashboard/revenue', [DashboardController::class, 'statistical_revenue']);
+Route::get('/dashboard/order', [DashboardController::class, 'statistical_order']);
+Route::get('/dashboard/contact', [DashboardController::class, 'statistical_contact']);
+Route::get('/dashboard/member', [DashboardController::class, 'statistical_member']);
+Route::get('/dashboard/product-sold', [DashboardController::class, 'statistical_product_sold']);
 Route::apiResource('/roles', RoleController::class);
 Route::apiResource('/categories', CategoryController::class);
 Route::apiResource('/carousels', CarouselController::class)->except('update');
