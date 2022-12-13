@@ -1,153 +1,10 @@
 import React from "react";
+import { useSelector } from "react-redux";
 import { Box } from "@mui/material";
+
+import axiosClient from "../../api/axiosClient";
 import NoOrders from "./NoOrders";
 import { PurchaseOrder } from "./PurchaseOrder";
-const datas = [
-    {
-        id: "1",
-        status: "wait",
-        products: [
-            {
-                id: "1",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-            {
-                id: "2",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-        ],
-    },
-    {
-        id: "2",
-        status: "delivering",
-        products: [
-            {
-                id: "1",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-            {
-                id: "2",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-        ],
-    },
-    {
-        id: "3",
-        status: "wait",
-        products: [
-            {
-                id: "1",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-            {
-                id: "2",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-        ],
-    },
-    {
-        id: "4",
-        status: "wait",
-        products: [
-            {
-                id: "1",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-            {
-                id: "2",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-        ],
-    },
-    {
-        id: "5",
-        status: "prepare",
-        products: [
-            {
-                id: "1",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-            {
-                id: "2",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-        ],
-    },
-    {
-        id: "5",
-        status: "delivered",
-        products: [
-            {
-                id: "1",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-            {
-                id: "2",
-                name: "Sản phẩm 1",
-                size: "L",
-                color: "red",
-                quantity: 1,
-                price: 123456,
-                img: "https://bizweb.dktcdn.net/thumb/large/100/415/697/products/ed27fa4d-1f51-4593-9f94-a7f2c15e162c-fd991ced-c148-42e8-86b9-a89e92f5d39b.jpg?v=1660306346000",
-            },
-        ],
-    },
-];
 const tabs = [
     {
         value: "wait",
@@ -172,7 +29,20 @@ const tabs = [
 ];
 const Purchase = () => {
     document.title = "Đơn mua | 360 Store";
+    const user = useSelector((state) => state.user);
     const [currentTab, setCurrentTab] = React.useState("wait");
+    const [data, setData] = React.useState();
+    const [callApi, setCallApi] = React.useState(Math.random());
+
+    React.useEffect(() => {
+        async function getData() {
+            const res = await axiosClient.get(
+                `/orders/by-member-id/${user.id}?status=${currentTab}`,
+            );
+            setData(res.data.data);
+        }
+        getData();
+    }, [currentTab, user, callApi]);
 
     const handleChangeTab = (e) => {
         setCurrentTab(e.target.getAttribute("value"));
@@ -245,13 +115,18 @@ const Purchase = () => {
                 ))}
                 <div className='line'></div>
             </Box>
-            {datas.filter((data) => data.status === currentTab).length === 0 ? (
-                <NoOrders />
-            ) : (
-                datas
-                    .filter((data) => data.status === currentTab)
-                    .map((data) => <PurchaseOrder value={data} key={data.id} />)
-            )}
+            {data &&
+                (data.length === 0 ? (
+                    <NoOrders />
+                ) : (
+                    data.map((order) => (
+                        <PurchaseOrder
+                            reCall={setCallApi}
+                            value={order}
+                            key={order.id}
+                        />
+                    ))
+                ))}
         </Box>
     );
 };

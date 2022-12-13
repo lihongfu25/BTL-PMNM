@@ -27,7 +27,10 @@ const PurchaseItem = ({ value }) => {
                     },
                 }}
             >
-                <img alt='' src={value.img} />
+                <img
+                    alt=''
+                    src={"http://13.228.71.235/" + value.product.image[0].url}
+                />
                 <Box
                     sx={{
                         ml: "1.2rem",
@@ -52,18 +55,19 @@ const PurchaseItem = ({ value }) => {
                                 height: "1.4rem",
                                 border: "1px solid #ccc",
                                 borderRadius: "50%",
-                                backgroundColor: `${value.color}`,
+                                backgroundImage: `url(http://13.228.71.235/${value.color})`,
                             },
                         },
                     }}
                 >
-                    <h3>{value.name}</h3>
+                    <h3>{value.product.name}</h3>
                     <p>
-                        Size {value.size} / Màu <span></span>
+                        {value.size && <>Size {value.size} /</>} Màu{" "}
+                        <span></span>
                     </p>
                     <p>x{value.quantity}</p>
                 </Box>
-                <p>{currencyFormat(value.price * value.quantity)}</p>
+                <p>{currencyFormat(value.total_price)}</p>
             </Box>
             <Divider
                 sx={{

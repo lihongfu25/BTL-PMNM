@@ -9,8 +9,12 @@ import {
     DialogContent,
     DialogActions,
     Rating,
+    Snackbar,
 } from "@mui/material";
+
+import axiosClient from "../../../api/axiosClient";
 import { PurchaseItem } from "../PurchaseItem";
+import { Alert } from "../../../components/Alert";
 import { Button } from "../../../components/Button";
 import { TextField } from "../../../components/TextField";
 import { currencyFormat } from "../../../styles/GlobalStyles";
@@ -27,10 +31,16 @@ const StyledDialog = styled(Dialog)({
         fontSize: "1.6rem",
     },
 });
-const PurchaseOrder = ({ value }) => {
+const PurchaseOrder = ({ value, reCall }) => {
     const [openRequestCancel, setOpenRequestCancel] = React.useState(false);
     const [openRatingForm, setOpenRatingForm] = React.useState(false);
     const [isReceived, setIsReceived] = React.useState(false);
+    const [cancelRC, setCancelRC] = React.useState(false);
+    const [snackbar, setSnackbar] = React.useState({
+        isOpen: false,
+        type: "",
+        message: "",
+    });
     const {
         control,
         handleSubmit,
@@ -38,6 +48,12 @@ const PurchaseOrder = ({ value }) => {
         clearErrors,
         setValue,
     } = useForm();
+    const handleCloseSnackbar = (e, reason) => {
+        if (reason === "clickaway") {
+            return;
+        }
+        setSnackbar((prev) => ({ ...prev, isOpen: false }));
+    };
     const handleOpenRequestCancel = () => {
         setOpenRequestCancel(true);
         setValue("reason", "");
@@ -56,20 +72,96 @@ const PurchaseOrder = ({ value }) => {
         clearErrors();
     };
     const onRequestCancel = (data) => {
-        setOpenRequestCancel(false);
-        console.log({ id: value.id, ...data });
+        async function requestCancel() {
+            try {
+                const res = await axiosClient.post(
+                    `/orders/request-cancel/${value.id}`,
+                    {
+                        status: "request cancel",
+                        reason: data.reason,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                reCall(Math.random());
+                setOpenRequestCancel(false);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        requestCancel();
     };
     const onSendRating = (data) => {
-        setOpenRatingForm(false);
-        console.log({ id: value.id, ...data });
+        async function sendRating() {
+            try {
+                const res = await axiosClient.post(
+                    `/orders/rating/${value.id}`,
+                    {
+                        ...data,
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setOpenRatingForm(false);
+                reCall(Math.random());
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        sendRating();
     };
     const onReceived = () => {
-        console.log(value.id);
-        setIsReceived(false);
+        async function received() {
+            try {
+                const res = await axiosClient.post(
+                    `/orders/status/${value.id}`,
+                    {
+                        status: "delivered",
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                setIsReceived(false);
+                reCall(Math.random());
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        received();
+    };
+    const onCancelRequestCancel = () => {
+        async function cancelRC() {
+            try {
+                const res = await axiosClient.post(
+                    `/orders/status/${value.id}`,
+                    {
+                        status: "wait",
+                    },
+                );
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+                reCall(Math.random());
+                setCancelRC(false);
+            } catch (err) {
+                console.log(err);
+            }
+        }
+        cancelRC();
     };
     return (
         <Box
-            key={value.id}
             sx={{
                 mt: "1.6rem",
                 width: "100%",
@@ -78,8 +170,8 @@ const PurchaseOrder = ({ value }) => {
                 boxShadow: "0 0 2rem #e5e5e5",
             }}
         >
-            {value.products.map((product) => (
-                <PurchaseItem value={product} key={product.id} />
+            {value.order_detail.map((detail, index) => (
+                <PurchaseItem value={detail} key={index} />
             ))}
             <Typography
                 sx={{
@@ -99,8 +191,8 @@ const PurchaseOrder = ({ value }) => {
                 Tổng số tiền:{" "}
                 <span>
                     {currencyFormat(
-                        value.products.reduce(
-                            (total, product) => total + product.price,
+                        value.order_detail.reduce(
+                            (total, detail) => total + detail.total_price,
                             0,
                         ),
                     )}
@@ -117,9 +209,27 @@ const PurchaseOrder = ({ value }) => {
                 {value.status === "wait" && (
                     <StyledButton
                         variant='text'
+                        sx={{
+                            "&.buttonText": {
+                                color: "#ee4f2f",
+                            },
+                        }}
                         onClick={handleOpenRequestCancel}
                     >
                         Hủy
+                    </StyledButton>
+                )}
+                {value.status === "request cancel" && (
+                    <StyledButton
+                        variant='text'
+                        sx={{
+                            "&.buttonText": {
+                                color: "#ee4f2f",
+                            },
+                        }}
+                        onClick={() => setCancelRC(true)}
+                    >
+                        Chờ xác nhận hủy
                     </StyledButton>
                 )}
                 {value.status === "delivering" && (
@@ -127,14 +237,14 @@ const PurchaseOrder = ({ value }) => {
                         Đã nhận được hàng
                     </StyledButton>
                 )}
-                {value.status === "delivered" && (
+                {value.status === "delivered" && !value.is_rated && (
                     <StyledButton onClick={handleOpenRatingForm}>
                         Đánh giá
                     </StyledButton>
                 )}
             </Box>
             <StyledDialog
-                className='del-form'
+                className='form'
                 open={isReceived}
                 onClose={() => setIsReceived(false)}
                 sx={{
@@ -153,8 +263,8 @@ const PurchaseOrder = ({ value }) => {
                     <p className='mess'>
                         Xác nhận đã nhận được hàng và thanh toán{" "}
                         {currencyFormat(
-                            value.products.reduce(
-                                (total, product) => total + product.price,
+                            value.order_detail.reduce(
+                                (total, detail) => total + detail.total_price,
                                 0,
                             ),
                         )}{" "}
@@ -168,6 +278,43 @@ const PurchaseOrder = ({ value }) => {
                     <StyledButton
                         variant='text'
                         onClick={() => setIsReceived(false)}
+                    >
+                        Hủy
+                    </StyledButton>
+                </DialogActions>
+            </StyledDialog>
+            <StyledDialog
+                className='form'
+                open={cancelRC}
+                onClose={() => setCancelRC(false)}
+                sx={{
+                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                        maxWidth: "40rem",
+                    },
+                    "& .mess": {
+                        m: 0,
+                        fontSize: "1.6rem",
+                        textAlign: "center",
+                    },
+                }}
+            >
+                <DialogTitle>Hủy yêu cầu hủy đơn hàng</DialogTitle>
+                <DialogContent>
+                    <p className='mess'>
+                        Xác nhận hủy yêu cầu hủy đơn hàng có mã{" "}
+                        <strong>{value.id}</strong> ?
+                    </p>
+                </DialogContent>
+                <DialogActions>
+                    <StyledButton
+                        variant='text'
+                        onClick={onCancelRequestCancel}
+                    >
+                        Đồng ý
+                    </StyledButton>
+                    <StyledButton
+                        variant='text'
+                        onClick={() => setCancelRC(false)}
                     >
                         Hủy
                     </StyledButton>
@@ -317,6 +464,22 @@ const PurchaseOrder = ({ value }) => {
                     </DialogActions>
                 </Box>
             </StyledDialog>
+            <Snackbar
+                open={snackbar.isOpen}
+                autoHideDuration={5000}
+                onClose={handleCloseSnackbar}
+            >
+                <Alert
+                    onClose={handleCloseSnackbar}
+                    severity={snackbar.type}
+                    sx={{
+                        width: "100%",
+                        fontSize: "1.6rem",
+                    }}
+                >
+                    {snackbar.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };
