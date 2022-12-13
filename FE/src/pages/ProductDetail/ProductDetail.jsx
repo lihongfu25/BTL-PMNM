@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper";
@@ -16,6 +15,7 @@ import {
 import { BsDash, BsPlus, BsCheck2 } from "react-icons/bs";
 import { FaCartPlus } from "react-icons/fa";
 
+import axiosClient from "../../api/axiosClient";
 import { PickSize } from "./PickSize";
 import { PickColor } from "./PickColor";
 import { RatingItem } from "./RatingItem";
@@ -78,8 +78,8 @@ const ProductDetail = () => {
         async function getProduct() {
             try {
                 const res = await Promise.all([
-                    axios.get(`//localhost:8000/api/products/get-limit/rating`),
-                    axios.get(`//localhost:8000/api/products/${productId}`),
+                    axiosClient.get(`/products/get-limit/rating`),
+                    axiosClient.get(`/products/${productId}`),
                 ]);
                 setRelateds(res[0].data.data);
                 setProduct(res[1].data.data);
@@ -179,10 +179,7 @@ const ProductDetail = () => {
                   };
             async function addToCart() {
                 setIsLoading(true);
-                const res = await axios.post(
-                    "//localhost:8000/api/carts",
-                    data,
-                );
+                const res = await axiosClient.post("/carts", data);
                 dispatch(setCart(res.data.data));
                 setIsLoading(false);
             }

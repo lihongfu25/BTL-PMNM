@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { useLocation, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
@@ -23,6 +22,8 @@ import {
     Snackbar,
     LinearProgress,
 } from "@mui/material";
+
+import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
@@ -75,10 +76,10 @@ const ProductManager = () => {
         async function getData() {
             setIsLoading(true);
             const res = await Promise.all([
-                axios.get(`//localhost:8000/api/categories/all`),
-                axios.get("//localhost:8000/api/sizes"),
-                axios.get(
-                    `//localhost:8000/api/products?keyword=${debounceSearch}&page=${page}`,
+                axiosClient.get(`/categories/all`),
+                axiosClient.get("/sizes"),
+                axiosClient.get(
+                    `/products?keyword=${debounceSearch}&page=${page}`,
                 ),
             ]);
             setCategories(res[0].data.data);
@@ -150,10 +151,7 @@ const ProductManager = () => {
                     Array.from(data.size).forEach((value) =>
                         formData.append("size[]", value),
                     );
-                const res = await axios.post(
-                    `//localhost:8000/api/products`,
-                    formData,
-                );
+                const res = await axiosClient.post(`/products`, formData);
                 setOpenAddForm(false);
                 setSnackbar({
                     isOpen: true,

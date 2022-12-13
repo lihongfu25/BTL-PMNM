@@ -1,10 +1,10 @@
 import React from "react";
-import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import { BsDash, BsPlus } from "react-icons/bs";
 import { Box, Button as MuiButton, Typography } from "@mui/material";
 
+import axiosClient from "../../../api/axiosClient";
 import { Button } from "../../../components/Button";
 import { currencyFormat } from "../../../styles/GlobalStyles";
 import {
@@ -41,8 +41,8 @@ const CartItem = ({ value }) => {
 
     const handleDelete = () => {
         async function delCart() {
-            const res = await axios.delete(
-                `//localhost:8000/api/carts/${cart.id}?member_id=${userId}`,
+            const res = await axiosClient.delete(
+                `/carts/${cart.id}?member_id=${userId}`,
             );
             dispatch(setCartStore(res.data.data));
         }
@@ -53,10 +53,9 @@ const CartItem = ({ value }) => {
         setQuantity((prevState) => prevState + 1);
         dispatch(cartIncreaseQuantity(cart.id));
         async function increase() {
-            const res = await axios.put(
-                `//localhost:8000/api/carts/${cart.id}`,
-                { quantity: quantity + 1 },
-            );
+            const res = await axiosClient.put(`/carts/${cart.id}`, {
+                quantity: quantity + 1,
+            });
             setCart(res.data.data);
         }
         increase();
@@ -66,10 +65,9 @@ const CartItem = ({ value }) => {
         setQuantity((prevState) => prevState - 1);
         dispatch(cartReducedQuantity(cart.id));
         async function reduced() {
-            const res = await axios.put(
-                `//localhost:8000/api/carts/${cart.id}`,
-                { quantity: quantity - 1 },
-            );
+            const res = await axiosClient.put(`/carts/${cart.id}`, {
+                quantity: quantity - 1,
+            });
             setCart(res.data.data);
         }
         reduced();

@@ -1,7 +1,7 @@
 import React from "react";
-import axios from "axios";
 import { useSelector, useDispatch } from "react-redux";
 import { useRoutes, useLocation, useNavigate } from "react-router-dom";
+import axiosClient from "./api/axiosClient";
 import { routes } from "./route";
 import { userUpdateProfile } from "./redux/store/userSlice";
 import { setCart } from "./pages/Cart/cartSlice";
@@ -13,18 +13,16 @@ function App() {
     const { pathname } = useLocation();
     React.useEffect(() => {
         const getUser = async () => {
-            axios
-                .get("//localhost:8000/api/user", {
+            axiosClient
+                .get("/user", {
                     headers: {
                         Authorization: "Bearer " + token.authToken,
                     },
                 })
                 .then((res) => {
                     dispatch(userUpdateProfile(res.data));
-                    axios
-                        .get(
-                            `//localhost:8000/api/carts?member_id=${res.data.id}`,
-                        )
+                    axiosClient
+                        .get(`/carts?member_id=${res.data.id}`)
                         .then((res) => dispatch(setCart(res.data.data)));
                 })
                 .catch((err) => {

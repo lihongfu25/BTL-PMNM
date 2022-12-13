@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { styled } from "@mui/material/styles";
 import {
     Box,
@@ -13,6 +12,8 @@ import {
     Snackbar,
     LinearProgress,
 } from "@mui/material";
+
+import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
@@ -60,8 +61,8 @@ const CarouselManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axios.get(
-                `//localhost:8000/api/contacts?keyword=${debounceSearch}&page=${page}`,
+            const res = await axiosClient.get(
+                `/contacts?keyword=${debounceSearch}&page=${page}`,
             );
             setData(res.data.data.data);
             setPage(res.data.data.current_page);
@@ -91,12 +92,9 @@ const CarouselManager = () => {
         async function sendMail() {
             setBtnLoading(true);
             try {
-                const res = await axios.put(
-                    `//localhost:8000/api/contacts/${feedbackId}`,
-                    {
-                        is_feedback: true,
-                    },
-                );
+                const res = await axiosClient.put(`/contacts/${feedbackId}`, {
+                    is_feedback: true,
+                });
                 setOpenFeedbackForm(false);
                 setSnackbar({
                     isOpen: true,

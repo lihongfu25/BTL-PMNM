@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { Controller, useForm } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import {
@@ -14,6 +13,7 @@ import {
     Snackbar,
     LinearProgress,
 } from "@mui/material";
+import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
 import { TextField } from "../../components/TextField";
@@ -96,9 +96,9 @@ const ContactManager = () => {
         async function getData() {
             setIsLoading(true);
             const res = await Promise.all([
-                axios.get(`//localhost:8000/api/categories/all`),
-                axios.get(
-                    `//localhost:8000/api/carousels?keyword=${debounceSearch}&page=${page}`,
+                axiosClient.get(`/categories/all`),
+                axiosClient.get(
+                    `/carousels?keyword=${debounceSearch}&page=${page}`,
                 ),
             ]);
             setCategories(res[0].data.data);
@@ -172,9 +172,7 @@ const ContactManager = () => {
         setOpenDelForm(false);
         async function delCategory() {
             try {
-                const res = await axios.delete(
-                    `//localhost:8000/api/carousels/${delId}`,
-                );
+                const res = await axiosClient.delete(`/carousels/${delId}`);
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -204,10 +202,7 @@ const ContactManager = () => {
                     formData.append(item, data[item]);
                 });
                 if (data.image) formData.append("image", data.image);
-                const res = await axios.post(
-                    `//localhost:8000/api/carousels`,
-                    formData,
-                );
+                const res = await axiosClient.post(`/carousels`, formData);
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -230,8 +225,8 @@ const ContactManager = () => {
                     formData.append(item, data[item]);
                 });
                 if (data.image) formData.append("image", data.image);
-                const res = await axios.post(
-                    `//localhost:8000/api/carousels/${updateId}`,
+                const res = await axiosClient.post(
+                    `/carousels/${updateId}`,
                     formData,
                 );
                 setSnackbar({

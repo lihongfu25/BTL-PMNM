@@ -14,12 +14,12 @@ import {
 } from "@mui/material";
 import { BsArrowLeftShort } from "react-icons/bs";
 
+import axiosClient from "../../api/axiosClient";
 import { Alert } from "../../components/Alert";
 import styles from "./orderDetail.module.scss";
 import "../../styles/DataTable/dataTable.scss";
 import { currencyFormat, formatDateTime } from "../../styles/GlobalStyles";
 import { TextField } from "../../components/TextField";
-import axios from "axios";
 const columns = [
     { field: "id", headerName: "Mã sản phẩm", width: 100 },
     { field: "name", headerName: "Tên sản phẩm", width: 200 },
@@ -55,7 +55,7 @@ const OrderDetail = () => {
     } = useForm();
     React.useEffect(() => {
         async function getData() {
-            const res = await axios.get(`//localhost:8000/api/orders/${id}`);
+            const res = await axiosClient.get(`/orders/${id}`);
             setData(res.data.data);
         }
         getData();
@@ -78,8 +78,8 @@ const OrderDetail = () => {
         const newStatus = data.status === "wait" ? "prepare" : "delivering";
         async function updateStatus() {
             try {
-                const res = await axios.post(
-                    `//localhost:8000/api/orders/status/${data.id}`,
+                const res = await axiosClient.post(
+                    `/orders/status/${data.id}`,
                     {
                         status: newStatus,
                     },
@@ -103,8 +103,8 @@ const OrderDetail = () => {
     const onCancel = (value) => {
         async function cancel() {
             try {
-                const res = await axios.post(
-                    `//localhost:8000/api/orders/cancel/${data.id}`,
+                const res = await axiosClient.post(
+                    `/orders/cancel/${data.id}`,
                     {
                         reason: value.reason,
                     },

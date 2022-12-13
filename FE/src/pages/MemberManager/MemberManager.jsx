@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
 import {
@@ -14,6 +13,8 @@ import {
     Snackbar,
     LinearProgress,
 } from "@mui/material";
+
+import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
 import { Alert } from "../../components/Alert";
@@ -61,10 +62,10 @@ const MemberManager = () => {
         async function getData() {
             setIsLoading(true);
             const res = await Promise.all([
-                axios.get(
-                    `//localhost:8000/api/members?keyword=${debounceSearch}&page=${page}`,
+                axiosClient.get(
+                    `/members?keyword=${debounceSearch}&page=${page}`,
                 ),
-                axios.get(`//localhost:8000/api/roles`),
+                axiosClient.get(`/roles`),
             ]);
             setRoles(res[1].data.data);
             setData(res[0].data.data.data);
@@ -94,8 +95,8 @@ const MemberManager = () => {
     const handleUpdateRole = () => {
         async function updateRole() {
             try {
-                const res = await axios.post(
-                    `//localhost:8000/api/members/role/${memberInfor.id}`,
+                const res = await axiosClient.post(
+                    `/members/role/${memberInfor.id}`,
                     {
                         role_id: memberInfor.role_id,
                     },
@@ -121,8 +122,8 @@ const MemberManager = () => {
     const handleDeleteMember = () => {
         async function deleteMember() {
             try {
-                const res = await axios.delete(
-                    `//localhost:8000/api/members/${memberInfor.id}?user_role=${user.role_id}`,
+                const res = await axiosClient.delete(
+                    `/members/${memberInfor.id}?user_role=${user.role_id}`,
                 );
                 setSnackbar({
                     isOpen: true,

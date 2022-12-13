@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
@@ -16,6 +15,7 @@ import {
 } from "@mui/material";
 import { NumericFormat } from "react-number-format";
 import { BsCaretDownFill } from "react-icons/bs";
+import axiosClient from "../../api/axiosClient";
 import { ProductItem } from "../../components/ProductItem";
 import { Input } from "../../components/Input";
 const StyledFormControlLable = styled(FormControlLabel)({
@@ -70,17 +70,14 @@ const Search = ({ title }) => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axios.post(
-                `//localhost:8000/api/products/get-by-keyword`,
-                {
-                    keyword: searchParams.get("keyword"),
-                    order_by: sorting,
-                    category: filterCategory,
-                    min_price: filterPrice.min,
-                    max_price: filterPrice.max,
-                    page: page,
-                },
-            );
+            const res = await axiosClient.post(`/products/get-by-keyword`, {
+                keyword: searchParams.get("keyword"),
+                order_by: sorting,
+                category: filterCategory,
+                min_price: filterPrice.min,
+                max_price: filterPrice.max,
+                page: page,
+            });
             setData(res.data.data.data);
             setPage(res.data.current_page);
             setTotalPage(res.data.data.last_page);

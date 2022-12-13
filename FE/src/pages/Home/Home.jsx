@@ -1,8 +1,9 @@
 import React from "react";
-import axios from "axios";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { Autoplay, Pagination } from "swiper";
 import { Box, Skeleton, Stack } from "@mui/material";
+
+import axiosClient from "../../api/axiosClient";
 import { Recommend } from "../../components/Recommend";
 import "swiper/css";
 import "swiper/css/pagination";
@@ -19,10 +20,10 @@ const Home = () => {
         async function getData() {
             setIsLoading(true);
             const res = await Promise.all([
-                axios.get(`//localhost:8000/api/carousels/all`),
-                axios.get(`//localhost:8000/api/products/get-limit/ctime`),
-                axios.get(`//localhost:8000/api/products/get-limit/rating`),
-                axios.get(`//localhost:8000/api/products/get-limit/discount`),
+                axiosClient.get(`/carousels/all`),
+                axiosClient.get(`/products/get-limit/ctime`),
+                axiosClient.get(`/products/get-limit/rating`),
+                axiosClient.get(`/products/get-limit/discount`),
             ]);
             setSlides(res[0].data.data);
             setCtimes(res[1].data.data);

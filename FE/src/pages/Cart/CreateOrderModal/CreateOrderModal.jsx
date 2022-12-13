@@ -1,3 +1,4 @@
+import React from "react";
 import {
     Box,
     Dialog,
@@ -6,14 +7,13 @@ import {
     Divider,
     Radio,
     Snackbar,
+    FormControlLabel,
 } from "@mui/material";
-import FormControlLabel from "@mui/material/FormControlLabel";
 import RadioGroup, { useRadioGroup } from "@mui/material/RadioGroup";
 import { styled } from "@mui/material/styles";
-import axios from "axios";
-import React from "react";
 import { useSelector } from "react-redux";
 
+import axiosClient from "../../../api/axiosClient";
 import { Button } from "../../../components/Button";
 import { currencyFormat } from "../../../styles/GlobalStyles";
 import styles from "./createOrderModal.module.scss";
@@ -98,11 +98,9 @@ export default function CreateOrderModal({
                 })),
             };
 
-            const res = await axios.post(`//localhost:8000/api/orders`, body);
+            const res = await axiosClient.post(`/orders`, body);
 
-            axios.delete(
-                `//localhost:8000/api/carts/delete-all?member_id=${user.id}`,
-            );
+            axiosClient.delete(`/carts/delete-all?member_id=${user.id}`);
 
             setSnackbar({
                 isOpen: true,

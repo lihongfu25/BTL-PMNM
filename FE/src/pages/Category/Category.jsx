@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useParams } from "react-router-dom";
 import { Autoplay, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -12,8 +11,9 @@ import {
     Skeleton,
     Stack,
 } from "@mui/material";
-
 import { BsCaretDownFill } from "react-icons/bs";
+
+import axiosClient from "../../api/axiosClient";
 import { ProductItem } from "../../components/ProductItem";
 
 import "swiper/css";
@@ -54,9 +54,7 @@ const Category = () => {
         setSorting("Liên Quan");
         async function getSlides() {
             setLoadSlides(true);
-            const res = await axios.get(
-                `//localhost:8000/api/carousels/${slug}`,
-            );
+            const res = await axiosClient.get(`/carousels/${slug}`);
             setSlides(res.data.data);
             setLoadSlides(false);
         }
@@ -66,14 +64,11 @@ const Category = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axios.post(
-                `//localhost:8000/api/products/get-by-category`,
-                {
-                    category: slug,
-                    order_by: sorting,
-                    page: page,
-                },
-            );
+            const res = await axiosClient.post(`/products/get-by-category`, {
+                category: slug,
+                order_by: sorting,
+                page: page,
+            });
             setIsLoading(false);
             setData(res.data.data.data);
             setPage(res.data.data.current_page);

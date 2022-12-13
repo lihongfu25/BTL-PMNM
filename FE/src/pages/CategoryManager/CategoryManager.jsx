@@ -1,5 +1,4 @@
 import React from "react";
-import axios from "axios";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import {
@@ -14,6 +13,8 @@ import {
     Snackbar,
     LinearProgress,
 } from "@mui/material";
+
+import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
@@ -81,8 +82,8 @@ const CategoryManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axios.get(
-                `//localhost:8000/api/categories?keyword=${debounceSearch}&page=${page}`,
+            const res = await axiosClient.get(
+                `/categories?keyword=${debounceSearch}&page=${page}`,
             );
             setData(res.data.data.data);
             setPage(res.data.data.current_page);
@@ -127,9 +128,7 @@ const CategoryManager = () => {
     const onDel = () => {
         async function delCategory() {
             try {
-                const res = await axios.delete(
-                    `//localhost:8000/api/categories/${delId}`,
-                );
+                const res = await axiosClient.delete(`/categories/${delId}`);
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -154,12 +153,9 @@ const CategoryManager = () => {
         async function updateCategory() {
             setOpenUpdateForm(false);
             try {
-                const res = await axios.put(
-                    `//localhost:8000/api/categories/${updateId}`,
-                    {
-                        ...data,
-                    },
-                );
+                const res = await axiosClient.put(`/categories/${updateId}`, {
+                    ...data,
+                });
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -179,12 +175,9 @@ const CategoryManager = () => {
     const onAdd = (data) => {
         async function createCategory() {
             try {
-                const res = await axios.post(
-                    `//localhost:8000/api/categories`,
-                    {
-                        ...data,
-                    },
-                );
+                const res = await axiosClient.post(`/categories`, {
+                    ...data,
+                });
                 setSnackbar({
                     isOpen: true,
                     type: "success",

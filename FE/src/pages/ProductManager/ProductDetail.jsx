@@ -1,6 +1,5 @@
 import React from "react";
 import clsx from "clsx";
-import axios from "axios";
 import { v4 as uuid } from "uuid";
 import { useForm } from "react-hook-form";
 import { useParams, Link, useNavigate } from "react-router-dom";
@@ -18,6 +17,7 @@ import {
 import { FaTimes } from "react-icons/fa";
 import { BsPlusLg, BsArrowLeftShort } from "react-icons/bs";
 
+import axiosClient from "../../api/axiosClient";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
 import styles from "./productDetail.module.scss";
@@ -53,9 +53,9 @@ const ProductDetail = () => {
     React.useEffect(() => {
         async function getData() {
             const res = await Promise.all([
-                axios.get(`//localhost:8000/api/sizes`),
-                axios.get(`//localhost:8000/api/categories/all`),
-                axios.get(`//localhost:8000/api/products/${id}`),
+                axiosClient.get(`/sizes`),
+                axiosClient.get(`/categories/all`),
+                axiosClient.get(`/products/${id}`),
             ]);
             setAllSize(res[0].data.data);
             setCategories(res[1].data.data);
@@ -92,7 +92,7 @@ const ProductDetail = () => {
                     const formData = new FormData();
                     formData.append("url", colorImg);
                     formData.append("product_id", product.id);
-                    axios.post("//localhost:8000/api/colors", formData);
+                    axiosClient.post("/colors", formData);
                     setCallApi(Math.random());
                 } catch (err) {
                     console.log(err);
@@ -114,7 +114,7 @@ const ProductDetail = () => {
                     const formData = new FormData();
                     formData.append("url", colorImg);
                     formData.append("product_id", product.id);
-                    axios.post("//localhost:8000/api/images", formData);
+                    axiosClient.post("/images", formData);
                     setCallApi(Math.random());
                 } catch (err) {
                     console.log(err);
@@ -145,9 +145,7 @@ const ProductDetail = () => {
     const handleDeleteProduct = (id) => {
         async function delProduct() {
             try {
-                await axios.delete(
-                    `//localhost:8000/api/products/${product.id}`,
-                );
+                await axiosClient.delete(`/products/${product.id}`);
                 setOpenDelForm(false);
                 navigate("/manager/products");
             } catch (err) {
@@ -165,7 +163,7 @@ const ProductDetail = () => {
         setColors((prevState) => prevState.filter((color) => color.id !== id));
         async function delColor() {
             try {
-                await axios.delete(`//localhost:8000/api/colors/${id}`);
+                await axiosClient.delete(`/colors/${id}`);
             } catch (err) {
                 console.log(err);
             }
@@ -181,13 +179,10 @@ const ProductDetail = () => {
                 ) {
                     async function delProductColor() {
                         try {
-                            await axios.post(
-                                `//localhost:8000/api/product-sizes/delete`,
-                                {
-                                    product_id: product.id,
-                                    size_id: value.id,
-                                },
-                            );
+                            await axiosClient.post(`/product-sizes/delete`, {
+                                product_id: product.id,
+                                size_id: value.id,
+                            });
                         } catch (err) {
                             console.log(err);
                         }
@@ -199,13 +194,10 @@ const ProductDetail = () => {
                 } else {
                     async function addProductColor() {
                         try {
-                            await axios.post(
-                                `//localhost:8000/api/product-sizes`,
-                                {
-                                    product_id: product.id,
-                                    size_id: value.id,
-                                },
-                            );
+                            await axiosClient.post(`/product-sizes`, {
+                                product_id: product.id,
+                                size_id: value.id,
+                            });
                         } catch (err) {
                             console.log(err);
                         }
@@ -222,7 +214,7 @@ const ProductDetail = () => {
         setImages((prevState) => prevState.filter((image) => image.id !== id));
         async function delProductImg() {
             try {
-                await axios.delete(`//localhost:8000/api/images/${id}`);
+                await axiosClient.delete(`/images/${id}`);
             } catch (err) {
                 console.log(err);
             }
@@ -233,12 +225,9 @@ const ProductDetail = () => {
     const onSubmit = (data) => {
         async function updateProduct() {
             try {
-                const res = await axios.put(
-                    `//localhost:8000/api/products/${product.id}`,
-                    {
-                        ...data,
-                    },
-                );
+                const res = await axiosClient.put(`/products/${product.id}`, {
+                    ...data,
+                });
                 setIsEdit(false);
                 setSnackbar({
                     isOpen: true,
