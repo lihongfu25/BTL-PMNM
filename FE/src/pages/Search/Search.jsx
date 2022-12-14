@@ -474,12 +474,46 @@ const Search = ({ title }) => {
                                         }}
                                     />
                                 </Stack>
-                            ) : (
+                            ) : data.length !== 0 ? (
                                 data.map((product) => (
                                     <Grid xs={2} sm={3} key={product.id} item>
                                         <ProductItem product={product} />
                                     </Grid>
                                 ))
+                            ) : (
+                                <Grid item xs={12}>
+                                    <Box
+                                        sx={{
+                                            p: "2rem",
+                                            mt: "2rem",
+                                            width: "100%",
+                                            minHeight: "40rem",
+                                            display: "flex",
+                                            alignItems: "center",
+                                            flexDirection: "column",
+                                            borderRadius: "0.4rem",
+                                            boxSizing: "border-box",
+                                            "& .empty-img": {
+                                                mt: "5rem",
+                                                width: "48rem",
+                                                height: "23rem",
+                                            },
+                                            "& .empty-text": {
+                                                color: "#495057",
+                                                fontSize: "2rem",
+                                            },
+                                        }}
+                                    >
+                                        <img
+                                            className='empty-img'
+                                            alt=''
+                                            src='http://13.228.71.235/images/empty_cart.png'
+                                        />
+                                        <p className='empty-text'>
+                                            Không tìm thấy sản phẩm phù hợp
+                                        </p>
+                                    </Box>
+                                </Grid>
                             )}
                         </Grid>
                         <Box
