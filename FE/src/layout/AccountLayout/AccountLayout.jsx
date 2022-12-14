@@ -42,7 +42,7 @@ const AccountLayout = ({ children }) => {
                         },
                     }}
                 >
-                    <img src={`htpp://13.228.71.235/${user.avatar}`} alt='' />
+                    <img src={`http://13.228.71.235/${user.avatar}`} alt='' />
                     <Typography className='useFont-Nunito'>
                         {user.name}
                     </Typography>
