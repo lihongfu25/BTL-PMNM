@@ -1,5 +1,5 @@
 import React from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { Link, useNavigate } from "react-router-dom";
 import { BsArrowLeftShort } from "react-icons/bs";
 import { useForm, Controller } from "react-hook-form";
@@ -10,15 +10,27 @@ import { Button } from "../../components/Button";
 import { Loading } from "../../components/Loading";
 import { TextField } from "../../components/TextField";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
+import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
 
 const ForgotPassword = () => {
     document.title = "Quên mật khẩu | 360 Store";
     const isLogin = useSelector((state) => state.token.isLogin);
+    const userRole = useSelector((state) => state.user.role_id);
     const [sended, setSended] = React.useState(false);
     const [notExist, setNotExist] = React.useState(false);
     const [isLoading, setIsLoading] = React.useState(false);
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        if (isLogin) {
+            if (userRole !== "r2") {
+                dispatch(managerChangeTab("dashboard"));
+                navigate("/manager/dashboard");
+            } else navigate("/");
+        }
+    }, [isLogin, userRole, navigate, dispatch]);
 
     const {
         control,

@@ -1,6 +1,6 @@
 import React from "react";
-import { useSelector, useDispatch } from "react-redux";
-import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { Link, useSearchParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import { Box, FormControlLabel, Checkbox } from "@mui/material";
@@ -11,7 +11,6 @@ import { TextField } from "../../components/TextField";
 import { Loading } from "../../components/Loading";
 import { setToken } from "../../redux/store/tokenSlice";
 import { userUpdateProfile } from "../../redux/store/userSlice";
-import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
 import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 
 const StyledTextField = styled(TextField)({
@@ -21,9 +20,6 @@ const StyledTextField = styled(TextField)({
 const Register = () => {
     document.title = "Đăng ký | 360 Store";
     const [searchParams] = useSearchParams();
-
-    const isLogin = useSelector((state) => state.token.isLogin);
-    const userRole = useSelector((state) => state.user.role_id);
     const [isLoading, setIsLoading] = React.useState(false);
 
     const {
@@ -36,17 +32,8 @@ const Register = () => {
         },
     });
 
-    const navigate = useNavigate();
     const dispatch = useDispatch();
 
-    React.useEffect(() => {
-        if (isLogin) {
-            if (userRole !== "r2") {
-                dispatch(managerChangeTab("dashboard"));
-                navigate("/manager/dashboard");
-            } else navigate("/");
-        }
-    }, [isLogin, userRole, navigate, dispatch]);
     const onSubmit = (data) => {
         async function register() {
             setIsLoading(true);

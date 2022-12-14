@@ -1,4 +1,5 @@
 import React from "react";
+import { useSelector, useDispatch } from "react-redux";
 import { useForm, Controller } from "react-hook-form";
 import { Link, useNavigate, createSearchParams } from "react-router-dom";
 
@@ -9,17 +10,30 @@ import axiosClient from "../../api/axiosClient";
 import { Button } from "../../components/Button";
 import { Loading } from "../../components/Loading";
 import { TextField } from "../../components/TextField";
+import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
 
 const StyledTextField = styled(TextField)({
     width: "100%",
     margin: "1rem 0",
 });
 const VerifyEmail = () => {
+    const isLogin = useSelector((state) => state.token.isLogin);
+    const userRole = useSelector((state) => state.user.role_id);
     const [isSendCode, setIsSendCode] = React.useState(false);
     const [verifyCode, setVerifyCode] = React.useState();
     const [isLoading, setIsLoading] = React.useState(false);
 
     const navigate = useNavigate();
+    const dispatch = useDispatch();
+
+    React.useEffect(() => {
+        if (isLogin) {
+            if (userRole !== "r2") {
+                dispatch(managerChangeTab("dashboard"));
+                navigate("/manager/dashboard");
+            } else navigate("/");
+        }
+    }, [isLogin, userRole, navigate, dispatch]);
 
     const {
         control: control2,
