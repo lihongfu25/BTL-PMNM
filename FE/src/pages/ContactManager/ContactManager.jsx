@@ -33,10 +33,10 @@ const StyledButton = styled(Button)({
     padding: "0.2rem 1.2rem",
 });
 const StyledDialog = styled(Dialog)({
-    "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root": {
+    "& .MuiTypography-root.MuiDialogTitle-root": {
         fontSize: "2rem",
     },
-    "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root": {
+    "& .MuiTypography-root.MuiDialogContentText-root": {
         fontSize: "1.6rem",
     },
 });
@@ -263,7 +263,7 @@ const CarouselManager = () => {
                 open={openFeedbackForm}
                 onClose={handleCloseFeedbackForm}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         width: "50rem",
                     },
                     "& .mess": {

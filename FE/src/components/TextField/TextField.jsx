@@ -2,9 +2,11 @@ import React from "react";
 import { styled } from "@mui/material/styles";
 import { TextField as MUI } from "@mui/material";
 const StyledTextField = styled(MUI)({
+    "& .MuiFormLabel-root:not(.MuiInputLabel-shrink)": {
+        transform: "translate(1.4rem, 0.8rem)",
+    },
     "& .MuiFormLabel-root": {
         fontSize: "1.6rem",
-        transform: "translate(1.4rem, 0.8rem)",
     },
     "& .css-14lo706": {
         fontSize: "1.2rem",

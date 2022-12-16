@@ -324,14 +324,14 @@ const OrderDetail = () => {
                     open={cancelForm}
                     onClose={handleCloseCancelForm}
                     sx={{
-                        "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                        "& .MuiPaper-root": {
                             width: "40rem",
                         },
-                        "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root":
+                        "& .MuiTypography-root.MuiDialogTitle-root":
                             {
                                 fontSize: "2rem",
                             },
-                        "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root":
+                        "& .MuiTypography-root.MuiDialogContentText-root":
                             {
                                 fontSize: "1.6rem",
                             },

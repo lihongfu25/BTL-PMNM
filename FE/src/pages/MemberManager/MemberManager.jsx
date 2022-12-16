@@ -292,16 +292,15 @@ const MemberManager = () => {
                 open={openDetail}
                 onClose={handleCloseDetail}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         width: "50rem",
                     },
-                    "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root": {
+                    "& .MuiTypography-root.MuiDialogTitle-root": {
                         fontSize: "2rem",
                     },
-                    "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root":
-                        {
-                            fontSize: "1.6rem",
-                        },
+                    "& .MuiTypography-root.MuiDialogContentText-root": {
+                        fontSize: "1.6rem",
+                    },
                 }}
             >
                 <DialogTitle>Thông tin thành viên</DialogTitle>
@@ -391,7 +390,7 @@ const MemberManager = () => {
                 open={openDelForm}
                 onClose={() => setOpenDelForm(false)}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         maxWidth: "40rem",
                     },
                     "& .mess": {

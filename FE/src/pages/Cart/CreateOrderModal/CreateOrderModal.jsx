@@ -21,13 +21,13 @@ import styles from "./createOrderModal.module.scss";
 import { Alert } from "../../../components/Alert";
 
 const StyledDialog = styled(Dialog)({
-    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+    "& .MuiPaper-root": {
         maxWidth: "unset",
     },
-    "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root": {
+    "& .MuiTypography-root.MuiDialogTitle-root": {
         fontSize: "2rem",
     },
-    "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root": {
+    "& .MuiTypography-root.MuiDialogContentText-root": {
         fontSize: "1.6rem",
     },
 });
@@ -135,7 +135,7 @@ export default function CreateOrderModal({
                 open={isOpen}
                 onClose={onClose}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         width: "100rem",
                         overflow: "hidden",
                     },

@@ -43,10 +43,10 @@ const StyledButton = styled(Button)({
     padding: "0.2rem 1.2rem",
 });
 const StyledDialog = styled(Dialog)({
-    "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root": {
+    "& .MuiTypography-root.MuiDialogTitle-root": {
         fontSize: "2rem",
     },
-    "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root": {
+    "& .MuiTypography-root.MuiDialogContentText-root": {
         fontSize: "1.6rem",
     },
 });
@@ -418,7 +418,7 @@ const ContactManager = () => {
                 open={openDelForm}
                 onClose={() => setOpenDelForm(false)}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         maxWidth: "40rem",
                     },
                     "& .mess": {
@@ -452,7 +452,7 @@ const ContactManager = () => {
                 open={openAddForm}
                 onClose={handleCloseAddForm}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         width: "50rem",
                     },
                 }}
@@ -608,7 +608,7 @@ const ContactManager = () => {
                 open={openUpdateForm}
                 onClose={handleCloseUpdateForm}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         width: "50rem",
                     },
                 }}

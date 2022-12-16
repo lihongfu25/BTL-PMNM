@@ -86,7 +86,6 @@ const Dashboard = () => {
         }
         getData();
     }, []);
-    console.log(solds);
     return (
         <Box
             sx={{

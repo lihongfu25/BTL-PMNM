@@ -24,10 +24,10 @@ const StyledButton = styled(Button)({
     minWidth: "12rem",
 });
 const StyledDialog = styled(Dialog)({
-    "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root": {
+    "& .MuiTypography-root.MuiDialogTitle-root": {
         fontSize: "2rem",
     },
-    "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root": {
+    "& .MuiTypography-root.MuiDialogContentText-root": {
         fontSize: "1.6rem",
     },
 });
@@ -248,7 +248,7 @@ const PurchaseOrder = ({ value, reCall }) => {
                 open={isReceived}
                 onClose={() => setIsReceived(false)}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         maxWidth: "40rem",
                     },
                     "& .mess": {
@@ -288,7 +288,7 @@ const PurchaseOrder = ({ value, reCall }) => {
                 open={cancelRC}
                 onClose={() => setCancelRC(false)}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         maxWidth: "40rem",
                     },
                     "& .mess": {
@@ -325,7 +325,7 @@ const PurchaseOrder = ({ value, reCall }) => {
                 open={openRequestCancel}
                 onClose={handleCloseRequestCancel}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         width: "40rem",
                     },
                 }}
@@ -390,7 +390,7 @@ const PurchaseOrder = ({ value, reCall }) => {
                 open={openRatingForm}
                 onClose={handleCloseRatingForm}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         width: "40rem",
                     },
                 }}
