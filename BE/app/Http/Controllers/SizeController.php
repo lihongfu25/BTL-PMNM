@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Size;
+use App\Models\ProductSize;
+use Illuminate\Support\Facades\DB;
 use App\Http\Requests\StoreSizeRequest;
 use App\Http\Requests\UpdateSizeRequest;
 
@@ -33,11 +35,28 @@ class SizeController extends Controller
         if ($unique) {
             return response()->json(['message' => "Kích cỡ đã tồn tại!"], 409);
         }
-        Size::create($request->all());
-        $size = Size::paginate(10);
+        $body['description'] = $request->description;
+        $product_size['product_id'] = $request->product_id;
+        DB::beginTransaction();
+
+        try {
+            $size = Size::create($body);
+
+            $product_size['size_id'] = $size->id;
+            ProductSize::create($product_size);
+        } catch (\Exception $e) {
+            DB::rollback();
+
+            return response()->json([
+                'message' => 'Thêm thất bại!',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+
+        DB::commit();
+        
         return response()->json([
             'message' => "Tạo mới thành công!",
-            'data' => $size
         ], 201);
     }
 

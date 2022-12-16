@@ -1,7 +1,7 @@
 import React from "react";
 import clsx from "clsx";
 import { v4 as uuid } from "uuid";
-import { useForm } from "react-hook-form";
+import { useForm, Controller } from "react-hook-form";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
 import {
@@ -20,6 +20,7 @@ import { BsPlusLg, BsArrowLeftShort } from "react-icons/bs";
 import axiosClient from "../../api/axiosClient";
 import { Alert } from "../../components/Alert";
 import { Button } from "../../components/Button";
+import { TextField } from "../../components/TextField";
 import styles from "./productDetail.module.scss";
 const StyledButton = styled(Button)({
     textTransform: "none",
@@ -31,6 +32,7 @@ const ProductDetail = () => {
     const { id } = useParams();
     const [isEdit, setIsEdit] = React.useState(false);
     const [openDelForm, setOpenDelForm] = React.useState(false);
+    const [openAddSize, setOpenAddSize] = React.useState(false);
     const [product, setProduct] = React.useState({});
     const [categories, setCategories] = React.useState([]);
     const [colors, setColors] = React.useState([]);
@@ -80,6 +82,15 @@ const ProductDetail = () => {
         register,
         handleSubmit,
         formState: { errors },
+    } = useForm();
+
+    const {
+        control,
+        handleSubmit: handleSubmit2,
+        formState: { errors: errors2 },
+        setValue,
+        clearErrors,
+        setError,
     } = useForm();
 
     document.title = product.name;
@@ -141,6 +152,15 @@ const ProductDetail = () => {
             return;
         }
         setSnackbar((prev) => ({ ...prev, isOpen: false }));
+    };
+    const handleOpenAddSize = () => {
+        setOpenAddSize(true);
+        setValue("product_id", product.id);
+        setValue("description", "");
+    };
+    const handleCloseAddSize = () => {
+        setOpenAddSize(false);
+        clearErrors();
     };
     const handleDeleteProduct = (id) => {
         async function delProduct() {
@@ -221,7 +241,26 @@ const ProductDetail = () => {
         }
         delProductImg();
     };
-
+    const onAddSize = (data) => {
+        const addSize = async () => {
+            try {
+                const res = await axiosClient.post("/sizes", {
+                    ...data,
+                });
+                setSnackbar({
+                    isOpen: true,
+                    type: "success",
+                    message: res.data.message,
+                });
+            } catch (err) {
+                setError("description", {
+                    type: "validate",
+                    message: err.response.data.message,
+                });
+            }
+        };
+        addSize();
+    };
     const onSubmit = (data) => {
         async function updateProduct() {
             try {
@@ -702,23 +741,10 @@ const ProductDetail = () => {
                                     >
                                         <button
                                             className={styles.addBtn}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                colorRef.current.click();
-                                            }}
+                                            onClick={handleOpenAddSize}
                                         >
                                             <BsPlusLg />
                                         </button>
-                                        <input
-                                            type='file'
-                                            ref={colorRef}
-                                            accept='image/*'
-                                            onChange={(e) => {
-                                                const newImg =
-                                                    e.target.files[0];
-                                                if (newImg) setColorImg(newImg);
-                                            }}
-                                        />
                                     </Box>
                                 )}
                             </ul>
@@ -785,16 +811,15 @@ const ProductDetail = () => {
                 open={openDelForm}
                 onClose={() => setOpenDelForm(false)}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         maxWidth: "40rem",
                     },
-                    "& .css-bdhsul-MuiTypography-root-MuiDialogTitle-root": {
+                    "& .MuiTypography-root.MuiDialogTitle-root": {
                         fontSize: "2rem",
                     },
-                    "& .css-qfso29-MuiTypography-root-MuiDialogContentText-root":
-                        {
-                            fontSize: "1.6rem",
-                        },
+                    "& .MuiTypography-root.MuiDialogContentText-root": {
+                        fontSize: "1.6rem",
+                    },
                     "& .mess": {
                         m: 0,
                         fontSize: "1.6rem",
@@ -820,6 +845,79 @@ const ProductDetail = () => {
                         Hủy
                     </StyledButton>
                 </DialogActions>
+            </Dialog>
+            <Dialog
+                className='add-size-form'
+                open={openAddSize}
+                onClose={handleCloseAddSize}
+                sx={{
+                    "& .MuiPaper-root": {
+                        width: "44rem",
+                    },
+                    "& .MuiTypography-root.MuiDialogTitle-root": {
+                        fontSize: "2rem",
+                    },
+                    "& .MuiTypography-root.MuiDialogContentText-root": {
+                        fontSize: "1.6rem",
+                    },
+                    "& .mess": {
+                        m: 0,
+                        fontSize: "1.6rem",
+                        textAlign: "center",
+                    },
+                }}
+            >
+                <Box
+                    component='form'
+                    onSubmit={handleSubmit2(onAddSize)}
+                    noValidate
+                >
+                    <DialogTitle>Thêm kích cỡ</DialogTitle>
+                    <DialogContent
+                        sx={{
+                            pt: "2rem!important",
+                            flexDirection: "column",
+                        }}
+                    >
+                        <Controller
+                            name='description'
+                            control={control}
+                            rules={{
+                                required: "Vui lòng nhập trường này!",
+                            }}
+                            render={({ field }) => (
+                                <TextField
+                                    label='Mô tả'
+                                    error={Boolean(errors2.description)}
+                                    helperText={
+                                        errors2?.description
+                                            ? errors2.description.message
+                                            : ""
+                                    }
+                                    {...field}
+                                    sx={{
+                                        width: "100%",
+                                    }}
+                                />
+                            )}
+                        />
+                    </DialogContent>
+                    <DialogActions
+                        sx={{
+                            px: "2.4rem",
+                        }}
+                    >
+                        <StyledButton variant='text' type='submit'>
+                            Thêm
+                        </StyledButton>
+                        <StyledButton
+                            variant='text'
+                            onClick={handleCloseAddSize}
+                        >
+                            Hủy
+                        </StyledButton>
+                    </DialogActions>
+                </Box>
             </Dialog>
             <Snackbar
                 open={snackbar.isOpen}
