@@ -186,7 +186,7 @@ const Profile = () => {
                 open={openChangePass}
                 onClose={handleCloseChangePassForm}
                 sx={{
-                    "& .css-1t1j96h-MuiPaper-root-MuiDialog-paper": {
+                    "& .MuiPaper-root": {
                         minWidth: "40rem",
                     },
                 }}

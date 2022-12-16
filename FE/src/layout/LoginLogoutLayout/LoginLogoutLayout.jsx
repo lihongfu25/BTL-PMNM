@@ -1,8 +1,15 @@
 import React from "react";
 import { Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
+
 import logo from "../../assets/img/logo.png";
 import bg from "../../assets/img/bg-loginlogout.jpg";
 const LoginLogoutLayout = ({ children }) => {
+    const navigate = useNavigate();
+    const handleGoHome = () => {
+        navigate("/");
+    };
+
     return (
         <Box
             sx={{
@@ -39,7 +46,9 @@ const LoginLogoutLayout = ({ children }) => {
                     src={logo}
                     style={{
                         width: "10rem",
+                        cursor: "pointer",
                     }}
+                    onClick={handleGoHome}
                 />
                 {children}
             </Box>

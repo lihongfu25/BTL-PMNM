@@ -160,7 +160,7 @@ const Login = () => {
                     label='Ghi nhớ mật khẩu'
                     sx={{
                         alignSelf: "flex-start",
-                        "& .css-ahj2mt-MuiTypography-root": {
+                        "& .MuiTypography-root": {
                             fontSize: "1.4rem",
                             fontFamily: "Nunito",
                         },

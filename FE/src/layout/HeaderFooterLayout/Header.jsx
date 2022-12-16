@@ -151,7 +151,7 @@ const Header = () => {
                             badgeContent={cart.length}
                             color='primary'
                             sx={{
-                                "& .css-106c1u2-MuiBadge-badge": {
+                                "& .MuiBadge-badge": {
                                     color: "#fff",
                                     fontSize: "1.2rem",
                                     backgroundColor: "#333",
