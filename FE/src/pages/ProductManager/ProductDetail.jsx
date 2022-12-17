@@ -247,6 +247,8 @@ const ProductDetail = () => {
                 const res = await axiosClient.post("/sizes", {
                     ...data,
                 });
+                setCallApi(Math.random());
+                setOpenAddSize(false);
                 setSnackbar({
                     isOpen: true,
                     type: "success",
