@@ -27,21 +27,19 @@ const Select = ({
             fullWidth
             error={isError}
             sx={{
-                "& .css-1yk1gt9-MuiInputBase-root-MuiOutlinedInput-root-MuiSelect-root.Mui-focused .MuiOutlinedInput-notchedOutline":
+                "& .MuiInputBase-root.Mui-focused .MuiOutlinedInput-notchedOutline":
                     {
                         borderColor: "#333",
                     },
-                "& .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root": {
-                    fontSize: "1.6rem",
+                "& .MuiFormLabel-root:not(.MuiInputLabel-shrink)": {
                     transform: "translate(1.2rem, 0.8rem)",
                 },
-                "& .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input":
-                    {
-                        p: "1.2rem",
-                        fontSize: "1.6rem",
-                        minHeight: "0!important",
-                    },
-                "& .css-1sumxir-MuiFormLabel-root-MuiInputLabel-root": {
+                "& .MuiSelect-select": {
+                    p: "1.2rem",
+                    fontSize: "1.6rem",
+                    minHeight: "0!important",
+                },
+                "& .MuiFormLabel-root": {
                     fontSize: "1.6rem",
                     "&.Mui-focused": {
                         color: "#333",
@@ -50,7 +48,7 @@ const Select = ({
                 "& .css-14lo706": {
                     fontSize: "1.2rem",
                 },
-                "& .css-1wc848c-MuiFormHelperText-root": {
+                "& .MuiFormHelperText-root": {
                     fontSize: "1.2rem",
                 },
                 ...props.sx,
