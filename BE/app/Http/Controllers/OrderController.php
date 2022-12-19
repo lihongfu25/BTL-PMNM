@@ -143,17 +143,17 @@ class OrderController extends Controller
 
         try {
             if ($request->status === 'prepare') {
-            $products = DB::table('orders')->join('order_details', 'orders.id', '=', 'order_details.order_id')
-                        ->join('products', 'products.id', '=', 'order_details.product_id')->selectRaw('products.id, order_details.quantity as dash')
-                        ->where('orders.id', $orderFind->id)->get();
-        
-            foreach($products as $product) {
-                $productFind = Product::where('id', $product->id)->first();
-                $productFind->quantity = $productFind->quantity - $product->dash;
-                $productFind->save();
+                $products = DB::table('orders')->join('order_details', 'orders.id', '=', 'order_details.order_id')
+                            ->join('products', 'products.id', '=', 'order_details.product_id')->selectRaw('products.id, order_details.quantity as dash')
+                            ->where('orders.id', $orderFind->id)->get();
+            
+                foreach($products as $product) {
+                    $productFind = Product::where('id', $product->id)->first();
+                    $productFind->quantity = $productFind->quantity - $product->dash;
+                    $productFind->save();
+                }
             }
             $orderFind->status = $request->status;
-        }
         } catch (\Exception $e) {
             DB::rollback();
 
