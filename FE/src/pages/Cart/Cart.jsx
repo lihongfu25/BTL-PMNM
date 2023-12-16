@@ -27,7 +27,7 @@ const StyledButton = styled(Button)({
 const Cart = () => {
     const dispatch = useDispatch();
     const [openCreateOrder, setOpenCreateOrder] = React.useState(false);
-    document.title = "Giỏ hàng | 360 Store";
+    document.title = "Giỏ hàng | Hoàn Mỹ Store";
     const carts = useSelector((state) => state.cart.carts);
     return (
         <Box
@@ -53,15 +53,14 @@ const Cart = () => {
                         },
                     }}
                 >
-                    <h3 className='textColor'>360 Store</h3>
+                    <h3 className='textColor'>Hoàn Mỹ Store</h3>
                     <Box
                         sx={{
                             mx: "3rem",
                             width: "0.4rem",
                             height: "3.6rem",
                             borderRadius: "0.4rem",
-                            backgroundImage:
-                                "linear-gradient(45deg, #485563, #29323c)",
+                            backgroundImage: "linear-gradient(45deg, #485563, #29323c)",
                         }}
                     ></Box>
                     <h3 className='textColor'>Cart</h3>
@@ -132,40 +131,13 @@ const Cart = () => {
                             }}
                         >
                             Tổng thanh toán(
-                            <span className='total-Count'>
-                                {carts.reduce(
-                                    (total, cart) => total + cart.quantity,
-                                    0,
-                                )}
-                            </span>{" "}
-                            sản phẩm):{" "}
+                            <span className='total-Count'>{carts.reduce((total, cart) => total + cart.quantity, 0)}</span> sản phẩm):{" "}
                             <span className='total-Price'>
-                                {currencyFormat(
-                                    carts.reduce(
-                                        (total, cart) =>
-                                            total +
-                                            Math.ceil(
-                                                (cart.product.price *
-                                                    (100 -
-                                                        cart.product
-                                                            .discount)) /
-                                                    100,
-                                            ) *
-                                                cart.quantity,
-                                        0,
-                                    ),
-                                )}
+                                {currencyFormat(carts.reduce((total, cart) => total + Math.ceil((cart.product.price * (100 - cart.product.discount)) / 100) * cart.quantity, 0))}
                             </span>
                         </Typography>
-                        <StyledButton onClick={() => setOpenCreateOrder(true)}>
-                            Đặt hàng
-                        </StyledButton>
-                        <CreateOrderModal
-                            products={carts}
-                            isOpen={openCreateOrder}
-                            onClose={() => setOpenCreateOrder(false)}
-                            updateCartsRedux={() => dispatch(setCartStore([]))}
-                        />
+                        <StyledButton onClick={() => setOpenCreateOrder(true)}>Đặt hàng</StyledButton>
+                        <CreateOrderModal products={carts} isOpen={openCreateOrder} onClose={() => setOpenCreateOrder(false)} updateCartsRedux={() => dispatch(setCartStore([]))} />
                     </Box>
                 </>
             )}

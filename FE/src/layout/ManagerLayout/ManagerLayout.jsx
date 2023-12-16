@@ -1,32 +1,12 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { Outlet, useNavigate, useLocation } from "react-router-dom";
-import {
-    Avatar,
-    Box,
-    Divider,
-    List,
-    ListItem,
-    ListItemButton,
-    ListItemIcon,
-    ListItemText,
-    Typography,
-} from "@mui/material";
-import {
-    BsHouseDoor,
-    BsListUl,
-    BsCart3,
-    BsEnvelope,
-    BsGrid,
-    BsPeople,
-    BsBoxSeam,
-    BsPerson,
-    BsBoxArrowLeft,
-} from "react-icons/bs";
+import { Avatar, Box, Divider, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography } from "@mui/material";
+import { BsHouseDoor, BsListUl, BsCart3, BsEnvelope, BsGrid, BsPeople, BsBoxSeam, BsPerson, BsBoxArrowLeft } from "react-icons/bs";
 import { managerChangeTab } from "./managerSlice";
 import { clearToken } from "../../redux/store/tokenSlice";
 import { userLogout } from "../../redux/store/userSlice";
-import logo from "../../assets/img/logo.png";
+import logo from "../../assets/img/logo.jpg";
 import "./manager.scss";
 import { clearCart } from "../../pages/Cart/cartSlice";
 
@@ -111,6 +91,7 @@ const ManagerLayout = ({ children }) => {
                         height: "4.4rem",
                         display: "flex",
                         alignItems: "center",
+                        justifyContent: "center",
                         boxSizing: "border-box",
                         "& > img": {
                             width: "6.4rem",
@@ -132,27 +113,14 @@ const ManagerLayout = ({ children }) => {
             >
                 <div className='heading-box'>
                     <img alt='' src={logo} />
-                    <span>Store</span>
                 </div>
                 <Divider />
                 <List>
                     {tabs.map((tab, index) => (
                         <ListItem key={index} disablePadding>
-                            <ListItemButton
-                                className={`tab ${
-                                    pathname.includes(tab.slug)
-                                        ? "currentTab"
-                                        : ""
-                                }`}
-                                onClick={() => handleChangeTab(tab.slug)}
-                            >
-                                <ListItemIcon className='tab-icon'>
-                                    {tab.icon}
-                                </ListItemIcon>
-                                <ListItemText
-                                    className='tab-text'
-                                    primary={tab.text}
-                                />
+                            <ListItemButton className={`tab ${pathname.includes(tab.slug) ? "currentTab" : ""}`} onClick={() => handleChangeTab(tab.slug)}>
+                                <ListItemIcon className='tab-icon'>{tab.icon}</ListItemIcon>
+                                <ListItemText className='tab-text' primary={tab.text} />
                             </ListItemButton>
                         </ListItem>
                     ))}
@@ -160,21 +128,11 @@ const ManagerLayout = ({ children }) => {
                 <p className='my-account'>Tài khoản của tôi</p>
                 <List>
                     <ListItem disablePadding>
-                        <ListItemButton
-                            className={`tab ${
-                                pathname.includes("/profile")
-                                    ? "currentTab"
-                                    : ""
-                            }`}
-                            onClick={() => handleChangeTab("profile")}
-                        >
+                        <ListItemButton className={`tab ${pathname.includes("/profile") ? "currentTab" : ""}`} onClick={() => handleChangeTab("profile")}>
                             <ListItemIcon className='tab-icon'>
                                 <BsPerson />
                             </ListItemIcon>
-                            <ListItemText
-                                className='tab-text'
-                                primary='Hồ sơ'
-                            />
+                            <ListItemText className='tab-text' primary='Hồ sơ' />
                         </ListItemButton>
                     </ListItem>
                     <ListItem disablePadding>
@@ -182,10 +140,7 @@ const ManagerLayout = ({ children }) => {
                             <ListItemIcon className='tab-icon'>
                                 <BsBoxArrowLeft />
                             </ListItemIcon>
-                            <ListItemText
-                                className='tab-text'
-                                primary='Đăng xuất'
-                            />
+                            <ListItemText className='tab-text' primary='Đăng xuất' />
                         </ListItemButton>
                     </ListItem>
                 </List>
@@ -207,10 +162,7 @@ const ManagerLayout = ({ children }) => {
                         justifyContent: "flex-end",
                     }}
                 >
-                    <Avatar
-                        alt=''
-                        src={`http://13.228.71.235/${user.avatar}`}
-                    />
+                    <Avatar alt='' src={`http://localhost:8000/${user.avatar}`} />
                     <Typography
                         sx={{
                             ml: "1.2rem",
@@ -243,8 +195,7 @@ const ManagerLayout = ({ children }) => {
                         backgroundColor: "#fff",
                     }}
                 >
-                    Copyright © 2022 Designed by <strong>Nhóm 9</strong>. All
-                    rights reserved.
+                    Copyright © 2022 Designed by <strong>Nhóm 9</strong>. All rights reserved.
                 </Typography>
             </Box>
         </Box>

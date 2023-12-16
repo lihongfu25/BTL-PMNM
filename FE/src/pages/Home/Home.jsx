@@ -9,7 +9,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "./slider.scss";
 const Home = () => {
-    document.title = "360 Store";
+    document.title = "Hoàn Mỹ Store";
     const [slides, setSlides] = React.useState([]);
     const [ctimes, setCtimes] = React.useState([]);
     const [ratings, setRatings] = React.useState([]);
@@ -36,10 +36,7 @@ const Home = () => {
 
     React.useEffect(() => {
         const slideImgs = document.querySelectorAll(".swiper-slide-img");
-        Array.from(slideImgs).forEach(
-            (slideImg) =>
-                (slideImg.style.height = slideImg.clientWidth * 0.4 + "px"),
-        );
+        Array.from(slideImgs).forEach((slideImg) => (slideImg.style.height = slideImg.clientWidth * 0.4 + "px"));
     });
 
     return (
@@ -80,11 +77,7 @@ const Home = () => {
                     ) : (
                         slides.map((img) => (
                             <SwiperSlide key={img.id}>
-                                <img
-                                    className='swiper-slide-img'
-                                    alt=''
-                                    src={"http://13.228.71.235/" + img.image}
-                                />
+                                <img className='swiper-slide-img' alt='' src={"http://localhost:8000/" + img.image} />
                             </SwiperSlide>
                         ))
                     )}

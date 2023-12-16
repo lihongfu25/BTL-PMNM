@@ -28,7 +28,7 @@ const tabs = [
     },
 ];
 const Purchase = () => {
-    document.title = "Đơn mua | 360 Store";
+    document.title = "Đơn mua | Hoàn Mỹ Store";
     const user = useSelector((state) => state.user);
     const [currentTab, setCurrentTab] = React.useState("wait");
     const [data, setData] = React.useState();
@@ -36,9 +36,7 @@ const Purchase = () => {
 
     React.useEffect(() => {
         async function getData() {
-            const res = await axiosClient.get(
-                `/orders/by-member-id/${user.id}?status=${currentTab}`,
-            );
+            const res = await axiosClient.get(`/orders/by-member-id/${user.id}?status=${currentTab}`);
             setData(res.data.data);
         }
         getData();
@@ -68,8 +66,7 @@ const Purchase = () => {
                     overflow: "hiden",
                     position: "relative",
                     borderRadius: "0.4rem",
-                    boxShadow:
-                        "-1rem -1rem 4rem #edeff1, 1rem 1rem 4rem #edeff1",
+                    boxShadow: "-1rem -1rem 4rem #edeff1, 1rem 1rem 4rem #edeff1",
                     "& .line": {
                         width: "20%",
                         py: "0.2rem",
@@ -77,8 +74,7 @@ const Purchase = () => {
                         position: "absolute",
                         borderRadius: "0.4rem",
                         transition: "all 0.5s ease",
-                        background:
-                            "linear-gradient(to right, #859398, #283048)",
+                        background: "linear-gradient(to right, #859398, #283048)",
                     },
                     "& .tab": {
                         m: 0,
@@ -102,31 +98,13 @@ const Purchase = () => {
                 }}
             >
                 {tabs.map((tab) => (
-                    <label
-                        value={tab.value}
-                        key={tab.value}
-                        onClick={handleChangeTab}
-                        className={
-                            tab.value === currentTab ? "tab active" : "tab"
-                        }
-                    >
+                    <label value={tab.value} key={tab.value} onClick={handleChangeTab} className={tab.value === currentTab ? "tab active" : "tab"}>
                         {tab.label}
                     </label>
                 ))}
                 <div className='line'></div>
             </Box>
-            {data &&
-                (data.length === 0 ? (
-                    <NoOrders />
-                ) : (
-                    data.map((order) => (
-                        <PurchaseOrder
-                            reCall={setCallApi}
-                            value={order}
-                            key={order.id}
-                        />
-                    ))
-                ))}
+            {data && (data.length === 0 ? <NoOrders /> : data.map((order) => <PurchaseOrder reCall={setCallApi} value={order} key={order.id} />))}
         </Box>
     );
 };

@@ -1,32 +1,13 @@
 import React from "react";
 import { Box, Grid, Skeleton } from "@mui/material";
-import {
-    Chart as ChartJS,
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-} from "chart.js";
+import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend } from "chart.js";
 import { Line, Bar } from "react-chartjs-2";
 import { RiMoneyDollarCircleLine } from "react-icons/ri";
 import { BsCart3, BsEnvelope, BsPeople } from "react-icons/bs";
 import axiosClient from "../../api/axiosClient";
 import { currencyFormat } from "../../styles/GlobalStyles";
 
-ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    BarElement,
-    Title,
-    Tooltip,
-    Legend,
-);
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 
 const optionsSold = {
     responsive: true,
@@ -55,7 +36,7 @@ const optionsCategory = {
 };
 
 const Dashboard = () => {
-    document.title = "Trang chủ | 360 Store";
+    document.title = "Trang chủ | Hoàn Mỹ Store";
     const [revenue, setRevenue] = React.useState();
     const [orderSold, setOrderSold] = React.useState();
     const [newContact, setNewContact] = React.useState();
@@ -136,9 +117,7 @@ const Dashboard = () => {
                             }}
                         >
                             <h4 className='title'>Doanh thu</h4>
-                            <p className='content'>
-                                {currencyFormat(revenue?.revenue || 0)}
-                            </p>
+                            <p className='content'>{currencyFormat(revenue?.revenue || 0)}</p>
                             <span className='icon'>
                                 <RiMoneyDollarCircleLine
                                     style={{
@@ -192,9 +171,7 @@ const Dashboard = () => {
                             }}
                         >
                             <h4 className='title'>Đơn hàng</h4>
-                            <p className='content'>
-                                {orderSold?.order_sold || 0}
-                            </p>
+                            <p className='content'>{orderSold?.order_sold || 0}</p>
                             <span className='icon'>
                                 <BsCart3
                                     style={{
@@ -248,9 +225,7 @@ const Dashboard = () => {
                             }}
                         >
                             <h4 className='title'>Liên hệ mới</h4>
-                            <p className='content'>
-                                {newContact?.contact || 0}
-                            </p>
+                            <p className='content'>{newContact?.contact || 0}</p>
                             <span className='icon'>
                                 <BsEnvelope
                                     style={{
@@ -343,27 +318,19 @@ const Dashboard = () => {
                             <Line
                                 options={optionsSold}
                                 data={{
-                                    labels: solds?.order_solds?.map(
-                                        (value) => value.month,
-                                    ),
+                                    labels: solds?.order_solds?.map((value) => value.month),
                                     datasets: [
                                         {
                                             label: "Đơn hàng",
-                                            data: solds?.order_solds?.map(
-                                                (value) => value.order_sold,
-                                            ),
+                                            data: solds?.order_solds?.map((value) => value.order_sold),
                                             borderColor: "rgb(255, 99, 132)",
-                                            backgroundColor:
-                                                "rgba(255, 99, 132, 0.5)",
+                                            backgroundColor: "rgba(255, 99, 132, 0.5)",
                                         },
                                         {
                                             label: "Sản phẩm",
-                                            data: solds?.product_solds?.map(
-                                                (value) => value.product_sold,
-                                            ),
+                                            data: solds?.product_solds?.map((value) => value.product_sold),
                                             borderColor: "rgb(53, 162, 235)",
-                                            backgroundColor:
-                                                "rgba(53, 162, 235, 0.5)",
+                                            backgroundColor: "rgba(53, 162, 235, 0.5)",
                                         },
                                     ],
                                 }}
@@ -391,40 +358,22 @@ const Dashboard = () => {
                             <Bar
                                 options={optionsCategory}
                                 data={{
-                                    labels: [
-                                        "Thống kê số sản phẩm đã bán theo danh mục",
-                                    ],
+                                    labels: ["Thống kê số sản phẩm đã bán theo danh mục"],
                                     datasets: [
                                         {
                                             label: "Nam",
-                                            data:
-                                                categories?.filter(
-                                                    (value) =>
-                                                        value.name === "Nam",
-                                                )[0]?.product_sold || 0,
-                                            backgroundColor:
-                                                "rgba(255, 99, 132, 0.2)",
+                                            data: categories?.filter((value) => value.name === "Nam")[0]?.product_sold || 0,
+                                            backgroundColor: "rgba(255, 99, 132, 0.2)",
                                         },
                                         {
                                             label: "Nữ",
-                                            data:
-                                                categories?.filter(
-                                                    (value) =>
-                                                        value.name === "Nữ",
-                                                )[0]?.product_sold || 0,
-                                            backgroundColor:
-                                                "rgba(54, 162, 235, 0.2)",
+                                            data: categories?.filter((value) => value.name === "Nữ")[0]?.product_sold || 0,
+                                            backgroundColor: "rgba(54, 162, 235, 0.2)",
                                         },
                                         {
                                             label: "Phụ Kiện",
-                                            data:
-                                                categories?.filter(
-                                                    (value) =>
-                                                        value.name ===
-                                                        "Phụ Kiện",
-                                                )[0]?.product_sold || 0,
-                                            backgroundColor:
-                                                "rgba(255, 206, 86, 0.2)",
+                                            data: categories?.filter((value) => value.name === "Phụ Kiện")[0]?.product_sold || 0,
+                                            backgroundColor: "rgba(255, 206, 86, 0.2)",
                                         },
                                     ],
                                 }}

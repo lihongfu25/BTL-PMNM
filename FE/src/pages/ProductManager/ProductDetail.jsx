@@ -4,16 +4,7 @@ import { v4 as uuid } from "uuid";
 import { useForm, Controller } from "react-hook-form";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    IconButton,
-    Typography,
-    Snackbar,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-} from "@mui/material";
+import { Box, IconButton, Typography, Snackbar, Dialog, DialogTitle, DialogContent, DialogActions } from "@mui/material";
 import { FaTimes } from "react-icons/fa";
 import { BsPlusLg, BsArrowLeftShort } from "react-icons/bs";
 
@@ -54,11 +45,7 @@ const ProductDetail = () => {
 
     React.useEffect(() => {
         async function getData() {
-            const res = await Promise.all([
-                axiosClient.get(`/sizes`),
-                axiosClient.get(`/categories/all`),
-                axiosClient.get(`/products/${id}`),
-            ]);
+            const res = await Promise.all([axiosClient.get(`/sizes`), axiosClient.get(`/categories/all`), axiosClient.get(`/products/${id}`)]);
             setAllSize(res[0].data.data);
             setCategories(res[1].data.data);
             setProduct(res[2].data.data);
@@ -66,13 +53,13 @@ const ProductDetail = () => {
             setImages(
                 res[2].data.data.image.map((img) => ({
                     ...img,
-                    url: "http://13.228.71.235/" + img.url,
+                    url: "http://localhost:8000/" + img.url,
                 })),
             );
             setColors(
                 res[2].data.data.color.map((cr) => ({
                     ...cr,
-                    url: "http://13.228.71.235/" + cr.url,
+                    url: "http://localhost:8000/" + cr.url,
                 })),
             );
         }
@@ -103,7 +90,11 @@ const ProductDetail = () => {
                     const formData = new FormData();
                     formData.append("url", colorImg);
                     formData.append("product_id", product.id);
-                    axiosClient.post("/colors", formData);
+                    axiosClient.post("/colors", formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    });
                     setCallApi(Math.random());
                 } catch (err) {
                     console.log(err);
@@ -111,10 +102,7 @@ const ProductDetail = () => {
             }
             createColor();
             reader.onloadend = () => {
-                setColors((prevState) => [
-                    ...prevState,
-                    { id: uuid(), url: reader.result },
-                ]);
+                setColors((prevState) => [...prevState, { id: uuid(), url: reader.result }]);
             };
             reader.readAsDataURL(colorImg);
         }
@@ -123,9 +111,13 @@ const ProductDetail = () => {
             async function createProductImg() {
                 try {
                     const formData = new FormData();
-                    formData.append("url", colorImg);
+                    formData.append("url", productImg);
                     formData.append("product_id", product.id);
-                    axiosClient.post("/images", formData);
+                    axiosClient.post("/images", formData, {
+                        headers: {
+                            "Content-Type": "multipart/form-data",
+                        },
+                    });
                     setCallApi(Math.random());
                 } catch (err) {
                     console.log(err);
@@ -133,10 +125,7 @@ const ProductDetail = () => {
             }
             createProductImg();
             reader.onloadend = () => {
-                setImages((prevState) => [
-                    ...prevState,
-                    { id: uuid(), url: reader.result },
-                ]);
+                setImages((prevState) => [...prevState, { id: uuid(), url: reader.result }]);
             };
             reader.readAsDataURL(productImg);
         }
@@ -193,10 +182,7 @@ const ProductDetail = () => {
     const handleToggleSize = (value) => {
         if (isEdit === true)
             setSizes((prevState) => {
-                if (
-                    prevState.filter((size) => size.size_id === value.id)
-                        .length !== 0
-                ) {
+                if (prevState.filter((size) => size.size_id === value.id).length !== 0) {
                     async function delProductColor() {
                         try {
                             await axiosClient.post(`/product-sizes/delete`, {
@@ -208,9 +194,7 @@ const ProductDetail = () => {
                         }
                     }
                     delProductColor();
-                    return prevState.filter(
-                        (size) => size.size_id !== value.id,
-                    );
+                    return prevState.filter((size) => size.size_id !== value.id);
                 } else {
                     async function addProductColor() {
                         try {
@@ -223,10 +207,7 @@ const ProductDetail = () => {
                         }
                     }
                     addProductColor();
-                    return [
-                        ...prevState,
-                        { product_id: product.id, size_id: value.id },
-                    ];
+                    return [...prevState, { product_id: product.id, size_id: value.id }];
                 }
             });
     };
@@ -306,15 +287,10 @@ const ProductDetail = () => {
                 },
             }}
         >
-            <Link
-                to='/manager/products'
-                className='prevButton navLink linkNoneUnderline'
-            >
+            <Link to='/manager/products' className='prevButton navLink linkNoneUnderline'>
                 <BsArrowLeftShort />
             </Link>
-            <Typography className='heading useFont-Nunito'>
-                Chi tiết sản phẩm
-            </Typography>
+            <Typography className='heading useFont-Nunito'>Chi tiết sản phẩm</Typography>
             <Box
                 sx={{
                     borderRadius: "0.4rem",
@@ -367,14 +343,8 @@ const ProductDetail = () => {
                         }}
                     >
                         <div className={styles.group}>
-                            <div
-                                className={`form-group ${
-                                    errors.name ? "error" : ""
-                                }`}
-                            >
-                                <label className='form-label'>
-                                    Tên sản phẩm:
-                                </label>
+                            <div className={`form-group ${errors.name ? "error" : ""}`}>
+                                <label className='form-label'>Tên sản phẩm:</label>
                                 <div
                                     style={{
                                         flexGrow: 1,
@@ -392,24 +362,14 @@ const ProductDetail = () => {
                                             })}
                                         />
                                     ) : (
-                                        <p className={styles.text}>
-                                            {product.name}
-                                        </p>
+                                        <p className={styles.text}>{product.name}</p>
                                     )}
-                                    {errors?.name?.type === "required" && (
-                                        <span className='form-message'>
-                                            Vui lòng nhập vào tên sản phẩm
-                                        </span>
-                                    )}
+                                    {errors?.name?.type === "required" && <span className='form-message'>Vui lòng nhập vào tên sản phẩm</span>}
                                 </div>
                             </div>
                         </div>
                         <div className={styles.group}>
-                            <div
-                                className={`form-group ${
-                                    errors.category_id ? "error" : ""
-                                }`}
-                            >
+                            <div className={`form-group ${errors.category_id ? "error" : ""}`}>
                                 <label className='form-label'>Danh mục:</label>
                                 <div
                                     style={{
@@ -419,34 +379,21 @@ const ProductDetail = () => {
                                     }}
                                 >
                                     {isEdit === true ? (
-                                        <select
-                                            className='form-input'
-                                            defaultValue={product.category_id}
-                                            {...register("category_id")}
-                                        >
+                                        <select className='form-input' defaultValue={product.category_id} {...register("category_id")}>
                                             {categories.map((category) => (
-                                                <option
-                                                    key={category.id}
-                                                    value={category.id}
-                                                >
+                                                <option key={category.id} value={category.id}>
                                                     {category.name}
                                                 </option>
                                             ))}
                                         </select>
                                     ) : (
-                                        <p className={styles.text}>
-                                            {product.category_name}
-                                        </p>
+                                        <p className={styles.text}>{product.category_name}</p>
                                     )}
                                 </div>
                             </div>
                         </div>
                         <div className={styles.group}>
-                            <div
-                                className={`form-group ${
-                                    errors.price ? "error" : ""
-                                }`}
-                            >
+                            <div className={`form-group ${errors.price ? "error" : ""}`}>
                                 <label className='form-label'>Đơn giá</label>
                                 <div
                                     style={{
@@ -466,31 +413,16 @@ const ProductDetail = () => {
                                             })}
                                         />
                                     ) : (
-                                        <p className={styles.text}>
-                                            {product.price}
-                                        </p>
+                                        <p className={styles.text}>{product.price}</p>
                                     )}
 
-                                    {errors?.price?.type === "required" && (
-                                        <span className='form-message'>
-                                            Vui lòng nhập vào đơn giá của sản
-                                            phẩm
-                                        </span>
-                                    )}
-                                    {errors?.price?.type === "pattern" && (
-                                        <span className='form-message'>
-                                            Đơn giá của sản phẩm chỉ chứa số
-                                        </span>
-                                    )}
+                                    {errors?.price?.type === "required" && <span className='form-message'>Vui lòng nhập vào đơn giá của sản phẩm</span>}
+                                    {errors?.price?.type === "pattern" && <span className='form-message'>Đơn giá của sản phẩm chỉ chứa số</span>}
                                 </div>
                             </div>
                         </div>
                         <div className={styles.group}>
-                            <div
-                                className={`form-group ${
-                                    errors.quantity ? "error" : ""
-                                }`}
-                            >
+                            <div className={`form-group ${errors.quantity ? "error" : ""}`}>
                                 <label className='form-label'>Số lượng:</label>
                                 <div
                                     style={{
@@ -510,30 +442,15 @@ const ProductDetail = () => {
                                             })}
                                         />
                                     ) : (
-                                        <p className={styles.text}>
-                                            {product.quantity}
-                                        </p>
+                                        <p className={styles.text}>{product.quantity}</p>
                                     )}
-                                    {errors?.quantity?.type === "required" && (
-                                        <span className='form-message'>
-                                            Vui lòng nhập vào số lượng sản phẩm
-                                            đang có
-                                        </span>
-                                    )}
-                                    {errors?.quantity?.type === "pattern" && (
-                                        <span className='form-message'>
-                                            Số lượng hàng chỉ chứa số
-                                        </span>
-                                    )}
+                                    {errors?.quantity?.type === "required" && <span className='form-message'>Vui lòng nhập vào số lượng sản phẩm đang có</span>}
+                                    {errors?.quantity?.type === "pattern" && <span className='form-message'>Số lượng hàng chỉ chứa số</span>}
                                 </div>
                             </div>
                         </div>
                         <div className={styles.group}>
-                            <div
-                                className={`form-group ${
-                                    errors.discount ? "error" : ""
-                                }`}
-                            >
+                            <div className={`form-group ${errors.discount ? "error" : ""}`}>
                                 <label className='form-label'>Giảm giá:</label>
                                 <div
                                     style={{
@@ -554,35 +471,16 @@ const ProductDetail = () => {
                                             })}
                                         />
                                     ) : (
-                                        <p className={styles.text}>
-                                            {product.discount}%
-                                        </p>
+                                        <p className={styles.text}>{product.discount}%</p>
                                     )}
-                                    {errors?.discount?.type === "min" && (
-                                        <span className='form-message'>
-                                            Không có khuyến mãi vui lòng bỏ qua
-                                        </span>
-                                    )}
-                                    {errors?.discount?.type === "max" && (
-                                        <span className='form-message'>
-                                            Mức ưu đãi lớn nhất có thể là 100%
-                                        </span>
-                                    )}
-                                    {errors?.discount?.type === "pattern" && (
-                                        <span className='form-message'>
-                                            Nhập vào số phần trăm giảm giá là
-                                            một số thực dương
-                                        </span>
-                                    )}
+                                    {errors?.discount?.type === "min" && <span className='form-message'>Không có khuyến mãi vui lòng bỏ qua</span>}
+                                    {errors?.discount?.type === "max" && <span className='form-message'>Mức ưu đãi lớn nhất có thể là 100%</span>}
+                                    {errors?.discount?.type === "pattern" && <span className='form-message'>Nhập vào số phần trăm giảm giá là một số thực dương</span>}
                                 </div>
                             </div>
                         </div>
                         <div className={styles.group}>
-                            <div
-                                className={`form-group ${
-                                    errors.description ? "error" : ""
-                                }`}
-                            >
+                            <div className={`form-group ${errors.description ? "error" : ""}`}>
                                 <label className='form-label'>Mô tả:</label>
                                 <div
                                     style={{
@@ -613,12 +511,7 @@ const ProductDetail = () => {
                                         </p>
                                     )}
 
-                                    {errors?.description?.type ===
-                                        "required" && (
-                                        <span className='form-message'>
-                                            Vui lòng nhập vào mô tả sản phẩm
-                                        </span>
-                                    )}
+                                    {errors?.description?.type === "required" && <span className='form-message'>Vui lòng nhập vào mô tả sản phẩm</span>}
                                 </div>
                             </div>
                         </div>
@@ -628,22 +521,11 @@ const ProductDetail = () => {
                                 ml: "15rem",
                             }}
                         >
-                            {isEdit && (
-                                <StyledButton type='submit'>
-                                    Cập nhật
-                                </StyledButton>
-                            )}
+                            {isEdit && <StyledButton type='submit'>Cập nhật</StyledButton>}
                             {!isEdit && (
                                 <>
-                                    <StyledButton
-                                        onClick={() => setIsEdit(true)}
-                                    >
-                                        Sửa
-                                    </StyledButton>
-                                    <StyledButton
-                                        variant='text'
-                                        onClick={() => setOpenDelForm(true)}
-                                    >
+                                    <StyledButton onClick={() => setIsEdit(true)}>Sửa</StyledButton>
+                                    <StyledButton variant='text' onClick={() => setOpenDelForm(true)}>
                                         Xóa
                                     </StyledButton>
                                 </>
@@ -655,22 +537,14 @@ const ProductDetail = () => {
                             <label className={styles.label}>Màu sắc</label>
                             <ul className={styles.colorList}>
                                 {colors.map((color, index) => (
-                                    <li
-                                        key={index}
-                                        className={styles.colorItem}
-                                    >
+                                    <li key={index} className={styles.colorItem}>
                                         <span
                                             style={{
                                                 backgroundImage: `url(${color.url})`,
                                             }}
                                         ></span>
                                         {isEdit && (
-                                            <IconButton
-                                                className={styles.delColor}
-                                                onClick={() =>
-                                                    handleDeteleColor(color.id)
-                                                }
-                                            >
+                                            <IconButton className={styles.delColor} onClick={() => handleDeteleColor(color.id)}>
                                                 <FaTimes />
                                             </IconButton>
                                         )}
@@ -699,8 +573,7 @@ const ProductDetail = () => {
                                             ref={colorRef}
                                             accept='image/*'
                                             onChange={(e) => {
-                                                const newImg =
-                                                    e.target.files[0];
+                                                const newImg = e.target.files[0];
                                                 if (newImg) setColorImg(newImg);
                                             }}
                                         />
@@ -715,21 +588,10 @@ const ProductDetail = () => {
                                     <li
                                         key={index}
                                         className={clsx(styles.sizeItem, {
-                                            [styles.active]:
-                                                sizes.filter(
-                                                    (field) =>
-                                                        field.size_id ===
-                                                        size.id,
-                                                ).length !== 0,
+                                            [styles.active]: sizes.filter((field) => field.size_id === size.id).length !== 0,
                                         })}
                                     >
-                                        <button
-                                            onClick={() =>
-                                                handleToggleSize(size)
-                                            }
-                                        >
-                                            {size.description}
-                                        </button>
+                                        <button onClick={() => handleToggleSize(size)}>{size.description}</button>
                                     </li>
                                 ))}
                                 {isEdit && (
@@ -741,10 +603,7 @@ const ProductDetail = () => {
                                             },
                                         }}
                                     >
-                                        <button
-                                            className={styles.addBtn}
-                                            onClick={handleOpenAddSize}
-                                        >
+                                        <button className={styles.addBtn} onClick={handleOpenAddSize}>
                                             <BsPlusLg />
                                         </button>
                                     </Box>
@@ -758,14 +617,7 @@ const ProductDetail = () => {
                                     <li key={index} className={styles.imgItem}>
                                         <img alt='' src={img.url} />
                                         {isEdit && (
-                                            <IconButton
-                                                className={styles.delProductImg}
-                                                onClick={() =>
-                                                    handleDeteleProductImg(
-                                                        img.id,
-                                                    )
-                                                }
-                                            >
+                                            <IconButton className={styles.delProductImg} onClick={() => handleDeteleProductImg(img.id)}>
                                                 <FaTimes />
                                             </IconButton>
                                         )}
@@ -795,10 +647,8 @@ const ProductDetail = () => {
                                             ref={imgRef}
                                             accept='image/*'
                                             onChange={(e) => {
-                                                const newImg =
-                                                    e.target.files[0];
-                                                if (newImg)
-                                                    setProductImg(newImg);
+                                                const newImg = e.target.files[0];
+                                                if (newImg) setProductImg(newImg);
                                             }}
                                         />
                                     </Box>
@@ -832,18 +682,14 @@ const ProductDetail = () => {
                 <DialogTitle>Xóa sản phẩm</DialogTitle>
                 <DialogContent>
                     <p className='mess'>
-                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa sản
-                        phẩm có mã <strong>{product.id}</strong> ?
+                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa sản phẩm có mã <strong>{product.id}</strong> ?
                     </p>
                 </DialogContent>
                 <DialogActions>
                     <StyledButton variant='text' onClick={handleDeleteProduct}>
                         Đồng ý
                     </StyledButton>
-                    <StyledButton
-                        variant='text'
-                        onClick={() => setOpenDelForm(false)}
-                    >
+                    <StyledButton variant='text' onClick={() => setOpenDelForm(false)}>
                         Hủy
                     </StyledButton>
                 </DialogActions>
@@ -869,11 +715,7 @@ const ProductDetail = () => {
                     },
                 }}
             >
-                <Box
-                    component='form'
-                    onSubmit={handleSubmit2(onAddSize)}
-                    noValidate
-                >
+                <Box component='form' onSubmit={handleSubmit2(onAddSize)} noValidate>
                     <DialogTitle>Thêm kích cỡ</DialogTitle>
                     <DialogContent
                         sx={{
@@ -891,11 +733,7 @@ const ProductDetail = () => {
                                 <TextField
                                     label='Mô tả'
                                     error={Boolean(errors2.description)}
-                                    helperText={
-                                        errors2?.description
-                                            ? errors2.description.message
-                                            : ""
-                                    }
+                                    helperText={errors2?.description ? errors2.description.message : ""}
                                     {...field}
                                     sx={{
                                         width: "100%",
@@ -912,20 +750,13 @@ const ProductDetail = () => {
                         <StyledButton variant='text' type='submit'>
                             Thêm
                         </StyledButton>
-                        <StyledButton
-                            variant='text'
-                            onClick={handleCloseAddSize}
-                        >
+                        <StyledButton variant='text' onClick={handleCloseAddSize}>
                             Hủy
                         </StyledButton>
                     </DialogActions>
                 </Box>
             </Dialog>
-            <Snackbar
-                open={snackbar.isOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnackbar}
-            >
+            <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}

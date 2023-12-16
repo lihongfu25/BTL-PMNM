@@ -71,7 +71,7 @@ class ContactController extends Controller
         #Queue
 
         Mail::send('emails.contact', compact('contactFind'), function($email) use($contactFind) {
-            $email->subject("360 Store - Chăm sóc khách hàng");
+            $email->subject("Hoàn Mỹ Store - Chăm sóc khách hàng");
             $email->to($contactFind->email, $contactFind->full_name);
         });
 

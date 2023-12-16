@@ -154,6 +154,7 @@ class OrderController extends Controller
                 }
             }
             $orderFind->status = $request->status;
+            $orderFind->save();
         } catch (\Exception $e) {
             DB::rollback();
 
@@ -202,7 +203,7 @@ class OrderController extends Controller
         $orderFind->save();
 
         Mail::send('emails.cancelOrder', compact('orderFind'), function($email) use($orderFind) {
-            $email->subject("360 Store - Thông báo cập nhật thông tin đơn hàng");
+            $email->subject("Hoàn Mỹ Store - Thông báo cập nhật thông tin đơn hàng");
             $email->to($orderFind->member->email, $orderFind->member->full_name, $orderFind->id, $orderFind->note);
         });
 

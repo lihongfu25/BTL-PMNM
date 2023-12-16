@@ -44,7 +44,7 @@ const StyledButton = styled(Button)({
     padding: "0.2rem 1.2rem",
 });
 const ProductManager = () => {
-    document.title = "Sản phẩm | 360 Store";
+    document.title = "Sản phẩm | Hoàn Mỹ Store";
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
@@ -75,13 +75,7 @@ const ProductManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await Promise.all([
-                axiosClient.get(`/categories/all`),
-                axiosClient.get("/sizes"),
-                axiosClient.get(
-                    `/products?keyword=${debounceSearch}&page=${page}`,
-                ),
-            ]);
+            const res = await Promise.all([axiosClient.get(`/categories/all`), axiosClient.get("/sizes"), axiosClient.get(`/products?keyword=${debounceSearch}&page=${page}`)]);
             setCategories(res[0].data.data);
             setSizes(res[1].data.data);
             setData(res[2].data.data.data);
@@ -127,10 +121,7 @@ const ProductManager = () => {
         navigate(`${pathname}/${id}`);
     };
     const onAdd = (data) => {
-        if (sizes.length !== 0)
-            data.size = sizes
-                .filter((size) => sizesSelected.includes(size.description))
-                .map((size) => size.id);
+        if (sizes.length !== 0) data.size = sizes.filter((size) => sizesSelected.includes(size.description)).map((size) => size.id);
 
         async function createProduct() {
             try {
@@ -139,19 +130,14 @@ const ProductManager = () => {
                 Object.keys(data).forEach((item) => {
                     formData.append(item, data[item]);
                 });
-                if (data.image)
-                    Array.from(data.image).forEach((img) =>
-                        formData.append("image[]", img),
-                    );
-                if (data.color)
-                    Array.from(data.color).forEach((value) =>
-                        formData.append("color[]", value),
-                    );
-                if (data.size)
-                    Array.from(data.size).forEach((value) =>
-                        formData.append("size[]", value),
-                    );
-                const res = await axiosClient.post(`/products`, formData);
+                if (data.image) Array.from(data.image).forEach((img) => formData.append("image[]", img));
+                if (data.color) Array.from(data.color).forEach((value) => formData.append("color[]", value));
+                if (data.size) Array.from(data.size).forEach((value) => formData.append("size[]", value));
+                const res = await axiosClient.post(`/products`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
                 setOpenAddForm(false);
                 setSnackbar({
                     isOpen: true,
@@ -245,52 +231,32 @@ const ProductManager = () => {
                         <tbody className='table-body'>
                             {isLoading ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         <LinearProgress color='inherit' />
                                     </td>
                                 </tr>
                             ) : data.length === 0 ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         Chưa có sản phẩm nào
                                     </td>
                                 </tr>
                             ) : (
                                 data.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
-                                        }
-                                    >
+                                    <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
                                         <td>{row.id}</td>
                                         <td>{row.category.name}</td>
                                         <td>{row.name}</td>
                                         <td>{currencyFormat(row.price)}</td>
                                         <td>{row.quantity}</td>
                                         <td>{row.discount}</td>
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
-                                        >
+                                        <td className='go-to-detail' align='center'>
                                             <Link
                                                 underline='hover'
                                                 sx={{
                                                     mr: "1rem",
                                                 }}
-                                                onClick={() =>
-                                                    handleGoToDetail(row.id)
-                                                }
+                                                onClick={() => handleGoToDetail(row.id)}
                                             >
                                                 Xem
                                             </Link>
@@ -302,13 +268,7 @@ const ProductManager = () => {
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
-                                    <Pagination
-                                        count={totalPage}
-                                        variant='outlined'
-                                        shape='rounded'
-                                        page={page}
-                                        onChange={handleChangePage}
-                                    />
+                                    <Pagination count={totalPage} variant='outlined' shape='rounded' page={page} onChange={handleChangePage} />
                                 </td>
                             </tr>
                         </tfoot>
@@ -330,11 +290,7 @@ const ProductManager = () => {
                         },
                     }}
                 >
-                    <Box
-                        component='form'
-                        noValidate
-                        onSubmit={handleSubmit(onAdd)}
-                    >
+                    <Box component='form' noValidate onSubmit={handleSubmit(onAdd)}>
                         <DialogTitle>Thêm sản phẩm</DialogTitle>
                         <DialogContent
                             sx={{
@@ -357,11 +313,7 @@ const ProductManager = () => {
                                                 width: "100%",
                                             }}
                                             error={Boolean(errors.name)}
-                                            helperText={
-                                                errors?.name
-                                                    ? errors.name.message
-                                                    : ""
-                                            }
+                                            helperText={errors?.name ? errors.name.message : ""}
                                             {...field}
                                         />
                                     );
@@ -373,17 +325,7 @@ const ProductManager = () => {
                                 rules={{
                                     required: "Vui lòng chọn danh mục!",
                                 }}
-                                render={({ field }) => (
-                                    <Select
-                                        label='Danh mục'
-                                        options={categories}
-                                        isError={Boolean(errors.category_id)}
-                                        errorMessage={
-                                            errors.category_id?.message
-                                        }
-                                        field={field}
-                                    />
-                                )}
+                                render={({ field }) => <Select label='Danh mục' options={categories} isError={Boolean(errors.category_id)} errorMessage={errors.category_id?.message} field={field} />}
                             />
                             <Controller
                                 name='price'
@@ -408,11 +350,7 @@ const ProductManager = () => {
                                                 width: "100%",
                                             }}
                                             error={Boolean(errors.price)}
-                                            helperText={
-                                                errors?.price
-                                                    ? errors.price.message
-                                                    : ""
-                                            }
+                                            helperText={errors?.price ? errors.price.message : ""}
                                             {...field}
                                         />
                                     );
@@ -441,11 +379,7 @@ const ProductManager = () => {
                                                 width: "100%",
                                             }}
                                             error={Boolean(errors.quantity)}
-                                            helperText={
-                                                errors?.quantity
-                                                    ? errors.quantity.message
-                                                    : ""
-                                            }
+                                            helperText={errors?.quantity ? errors.quantity.message : ""}
                                             {...field}
                                         />
                                     );
@@ -457,18 +391,15 @@ const ProductManager = () => {
                                 rules={{
                                     pattern: {
                                         value: /^[0-9.]+$/,
-                                        message:
-                                            "Nhập vào số phần trăm giảm giá là một số thực dương!",
+                                        message: "Nhập vào số phần trăm giảm giá là một số thực dương!",
                                     },
                                     min: {
                                         value: 0,
-                                        message:
-                                            "Không có giảm giá vui lòng bỏ qua!",
+                                        message: "Không có giảm giá vui lòng bỏ qua!",
                                     },
                                     max: {
                                         value: 100,
-                                        message:
-                                            "Mức ưu đãi lớn nhất có thể là 100%!",
+                                        message: "Mức ưu đãi lớn nhất có thể là 100%!",
                                     },
                                 }}
                                 render={({ field }) => {
@@ -480,11 +411,7 @@ const ProductManager = () => {
                                                 width: "100%",
                                             }}
                                             error={Boolean(errors.discount)}
-                                            helperText={
-                                                errors?.discount
-                                                    ? errors.discount.message
-                                                    : ""
-                                            }
+                                            helperText={errors?.discount ? errors.discount.message : ""}
                                             {...field}
                                         />
                                     );
@@ -506,11 +433,7 @@ const ProductManager = () => {
                                             }}
                                             multiline
                                             error={Boolean(errors.description)}
-                                            helperText={
-                                                errors?.description
-                                                    ? errors.description.message
-                                                    : ""
-                                            }
+                                            helperText={errors?.description ? errors.description.message : ""}
                                             {...field}
                                         />
                                     );
@@ -521,30 +444,25 @@ const ProductManager = () => {
                                 sx={{
                                     mt: "1.5rem",
                                     width: "100%",
-                                    "& .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline":
-                                        {
-                                            borderColor: "#333",
-                                        },
-                                    "& .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root":
-                                        {
-                                            fontSize: "1.6rem",
-                                            transform:
-                                                "translate(1.2rem, 0.8rem)",
-                                        },
+                                    "& .css-9ddj71-MuiInputBase-root-MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline": {
+                                        borderColor: "#333",
+                                    },
+                                    "& .css-14s5rfu-MuiFormLabel-root-MuiInputLabel-root": {
+                                        fontSize: "1.6rem",
+                                        transform: "translate(1.2rem, 0.8rem)",
+                                    },
 
-                                    "& .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input":
-                                        {
-                                            p: "1.2rem",
-                                            fontSize: "1.4rem",
-                                            minHeight: "0!important",
+                                    "& .css-11u53oe-MuiSelect-select-MuiInputBase-input-MuiOutlinedInput-input": {
+                                        p: "1.2rem",
+                                        fontSize: "1.4rem",
+                                        minHeight: "0!important",
+                                    },
+                                    "& .css-1sumxir-MuiFormLabel-root-MuiInputLabel-root": {
+                                        fontSize: "1.6rem",
+                                        "&.Mui-focused": {
+                                            color: "#333",
                                         },
-                                    "& .css-1sumxir-MuiFormLabel-root-MuiInputLabel-root":
-                                        {
-                                            fontSize: "1.6rem",
-                                            "&.Mui-focused": {
-                                                color: "#333",
-                                            },
-                                        },
+                                    },
                                     "& .css-14lo706": {
                                         fontSize: "1.2rem",
                                     },
@@ -554,44 +472,22 @@ const ProductManager = () => {
                                 }}
                             >
                                 <InputLabel>Kích cỡ</InputLabel>
-                                <MuiSelect
-                                    multiple
-                                    value={sizesSelected}
-                                    onChange={handleSelectSize}
-                                    input={<OutlinedInput label='Kích cỡ' />}
-                                    renderValue={(selected) =>
-                                        selected.join(", ")
-                                    }
-                                >
+                                <MuiSelect multiple value={sizesSelected} onChange={handleSelectSize} input={<OutlinedInput label='Kích cỡ' />} renderValue={(selected) => selected.join(", ")}>
                                     {sizes.map((size) => (
-                                        <MenuItem
-                                            key={size.id}
-                                            value={size.description}
-                                        >
-                                            <Checkbox
-                                                checked={
-                                                    sizesSelected.indexOf(
-                                                        size.description,
-                                                    ) > -1
-                                                }
-                                            />
+                                        <MenuItem key={size.id} value={size.description}>
+                                            <Checkbox checked={sizesSelected.indexOf(size.description) > -1} />
                                             <ListItemText
                                                 primary={size.description}
                                                 sx={{
-                                                    "& .css-10hburv-MuiTypography-root":
-                                                        {
-                                                            fontSize: "1.4rem",
-                                                        },
+                                                    "& .css-10hburv-MuiTypography-root": {
+                                                        fontSize: "1.4rem",
+                                                    },
                                                 }}
                                             />
                                         </MenuItem>
                                     ))}
                                 </MuiSelect>
-                                {errors.size && (
-                                    <FormHelperText>
-                                        {errors.size.message}
-                                    </FormHelperText>
-                                )}
+                                {errors.size && <FormHelperText>{errors.size.message}</FormHelperText>}
                             </FormControl>
                             <Box
                                 sx={{
@@ -617,16 +513,11 @@ const ProductManager = () => {
                                     {...register("image", {
                                         required: {
                                             value: true,
-                                            message:
-                                                "Vui lòng thêm một hình ảnh!",
+                                            message: "Vui lòng thêm một hình ảnh!",
                                         },
                                     })}
                                 />
-                                {errors.image && (
-                                    <span className='error-message'>
-                                        {errors.image.message}
-                                    </span>
-                                )}
+                                {errors.image && <span className='error-message'>{errors.image.message}</span>}
                             </Box>
                             <Box
                                 sx={{
@@ -652,16 +543,11 @@ const ProductManager = () => {
                                     {...register("color", {
                                         required: {
                                             value: true,
-                                            message:
-                                                "Vui lòng thêm một hình ảnh!",
+                                            message: "Vui lòng thêm một hình ảnh!",
                                         },
                                     })}
                                 />
-                                {errors.color && (
-                                    <span className='error-message'>
-                                        {errors.color.message}
-                                    </span>
-                                )}
+                                {errors.color && <span className='error-message'>{errors.color.message}</span>}
                             </Box>
                         </DialogContent>
                         <DialogActions
@@ -672,20 +558,13 @@ const ProductManager = () => {
                             <StyledButton variant='text' type='submit'>
                                 Thêm
                             </StyledButton>
-                            <StyledButton
-                                variant='text'
-                                onClick={handleCloseAddForm}
-                            >
+                            <StyledButton variant='text' onClick={handleCloseAddForm}>
                                 Hủy
                             </StyledButton>
                         </DialogActions>
                     </Box>
                 </Dialog>
-                <Snackbar
-                    open={snackbar.isOpen}
-                    autoHideDuration={5000}
-                    onClose={handleCloseSnackbar}
-                >
+                <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                     <Alert
                         onClose={handleCloseSnackbar}
                         severity={snackbar.type}

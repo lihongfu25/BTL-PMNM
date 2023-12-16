@@ -72,7 +72,7 @@ class MemberController extends Controller
             return response()->json(['message' => "Không tìm thấy tài khoản liên kết với email này"], 409);
 
         Mail::send('emails.sendPass', compact('request', 'member'), function($email) use($request, $member) {
-            $email->subject("360 Store - Đặt lại mật khẩu");
+            $email->subject("Hoàn Mỹ Store - Đặt lại mật khẩu");
             $email->to($request->email, $member->full_name ,$request->password);
         });
 
@@ -95,7 +95,7 @@ class MemberController extends Controller
 
         
         Mail::send('emails.sendCode', compact('request'), function($email) use($request) {
-            $email->subject("360 Store - Đăng ký thành viên");
+            $email->subject("Hoàn Mỹ Store - Đăng ký thành viên");
             $email->to($request->email, $request->code);
         });
         return response()->json([

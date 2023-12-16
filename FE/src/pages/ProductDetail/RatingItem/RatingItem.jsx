@@ -20,10 +20,7 @@ const RatingItem = ({ data }) => {
                         },
                     }}
                 >
-                    <img
-                        alt=''
-                        src={"http://13.228.71.235/" + data.member.avatar}
-                    />
+                    <img alt='' src={"http://localhost:8000/" + data.member.avatar} />
                 </Box>
                 <Box
                     sx={{
@@ -46,13 +43,9 @@ const RatingItem = ({ data }) => {
                         },
                     }}
                 >
-                    <p className='ratingItem-Username'>
-                        {data.member.username || data.member.email}
-                    </p>
+                    <p className='ratingItem-Username'>{data.member.username || data.member.email}</p>
                     <Rating value={data.star} />
-                    <p className='ratingItem-Datetime'>
-                        {formatDateTime(data.created_at)}
-                    </p>
+                    <p className='ratingItem-Datetime'>{formatDateTime(data.created_at)}</p>
                     <p className='ratingItem-Desc'>{data.description}</p>
                 </Box>
             </Box>

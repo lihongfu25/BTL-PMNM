@@ -1,11 +1,6 @@
 import React from "react";
 import { BsTelephoneFill, BsEnvelopeFill } from "react-icons/bs";
-import {
-    FaFacebookSquare,
-    FaYoutube,
-    FaInstagram,
-    FaTiktok,
-} from "react-icons/fa";
+import { FaFacebookSquare, FaYoutube, FaInstagram, FaTiktok } from "react-icons/fa";
 import LocationOnRoundedIcon from "@mui/icons-material/LocationOnRounded";
 import { styled } from "@mui/material/styles";
 import { Box, InputBase, Typography, Link } from "@mui/material";
@@ -72,7 +67,7 @@ const Footer = () => {
                                 fontWeight: 500,
                             }}
                         >
-                            360 Store
+                            Hoàn Mỹ Store
                         </Typography>
                         <StyledTypography className='useFont-Nunito'>
                             <LocationOnRoundedIcon />
@@ -95,8 +90,7 @@ const Footer = () => {
                                     color: "#a5a5a5",
                                 }}
                             >
-                                Đăng ký để được nhận thông tin khuyến mãi một
-                                cách nhanh chóng.
+                                Đăng ký để được nhận thông tin khuyến mãi một cách nhanh chóng.
                             </Typography>
                             <Box
                                 sx={{
@@ -128,47 +122,25 @@ const Footer = () => {
                         </Box>
                     </Box>
                     <StyledBox>
-                        <Typography className='useFont-Nunito heading'>
-                            Danh mục
-                        </Typography>
+                        <Typography className='useFont-Nunito heading'>Danh mục</Typography>
                         <Box className='content'>
-                            <StyledLink className='useFont-Nunito'>
-                                Thời trang nam
-                            </StyledLink>
-                            <StyledLink className='useFont-Nunito'>
-                                Thời trang nữ
-                            </StyledLink>
-                            <StyledLink className='useFont-Nunito'>
-                                Phụ kiện
-                            </StyledLink>
+                            <StyledLink className='useFont-Nunito'>Thời trang nam</StyledLink>
+                            <StyledLink className='useFont-Nunito'>Thời trang nữ</StyledLink>
+                            <StyledLink className='useFont-Nunito'>Phụ kiện</StyledLink>
                         </Box>
                     </StyledBox>
                     <StyledBox>
-                        <Typography className='useFont-Nunito heading'>
-                            Góc Khách Hàng
-                        </Typography>
+                        <Typography className='useFont-Nunito heading'>Góc Khách Hàng</Typography>
                         <Box className='content'>
-                            <StyledLink className='useFont-Nunito'>
-                                Điều kiện & điều khoản
-                            </StyledLink>
-                            <StyledLink className='useFont-Nunito'>
-                                Quyền riêng tư
-                            </StyledLink>
-                            <StyledLink className='useFont-Nunito'>
-                                Chính sách bảo mật thông tin
-                            </StyledLink>
-                            <StyledLink className='useFont-Nunito'>
-                                Ý kiến khách hàng
-                            </StyledLink>
-                            <StyledLink className='useFont-Nunito'>
-                                Phương thức thanh toán
-                            </StyledLink>
+                            <StyledLink className='useFont-Nunito'>Điều kiện & điều khoản</StyledLink>
+                            <StyledLink className='useFont-Nunito'>Quyền riêng tư</StyledLink>
+                            <StyledLink className='useFont-Nunito'>Chính sách bảo mật thông tin</StyledLink>
+                            <StyledLink className='useFont-Nunito'>Ý kiến khách hàng</StyledLink>
+                            <StyledLink className='useFont-Nunito'>Phương thức thanh toán</StyledLink>
                         </Box>
                     </StyledBox>
                     <StyledBox>
-                        <Typography className='useFont-Nunito heading'>
-                            Theo dõi chúng tôi
-                        </Typography>
+                        <Typography className='useFont-Nunito heading'>Theo dõi chúng tôi</Typography>
                         <Typography
                             className='useFont-Nunito'
                             sx={{
@@ -177,8 +149,7 @@ const Footer = () => {
                                 color: "#a5a5a5",
                             }}
                         >
-                            Theo dõi chúng tôi để cập nhật thông tin khuyến mãi
-                            một cách nhanh chóng nhất.
+                            Theo dõi chúng tôi để cập nhật thông tin khuyến mãi một cách nhanh chóng nhất.
                         </Typography>
                         <Box
                             sx={{

@@ -1,12 +1,6 @@
 import React from "react";
 import { useLocation, useNavigate } from "react-router-dom";
-import {
-    Box,
-    Typography,
-    Link,
-    Pagination,
-    LinearProgress,
-} from "@mui/material";
+import { Box, Typography, Link, Pagination, LinearProgress } from "@mui/material";
 
 import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
@@ -45,7 +39,7 @@ const statuses = [
 ];
 
 const OrderManager = () => {
-    document.title = "Đơn hàng | 360 Store";
+    document.title = "Đơn hàng | Hoàn Mỹ Store";
     const [totalPage, setTotalPage] = React.useState(1);
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
@@ -58,9 +52,7 @@ const OrderManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axiosClient.get(
-                `/orders?keyword=${debounceSearch}&status=${filterStatus}&page=${page}`,
-            );
+            const res = await axiosClient.get(`/orders?keyword=${debounceSearch}&status=${filterStatus}&page=${page}`);
             setData(res.data.data.data);
             setPage(res.data.data.current_page);
             setTotalPage(res.data.data.last_page);
@@ -155,52 +147,30 @@ const OrderManager = () => {
                         <tbody className='table-body'>
                             {isLoading ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         <LinearProgress color='inherit' />
                                     </td>
                                 </tr>
                             ) : data.length === 0 ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         Chưa có đơn hàng nào
                                     </td>
                                 </tr>
                             ) : (
                                 data.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
-                                        }
-                                    >
+                                    <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
                                         <td>{row.id}</td>
                                         <td>{row.member.full_name}</td>
                                         <td>{row.member.address}</td>
-                                        <td>
-                                            {formatDateTime(row.created_at)}
-                                        </td>
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
-                                        >
+                                        <td>{formatDateTime(row.created_at)}</td>
+                                        <td className='go-to-detail' align='center'>
                                             <Link
                                                 underline='hover'
                                                 sx={{
                                                     mr: "1rem",
                                                 }}
-                                                onClick={() =>
-                                                    handleGoToDetail(row.id)
-                                                }
+                                                onClick={() => handleGoToDetail(row.id)}
                                             >
                                                 Xem
                                             </Link>
@@ -212,13 +182,7 @@ const OrderManager = () => {
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
-                                    <Pagination
-                                        count={totalPage}
-                                        variant='outlined'
-                                        shape='rounded'
-                                        page={page}
-                                        onChange={handleChangePage}
-                                    />
+                                    <Pagination count={totalPage} variant='outlined' shape='rounded' page={page} onChange={handleChangePage} />
                                 </td>
                             </tr>
                         </tfoot>

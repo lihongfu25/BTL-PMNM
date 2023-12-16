@@ -9,21 +9,15 @@ const PickColor = ({ colors, value, setValue, isError }) => {
                 {colors.map((color) => (
                     <span
                         key={color.id}
-                        className={`color-item ${
-                            color.id === value.id ? "selected" : ""
-                        }`}
+                        className={`color-item ${color.id === value.id ? "selected" : ""}`}
                         onClick={() => setValue(color)}
                         style={{
-                            backgroundImage: `url(http://13.228.71.235/${color.url})`,
+                            backgroundImage: `url(http://localhost:8000/${color.url})`,
                         }}
                     ></span>
                 ))}
             </Box>
-            {isError && (
-                <span className='error-message'>
-                    Vui lòng chọn màu sắc trước
-                </span>
-            )}
+            {isError && <span className='error-message'>Vui lòng chọn màu sắc trước</span>}
         </Box>
     );
 };

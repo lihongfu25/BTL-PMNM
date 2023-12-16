@@ -2,16 +2,7 @@ import React from "react";
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { Controller, useForm } from "react-hook-form";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Typography,
-    Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Snackbar,
-} from "@mui/material";
+import { Box, Typography, Button, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar } from "@mui/material";
 import { BsArrowLeftShort } from "react-icons/bs";
 
 import axiosClient from "../../api/axiosClient";
@@ -78,12 +69,10 @@ const OrderDetail = () => {
         const newStatus = data.status === "wait" ? "prepare" : "delivering";
         async function updateStatus() {
             try {
-                const res = await axiosClient.post(
-                    `/orders/status/${data.id}`,
-                    {
-                        status: newStatus,
-                    },
-                );
+                const res = await axiosClient.post(`/orders/status/${data.id}`, {
+                    status: newStatus,
+                });
+                console.log(res);
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -103,12 +92,9 @@ const OrderDetail = () => {
     const onCancel = (value) => {
         async function cancel() {
             try {
-                const res = await axiosClient.post(
-                    `/orders/cancel/${data.id}`,
-                    {
-                        reason: value.reason,
-                    },
-                );
+                const res = await axiosClient.post(`/orders/cancel/${data.id}`, {
+                    reason: value.reason,
+                });
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -148,15 +134,10 @@ const OrderDetail = () => {
                     },
                 }}
             >
-                <Link
-                    to='/manager/orders'
-                    className='prevButton navLink linkNoneUnderline'
-                >
+                <Link to='/manager/orders' className='prevButton navLink linkNoneUnderline'>
                     <BsArrowLeftShort />
                 </Link>
-                <Typography className='heading useFont-Nunito'>
-                    Chi tiết đơn hàng
-                </Typography>
+                <Typography className='heading useFont-Nunito'>Chi tiết đơn hàng</Typography>
                 <Box
                     sx={{
                         flexDirection: "column",
@@ -170,44 +151,28 @@ const OrderDetail = () => {
                             }}
                         >
                             <div className={styles.group}>
-                                <label className={styles.label}>
-                                    Mã đơn hàng
-                                </label>
+                                <label className={styles.label}>Mã đơn hàng</label>
                                 <p className={styles.text}>{data.id}</p>
                             </div>
                             <div className={styles.group}>
                                 <label className={styles.label}>Ngày lập</label>
-                                <p className={styles.text}>
-                                    {formatDateTime(data.created_at)}
-                                </p>
+                                <p className={styles.text}>{formatDateTime(data.created_at)}</p>
                             </div>
                             <div className={styles.group}>
-                                <label className={styles.label}>
-                                    Khách hàng
-                                </label>
-                                <p className={styles.text}>
-                                    {data.member.full_name}
-                                </p>
+                                <label className={styles.label}>Khách hàng</label>
+                                <p className={styles.text}>{data.member.full_name}</p>
                             </div>
                             <div className={styles.group}>
                                 <label className={styles.label}>Địa chỉ</label>
-                                <p className={styles.text}>
-                                    {data.member.address}
-                                </p>
+                                <p className={styles.text}>{data.member.address}</p>
                             </div>
                             <div className={styles.group}>
-                                <label className={styles.label}>
-                                    Số điện thoại
-                                </label>
-                                <p className={styles.text}>
-                                    {data.member.phone}
-                                </p>
+                                <label className={styles.label}>Số điện thoại</label>
+                                <p className={styles.text}>{data.member.phone}</p>
                             </div>
                             {data.note && (
                                 <div className={styles.group}>
-                                    <label className={styles.label}>
-                                        Lý do hủy
-                                    </label>
+                                    <label className={styles.label}>Lý do hủy</label>
                                     <p className={styles.text}>{data.note}</p>
                                 </div>
                             )}
@@ -221,8 +186,7 @@ const OrderDetail = () => {
                                             <th
                                                 key={column.field}
                                                 style={{
-                                                    width:
-                                                        column.width || "100%",
+                                                    width: column.width || "100%",
                                                 }}
                                             >
                                                 {column.headerName}
@@ -231,55 +195,27 @@ const OrderDetail = () => {
                                     </tr>
                                 </thead>
                                 <tbody className='table-body'>
-                                    {data.order_detail.map(
-                                        (orderDetail, index) => (
-                                            <tr
-                                                key={index}
-                                                className={
-                                                    index % 2 === 0
-                                                        ? "even"
-                                                        : "odd"
-                                                }
-                                            >
-                                                <td>
-                                                    {orderDetail.product.id}
-                                                </td>
-                                                <td>
-                                                    {orderDetail.product.name}
-                                                </td>
-                                                <td align='center'>
-                                                    <span
-                                                        className={
-                                                            styles.orderDetailColor
-                                                        }
-                                                        style={{
-                                                            backgroundImage: `url(http://13.228.71.235/${orderDetail.color})`,
-                                                        }}
-                                                    ></span>
-                                                </td>
-                                                <td align='center'>
-                                                    {orderDetail.size}
-                                                </td>
-                                                <td align='center'>
-                                                    {orderDetail.quantity}
-                                                </td>
-                                            </tr>
-                                        ),
-                                    )}
+                                    {data.order_detail.map((orderDetail, index) => (
+                                        <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
+                                            <td>{orderDetail.product.id}</td>
+                                            <td>{orderDetail.product.name}</td>
+                                            <td align='center'>
+                                                <span
+                                                    className={styles.orderDetailColor}
+                                                    style={{
+                                                        backgroundImage: `url(http://localhost:8000/${orderDetail.color})`,
+                                                    }}
+                                                ></span>
+                                            </td>
+                                            <td align='center'>{orderDetail.size}</td>
+                                            <td align='center'>{orderDetail.quantity}</td>
+                                        </tr>
+                                    ))}
                                 </tbody>
                                 <tfoot className='tfoot'>
                                     <tr>
                                         <th colSpan='2'>Tổng thanh toán:</th>
-                                        <td colSpan='3'>
-                                            {currencyFormat(
-                                                data.order_detail.reduce(
-                                                    (total, order) =>
-                                                        total +
-                                                        order.total_price,
-                                                    0,
-                                                ),
-                                            )}
-                                        </td>
+                                        <td colSpan='3'>{currencyFormat(data.order_detail.reduce((total, order) => total + order.total_price, 0))}</td>
                                     </tr>
                                 </tfoot>
                             </table>
@@ -290,9 +226,7 @@ const OrderDetail = () => {
                             mt: "2rem",
                         }}
                     >
-                        {(data.status === "wait" ||
-                            data.status === "prepare" ||
-                            data.status === "request cancel") && (
+                        {(data.status === "wait" || data.status === "prepare" || data.status === "request cancel") && (
                             <StyledButton
                                 variant='contained'
                                 color='success'
@@ -302,18 +236,11 @@ const OrderDetail = () => {
                                 }}
                                 onClick={handleUpdateStatus}
                             >
-                                {data.status === "prepare"
-                                    ? "Tiếp theo"
-                                    : "Xác nhận"}
+                                {data.status === "prepare" ? "Tiếp theo" : "Xác nhận"}
                             </StyledButton>
                         )}
                         {data.status === "wait" && (
-                            <StyledButton
-                                variant='contained'
-                                color='error'
-                                disableElevation
-                                onClick={handleOpenCancelForm}
-                            >
+                            <StyledButton variant='contained' color='error' disableElevation onClick={handleOpenCancelForm}>
                                 Từ chối
                             </StyledButton>
                         )}
@@ -327,14 +254,12 @@ const OrderDetail = () => {
                         "& .MuiPaper-root": {
                             width: "40rem",
                         },
-                        "& .MuiTypography-root.MuiDialogTitle-root":
-                            {
-                                fontSize: "2rem",
-                            },
-                        "& .MuiTypography-root.MuiDialogContentText-root":
-                            {
-                                fontSize: "1.6rem",
-                            },
+                        "& .MuiTypography-root.MuiDialogTitle-root": {
+                            fontSize: "2rem",
+                        },
+                        "& .MuiTypography-root.MuiDialogContentText-root": {
+                            fontSize: "1.6rem",
+                        },
                         "& .mess": {
                             m: 0,
                             fontSize: "1.6rem",
@@ -342,11 +267,7 @@ const OrderDetail = () => {
                         },
                     }}
                 >
-                    <Box
-                        component='form'
-                        onSubmit={handleSubmit(onCancel)}
-                        noValidate
-                    >
+                    <Box component='form' onSubmit={handleSubmit(onCancel)} noValidate>
                         <DialogTitle>Từ chối đơn hàng</DialogTitle>
                         <DialogContent
                             sx={{
@@ -368,11 +289,7 @@ const OrderDetail = () => {
                                         }}
                                         multiline
                                         error={Boolean(errors.reason)}
-                                        helperText={
-                                            errors?.reason
-                                                ? errors.reason.message
-                                                : ""
-                                        }
+                                        helperText={errors?.reason ? errors.reason.message : ""}
                                         {...field}
                                     />
                                 )}
@@ -388,20 +305,13 @@ const OrderDetail = () => {
                             <StyledButton variant='text' type='submit'>
                                 Đồng ý
                             </StyledButton>
-                            <StyledButton
-                                variant='text'
-                                onClick={handleCloseCancelForm}
-                            >
+                            <StyledButton variant='text' onClick={handleCloseCancelForm}>
                                 Hủy
                             </StyledButton>
                         </DialogActions>
                     </Box>
                 </Dialog>
-                <Snackbar
-                    open={snackbar.isOpen}
-                    autoHideDuration={5000}
-                    onClose={handleCloseSnackbar}
-                >
+                <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                     <Alert
                         onClose={handleCloseSnackbar}
                         severity={snackbar.type}

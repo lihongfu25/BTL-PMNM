@@ -3,14 +3,7 @@ import { useParams } from "react-router-dom";
 import { Autoplay, Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Grid,
-    Button,
-    Pagination as MuiPagination,
-    Skeleton,
-    Stack,
-} from "@mui/material";
+import { Box, Grid, Button, Pagination as MuiPagination, Skeleton, Stack } from "@mui/material";
 import { BsCaretDownFill } from "react-icons/bs";
 
 import axiosClient from "../../api/axiosClient";
@@ -34,13 +27,8 @@ const StyledButton = styled(Button)({
 });
 const Category = () => {
     const { slug } = useParams();
-    const title =
-        slug === "men"
-            ? "Thời trang Nam"
-            : slug === "women"
-            ? "Thời trang Nữ"
-            : "Phụ kiện";
-    document.title = title + " - 360 Store";
+    const title = slug === "men" ? "Thời trang Nam" : slug === "women" ? "Thời trang Nữ" : "Phụ kiện";
+    document.title = title + " - Hoàn Mỹ Store";
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [data, setData] = React.useState([]);
@@ -79,10 +67,7 @@ const Category = () => {
 
     React.useEffect(() => {
         const slideImgs = document.querySelectorAll(".swiper-slide-img");
-        Array.from(slideImgs).forEach(
-            (slideImg) =>
-                (slideImg.style.height = slideImg.clientWidth * 0.4 + "px"),
-        );
+        Array.from(slideImgs).forEach((slideImg) => (slideImg.style.height = slideImg.clientWidth * 0.4 + "px"));
     });
     const handleChangePage = (e, value) => {
         setPage(value);
@@ -125,11 +110,7 @@ const Category = () => {
                     >
                         {slides.map((img) => (
                             <SwiperSlide key={img.id}>
-                                <img
-                                    className='swiper-slide-img'
-                                    alt=''
-                                    src={"http://13.228.71.235/" + img.image}
-                                />
+                                <img className='swiper-slide-img' alt='' src={"http://localhost:8000/" + img.image} />
                             </SwiperSlide>
                         ))}
                     </Swiper>
@@ -181,11 +162,7 @@ const Category = () => {
                         Bán Chạy
                     </StyledButton>
                     <Box
-                        className={`${
-                            (sorting === "ascending" ||
-                                sorting === "descending") &&
-                            "active"
-                        } textColor`}
+                        className={`${(sorting === "ascending" || sorting === "descending") && "active"} textColor`}
                         sx={{
                             px: "1.2rem",
                             ml: "1.2rem",
@@ -198,8 +175,7 @@ const Category = () => {
                             borderRadius: "0.4rem",
                             backgroundColor: "#fff",
                             "&.active": {
-                                backgroundImage:
-                                    "linear-gradient(45deg,#485563, #29323c)",
+                                backgroundImage: "linear-gradient(45deg,#485563, #29323c)",
                                 "& .sort-value": {
                                     color: "#fff",
                                 },
@@ -226,13 +202,7 @@ const Category = () => {
                             },
                         }}
                     >
-                        <span className='sort-value'>
-                            {sorting === "ascending"
-                                ? "Giá: Thấp đến Cao"
-                                : sorting === "descending"
-                                ? "Giá: Cao đến Thấp"
-                                : "Giá"}
-                        </span>
+                        <span className='sort-value'>{sorting === "ascending" ? "Giá: Thấp đến Cao" : sorting === "descending" ? "Giá: Cao đến Thấp" : "Giá"}</span>
                         <span className='icon'>
                             <BsCaretDownFill />
                         </span>
@@ -266,9 +236,7 @@ const Category = () => {
                             }}
                         >
                             <option
-                                className={
-                                    sorting === "ascending" ? "active" : ""
-                                }
+                                className={sorting === "ascending" ? "active" : ""}
                                 value='ascending'
                                 onClick={(e) => {
                                     setSorting(e.target.value);
@@ -277,9 +245,7 @@ const Category = () => {
                                 Giá: Thấp đến Cao
                             </option>
                             <option
-                                className={
-                                    sorting === "descending" ? "active" : ""
-                                }
+                                className={sorting === "descending" ? "active" : ""}
                                 value='descending'
                                 onClick={(e) => {
                                     setSorting(e.target.value);
@@ -365,21 +331,17 @@ const Category = () => {
                         page={page}
                         onChange={handleChangePage}
                         sx={{
-                            "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root":
-                                {
-                                    fontSize: "1.4rem",
-                                },
-                            "& .css-g2z002-MuiSvgIcon-root-MuiPaginationItem-icon":
-                                {
-                                    width: "2rem",
-                                    height: "2rem",
-                                },
-                            "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected":
-                                {
-                                    color: "#fff",
-                                    backgroundImage:
-                                        "linear-gradient(to right, #666, #283048)",
-                                },
+                            "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root": {
+                                fontSize: "1.4rem",
+                            },
+                            "& .css-g2z002-MuiSvgIcon-root-MuiPaginationItem-icon": {
+                                width: "2rem",
+                                height: "2rem",
+                            },
+                            "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected": {
+                                color: "#fff",
+                                backgroundImage: "linear-gradient(to right, #666, #283048)",
+                            },
                         }}
                     />
                 </Box>

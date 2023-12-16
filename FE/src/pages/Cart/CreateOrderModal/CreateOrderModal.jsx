@@ -1,14 +1,5 @@
 import React from "react";
-import {
-    Box,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    Divider,
-    Radio,
-    Snackbar,
-    FormControlLabel,
-} from "@mui/material";
+import { Box, Dialog, DialogActions, DialogContent, Divider, Radio, Snackbar, FormControlLabel } from "@mui/material";
 import RadioGroup, { useRadioGroup } from "@mui/material/RadioGroup";
 import { styled } from "@mui/material/styles";
 import { useSelector } from "react-redux";
@@ -45,9 +36,7 @@ const columns = [
     { field: "total", headerName: "Thành tiền", width: 120 },
 ];
 
-const StyledFormControlLabel = styled((props) => (
-    <FormControlLabel {...props} />
-))(({ theme, checked }) => ({
+const StyledFormControlLabel = styled((props) => <FormControlLabel {...props} />)(({ theme, checked }) => ({
     ".MuiFormControlLabel-label": {
         fontSize: 17,
         color: checked && "black",
@@ -66,12 +55,7 @@ function MyFormControlLabel(props) {
     return <StyledFormControlLabel checked={checked} {...props} />;
 }
 
-export default function CreateOrderModal({
-    isOpen,
-    onClose,
-    products = [],
-    updateCartsRedux = () => {},
-}) {
+export default function CreateOrderModal({ isOpen, onClose, products = [], updateCartsRedux = () => {} }) {
     const user = useSelector((state) => state.user);
 
     const [snackbar, setSnackbar] = React.useState({
@@ -86,12 +70,7 @@ export default function CreateOrderModal({
                 member_id: user.id,
                 cart_items: products?.map((item) => ({
                     quantity: item.quantity,
-                    total_price:
-                        Math.ceil(
-                            (item.product.price *
-                                (100 - item.product.discount)) /
-                                100,
-                        ) * item.quantity,
+                    total_price: Math.ceil((item.product.price * (100 - item.product.discount)) / 100) * item.quantity,
                     product_id: item.product_id,
                     color: item.color,
                     size: item.size,
@@ -173,25 +152,15 @@ export default function CreateOrderModal({
                                 }}
                             >
                                 <div className={styles.group}>
-                                    <label className={styles.label}>
-                                        Khách hàng
-                                    </label>
-                                    <p className={styles.text}>
-                                        {user?.full_name}
-                                    </p>
+                                    <label className={styles.label}>Khách hàng</label>
+                                    <p className={styles.text}>{user?.full_name}</p>
                                 </div>
                                 <div className={styles.group}>
-                                    <label className={styles.label}>
-                                        Địa chỉ
-                                    </label>
-                                    <p className={styles.text}>
-                                        {user?.address}
-                                    </p>
+                                    <label className={styles.label}>Địa chỉ</label>
+                                    <p className={styles.text}>{user?.address}</p>
                                 </div>
                                 <div className={styles.group}>
-                                    <label className={styles.label}>
-                                        Số điện thoại
-                                    </label>
+                                    <label className={styles.label}>Số điện thoại</label>
                                     <p className={styles.text}>{user?.phone}</p>
                                 </div>
                             </Box>
@@ -210,19 +179,9 @@ export default function CreateOrderModal({
                                     Hình thức thanh toán:
                                 </Box>
 
-                                <RadioGroup
-                                    onChange={(e) =>
-                                        console.log(e.target.value)
-                                    }
-                                    name='use-radio-group'
-                                    defaultValue='0'
-                                >
+                                <RadioGroup onChange={(e) => console.log(e.target.value)} name='use-radio-group' defaultValue='0'>
                                     <Box display='flex' alignItems='center'>
-                                        <MyFormControlLabel
-                                            value='0'
-                                            label='Ship code'
-                                            control={<Radio />}
-                                        />
+                                        <MyFormControlLabel value='0' label='Ship code' control={<Radio />} />
                                         {/* <MyFormControlLabel
 										value="1"
 										label="Card"
@@ -241,9 +200,7 @@ export default function CreateOrderModal({
                                                 <th
                                                     key={column.field}
                                                     style={{
-                                                        width:
-                                                            column.width ||
-                                                            "100%",
+                                                        width: column.width || "100%",
                                                     }}
                                                 >
                                                     {column.headerName}
@@ -253,51 +210,27 @@ export default function CreateOrderModal({
                                     </thead>
                                     <tbody className='table-body'>
                                         {products?.map((orderDetail, index) => (
-                                            <tr
-                                                key={index}
-                                                className={
-                                                    index % 2 === 0
-                                                        ? "even"
-                                                        : "odd"
-                                                }
-                                            >
-                                                <td>
-                                                    {orderDetail?.product.name}
-                                                </td>
+                                            <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
+                                                <td>{orderDetail?.product.name}</td>
                                                 <td>
                                                     <span
-                                                        className={
-                                                            styles.orderDetailColor
-                                                        }
+                                                        className={styles.orderDetailColor}
                                                         style={{
-                                                            backgroundImage: `url(http://13.228.71.235/${orderDetail?.color})`,
+                                                            backgroundImage: `url(http://localhost:8000/${orderDetail?.color})`,
                                                         }}
                                                     ></span>
                                                 </td>
                                                 <td>{orderDetail?.size}</td>
                                                 <td>{orderDetail?.quantity}</td>
                                                 <td style={{ color: "red" }}>
-                                                    {currencyFormat(
-                                                        Math.ceil(
-                                                            (orderDetail.product
-                                                                .price *
-                                                                (100 -
-                                                                    orderDetail
-                                                                        .product
-                                                                        .discount)) /
-                                                                100,
-                                                        ) *
-                                                            orderDetail.quantity,
-                                                    )}
+                                                    {currencyFormat(Math.ceil((orderDetail.product.price * (100 - orderDetail.product.discount)) / 100) * orderDetail.quantity)}
                                                 </td>
                                             </tr>
                                         ))}
                                     </tbody>
                                     <tfoot className='tfoot'>
                                         <tr>
-                                            <th colSpan='1'>
-                                                Tổng thanh toán:
-                                            </th>
+                                            <th colSpan='1'>Tổng thanh toán:</th>
                                             <td
                                                 colSpan='3'
                                                 style={{
@@ -305,23 +238,7 @@ export default function CreateOrderModal({
                                                     paddingTop: 18,
                                                 }}
                                             >
-                                                {currencyFormat(
-                                                    products.reduce(
-                                                        (total, item) =>
-                                                            total +
-                                                            Math.ceil(
-                                                                (item.product
-                                                                    .price *
-                                                                    (100 -
-                                                                        item
-                                                                            .product
-                                                                            .discount)) /
-                                                                    100,
-                                                            ) *
-                                                                item.quantity,
-                                                        0,
-                                                    ),
-                                                )}
+                                                {currencyFormat(products.reduce((total, item) => total + Math.ceil((item.product.price * (100 - item.product.discount)) / 100) * item.quantity, 0))}
                                             </td>
                                         </tr>
                                     </tfoot>
@@ -344,11 +261,7 @@ export default function CreateOrderModal({
                 </DialogActions>
             </StyledDialog>
 
-            <Snackbar
-                open={snackbar.isOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnackbar}
-            >
+            <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}

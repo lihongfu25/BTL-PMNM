@@ -20,8 +20,7 @@ const ProductItem = ({ product }) => {
                 overflow: "hidden",
                 backgroundColor: "#fff",
                 position: "relative",
-                boxShadow:
-                    "0 0 0.1rem 0 rgba(0, 0, 0, 0.1), 0 0 1rem 0 rgba(0, 0, 0, 0.1)",
+                boxShadow: "0 0 0.1rem 0 rgba(0, 0, 0, 0.1), 0 0 1rem 0 rgba(0, 0, 0, 0.1)",
                 "& .product-img": {
                     width: "100%",
                     transition: "all 0.3s ease-in-out",
@@ -75,11 +74,7 @@ const ProductItem = ({ product }) => {
                     overflow: "hidden",
                 }}
             >
-                <img
-                    className='product-img'
-                    alt=''
-                    src={"http://13.228.71.235/" + product.image}
-                />
+                <img className='product-img' alt='' src={"http://localhost:8000/" + product.image} />
             </Box>
             <Box
                 sx={{
@@ -110,29 +105,10 @@ const ProductItem = ({ product }) => {
             >
                 <h4 className='product-name'>{product.name}</h4>
                 <p className='product-price'>
-                    {product.discount !== 0 && (
-                        <span className='old-price'>
-                            {currencyFormat(product.price)}
-                        </span>
-                    )}
-                    <span className='new-price'>
-                        {product.discount !== 0
-                            ? currencyFormat(
-                                  Math.ceil(
-                                      (product.price *
-                                          (100 - product.discount)) /
-                                          100,
-                                  ),
-                              )
-                            : currencyFormat(product.price)}
-                    </span>
+                    {product.discount !== 0 && <span className='old-price'>{currencyFormat(product.price)}</span>}
+                    <span className='new-price'>{product.discount !== 0 ? currencyFormat(Math.ceil((product.price * (100 - product.discount)) / 100)) : currencyFormat(product.price)}</span>
                 </p>
-                <Rating
-                    className='product-rating'
-                    value={product.rating || 0}
-                    precision={0.1}
-                    readOnly
-                />
+                <Rating className='product-rating' value={product.rating || 0} precision={0.1} readOnly />
             </Box>
         </Box>
     );

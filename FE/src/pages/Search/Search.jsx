@@ -1,18 +1,7 @@
 import React from "react";
 import { useLocation, useSearchParams } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Grid,
-    FormControlLabel,
-    Checkbox,
-    FormGroup,
-    Button,
-    Typography,
-    Pagination,
-    Stack,
-    Skeleton,
-} from "@mui/material";
+import { Box, Grid, FormControlLabel, Checkbox, FormGroup, Button, Typography, Pagination, Stack, Skeleton } from "@mui/material";
 import { NumericFormat } from "react-number-format";
 import { BsCaretDownFill } from "react-icons/bs";
 import axiosClient from "../../api/axiosClient";
@@ -54,8 +43,7 @@ const StyledInput = styled(Input)({
 });
 const Search = ({ title }) => {
     const [searchParams] = useSearchParams();
-    document.title =
-        title || 'Kết quả tìm kiếm "' + searchParams.get("keyword") + '"';
+    document.title = title || 'Kết quả tìm kiếm "' + searchParams.get("keyword") + '"';
 
     const [data, setData] = React.useState([]);
     const [filterPrice, setFilterPrice] = React.useState({});
@@ -98,11 +86,7 @@ const Search = ({ title }) => {
                 my: "6rem",
             }}
         >
-            <Grid
-                container
-                spacing={{ xs: 2, md: 4 }}
-                columns={{ xs: 4, sm: 8, md: 12 }}
-            >
+            <Grid container spacing={{ xs: 2, md: 4 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                 <Grid item xs={2}>
                     <Box
                         sx={{
@@ -139,13 +123,8 @@ const Search = ({ title }) => {
                                     label='Nam'
                                     onChange={(e) =>
                                         setFilterCategory((prevState) => {
-                                            if (!prevState.includes("Nam"))
-                                                return [...prevState, "Nam"];
-                                            else
-                                                return prevState.filter(
-                                                    (element) =>
-                                                        element !== "Nam",
-                                                );
+                                            if (!prevState.includes("Nam")) return [...prevState, "Nam"];
+                                            else return prevState.filter((element) => element !== "Nam");
                                         })
                                     }
                                 />
@@ -154,13 +133,8 @@ const Search = ({ title }) => {
                                     label='Nữ'
                                     onChange={(e) =>
                                         setFilterCategory((prevState) => {
-                                            if (!prevState.includes("Nữ"))
-                                                return [...prevState, "Nữ"];
-                                            else
-                                                return prevState.filter(
-                                                    (element) =>
-                                                        element !== "Nữ",
-                                                );
+                                            if (!prevState.includes("Nữ")) return [...prevState, "Nữ"];
+                                            else return prevState.filter((element) => element !== "Nữ");
                                         })
                                     }
                                 />
@@ -169,16 +143,8 @@ const Search = ({ title }) => {
                                     label='Phụ Kiện'
                                     onChange={(e) =>
                                         setFilterCategory((prevState) => {
-                                            if (!prevState.includes("Phụ Kiện"))
-                                                return [
-                                                    ...prevState,
-                                                    "Phụ Kiện",
-                                                ];
-                                            else
-                                                return prevState.filter(
-                                                    (element) =>
-                                                        element !== "Phụ Kiện",
-                                                );
+                                            if (!prevState.includes("Phụ Kiện")) return [...prevState, "Phụ Kiện"];
+                                            else return prevState.filter((element) => element !== "Phụ Kiện");
                                         })
                                     }
                                 />
@@ -242,11 +208,7 @@ const Search = ({ title }) => {
                                     }}
                                 />
                             </Box>
-                            {filterPrice.min > filterPrice.max && (
-                                <span className='filter-error'>
-                                    Vui lòng điền khoảng giá phù hợp
-                                </span>
-                            )}
+                            {filterPrice.min > filterPrice.max && <span className='filter-error'>Vui lòng điền khoảng giá phù hợp</span>}
                         </Box>
                     </Box>
                 </Grid>
@@ -264,8 +226,7 @@ const Search = ({ title }) => {
                                 fontSize: "1.6rem",
                             }}
                         >
-                            Kết quả tìm kiếm cho từ khoá "
-                            {searchParams.get("keyword")}"
+                            Kết quả tìm kiếm cho từ khoá "{searchParams.get("keyword")}"
                         </Typography>
                         <Box
                             sx={{
@@ -283,9 +244,7 @@ const Search = ({ title }) => {
                         >
                             <p>Sắp xếp theo:</p>
                             <StyledButton
-                                className={
-                                    sorting === "Liên Quan" ? "active" : ""
-                                }
+                                className={sorting === "Liên Quan" ? "active" : ""}
                                 onClick={(e) => {
                                     setSorting("Liên Quan");
                                 }}
@@ -293,9 +252,7 @@ const Search = ({ title }) => {
                                 Liên Quan
                             </StyledButton>
                             <StyledButton
-                                className={
-                                    sorting === "Mới Nhất" ? "active" : ""
-                                }
+                                className={sorting === "Mới Nhất" ? "active" : ""}
                                 onClick={(e) => {
                                     setSorting("Mới Nhất");
                                 }}
@@ -303,9 +260,7 @@ const Search = ({ title }) => {
                                 Mới Nhất
                             </StyledButton>
                             <StyledButton
-                                className={
-                                    sorting === "Bán Chạy" ? "active" : ""
-                                }
+                                className={sorting === "Bán Chạy" ? "active" : ""}
                                 onClick={(e) => {
                                     setSorting("Bán Chạy");
                                 }}
@@ -313,11 +268,7 @@ const Search = ({ title }) => {
                                 Bán Chạy
                             </StyledButton>
                             <Box
-                                className={`${
-                                    (sorting === "ascending" ||
-                                        sorting === "descending") &&
-                                    "active"
-                                } textColor`}
+                                className={`${(sorting === "ascending" || sorting === "descending") && "active"} textColor`}
                                 sx={{
                                     px: "1.2rem",
                                     ml: "1.2rem",
@@ -330,8 +281,7 @@ const Search = ({ title }) => {
                                     borderRadius: "0.4rem",
                                     backgroundColor: "#fff",
                                     "&.active": {
-                                        backgroundImage:
-                                            "linear-gradient(45deg,#485563, #29323c)",
+                                        backgroundImage: "linear-gradient(45deg,#485563, #29323c)",
                                         "& .sort-value": {
                                             color: "#fff",
                                         },
@@ -358,13 +308,7 @@ const Search = ({ title }) => {
                                     },
                                 }}
                             >
-                                <span className='sort-value'>
-                                    {sorting === "ascending"
-                                        ? "Giá: Thấp đến Cao"
-                                        : sorting === "descending"
-                                        ? "Giá: Cao đến Thấp"
-                                        : "Giá"}
-                                </span>
+                                <span className='sort-value'>{sorting === "ascending" ? "Giá: Thấp đến Cao" : sorting === "descending" ? "Giá: Cao đến Thấp" : "Giá"}</span>
                                 <span className='icon'>
                                     <BsCaretDownFill />
                                 </span>
@@ -398,11 +342,7 @@ const Search = ({ title }) => {
                                     }}
                                 >
                                     <option
-                                        className={
-                                            sorting === "ascending"
-                                                ? "active"
-                                                : ""
-                                        }
+                                        className={sorting === "ascending" ? "active" : ""}
                                         value='ascending'
                                         onClick={(e) => {
                                             setSorting(e.target.value);
@@ -411,11 +351,7 @@ const Search = ({ title }) => {
                                         Giá: Thấp đến Cao
                                     </option>
                                     <option
-                                        className={
-                                            sorting === "descending"
-                                                ? "active"
-                                                : ""
-                                        }
+                                        className={sorting === "descending" ? "active" : ""}
                                         value='descending'
                                         onClick={(e) => {
                                             setSorting(e.target.value);
@@ -504,14 +440,8 @@ const Search = ({ title }) => {
                                             },
                                         }}
                                     >
-                                        <img
-                                            className='empty-img'
-                                            alt=''
-                                            src='http://13.228.71.235/images/empty_cart.png'
-                                        />
-                                        <p className='empty-text'>
-                                            Không tìm thấy sản phẩm phù hợp
-                                        </p>
+                                        <img className='empty-img' alt='' src='http://localhost:8000/images/empty_cart.png' />
+                                        <p className='empty-text'>Không tìm thấy sản phẩm phù hợp</p>
                                     </Box>
                                 </Grid>
                             )}
@@ -535,21 +465,17 @@ const Search = ({ title }) => {
                                 page={page}
                                 onChange={handleChangePage}
                                 sx={{
-                                    "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root":
-                                        {
-                                            fontSize: "1.4rem",
-                                        },
-                                    "& .css-g2z002-MuiSvgIcon-root-MuiPaginationItem-icon":
-                                        {
-                                            width: "2rem",
-                                            height: "2rem",
-                                        },
-                                    "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected":
-                                        {
-                                            color: "#fff",
-                                            backgroundImage:
-                                                "linear-gradient(to right, #666, #283048)",
-                                        },
+                                    "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root": {
+                                        fontSize: "1.4rem",
+                                    },
+                                    "& .css-g2z002-MuiSvgIcon-root-MuiPaginationItem-icon": {
+                                        width: "2rem",
+                                        height: "2rem",
+                                    },
+                                    "& .css-19xm0h7-MuiButtonBase-root-MuiPaginationItem-root.Mui-selected": {
+                                        color: "#fff",
+                                        backgroundImage: "linear-gradient(to right, #666, #283048)",
+                                    },
                                 }}
                             />
                         </Box>

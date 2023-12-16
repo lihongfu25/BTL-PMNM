@@ -3,15 +3,7 @@ import { useForm } from "react-hook-form";
 import { useSelector, useDispatch } from "react-redux";
 import { Link } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Typography,
-    Dialog,
-    DialogActions,
-    DialogContent,
-    DialogTitle,
-    Snackbar,
-} from "@mui/material";
+import { Box, Typography, Dialog, DialogActions, DialogContent, DialogTitle, Snackbar } from "@mui/material";
 
 import axiosClient from "../../api/axiosClient";
 import { Button } from "../../components/Button";
@@ -28,7 +20,7 @@ const StyledButton = styled(Button)({
     padding: "0.2rem 1.2rem",
 });
 const Profile = () => {
-    document.title = "Hồ sơ của tôi | 360 Store";
+    document.title = "Hồ sơ của tôi | Hoàn Mỹ Store";
     const user = useSelector((state) => state.user);
     const [image, setImage] = React.useState();
     const [preview, setPreview] = React.useState();
@@ -75,7 +67,7 @@ const Profile = () => {
             };
             reader.readAsDataURL(image);
         } else {
-            setPreview(`http://13.228.71.235/${user.avatar}`);
+            setPreview(`http://localhost:8000/${user.avatar}`);
         }
     }, [image, user]);
     const handleCloseSnackbar = (e, reason) => {
@@ -103,10 +95,11 @@ const Profile = () => {
                     formData.append(item, data[item]);
                 });
                 if (data.image) formData.append("image", data.image);
-                const res = await axiosClient.post(
-                    `/members/${user.id}`,
-                    formData,
-                );
+                const res = await axiosClient.post(`/members/${user.id}`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -125,12 +118,9 @@ const Profile = () => {
     const onChangePass = (data) => {
         async function updatePassword() {
             try {
-                const res = await axiosClient.post(
-                    `/members/password/${user.id}`,
-                    {
-                        ...data,
-                    },
-                );
+                const res = await axiosClient.post(`/members/password/${user.id}`, {
+                    ...data,
+                });
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -177,9 +167,7 @@ const Profile = () => {
                 <Typography variant='h3' className='useFont-Nunito'>
                     Hồ Sơ Của Tôi
                 </Typography>
-                <Typography className='useFont-Nunito'>
-                    Quản lý thông tin hồ sơ để bảo mật tài khoản
-                </Typography>
+                <Typography className='useFont-Nunito'>Quản lý thông tin hồ sơ để bảo mật tài khoản</Typography>
                 <Link onClick={handleOpenChangePassForm}>Đổi mật khẩu</Link>
             </Box>
             <Dialog
@@ -248,11 +236,7 @@ const Profile = () => {
                             pb: "1rem",
                         }}
                     >
-                        <div
-                            className={`form-group ${
-                                errors2.old_password ? "error" : ""
-                            }`}
-                        >
+                        <div className={`form-group ${errors2.old_password ? "error" : ""}`}>
                             <div
                                 style={{
                                     flexGrow: 1,
@@ -267,23 +251,11 @@ const Profile = () => {
                                         required: true,
                                     })}
                                 />
-                                {errors2.old_password?.type === "required" && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập vào mật khẩu cũ
-                                    </span>
-                                )}
-                                {errors2.old_password?.type === "validate" && (
-                                    <span className='form-message'>
-                                        {errors2.old_password?.message}
-                                    </span>
-                                )}
+                                {errors2.old_password?.type === "required" && <span className='form-message'>Vui lòng nhập vào mật khẩu cũ</span>}
+                                {errors2.old_password?.type === "validate" && <span className='form-message'>{errors2.old_password?.message}</span>}
                             </div>
                         </div>
-                        <div
-                            className={`form-group ${
-                                errors2.new_password ? "error" : ""
-                            }`}
-                        >
+                        <div className={`form-group ${errors2.new_password ? "error" : ""}`}>
                             <div
                                 style={{
                                     flexGrow: 1,
@@ -297,27 +269,13 @@ const Profile = () => {
                                     defaultValue=''
                                     {...register2("new_password", {
                                         required: true,
-                                        pattern:
-                                            /^(?=.*[a-zA-Z])(?=.*[@$!%*#?&])(?=.*[0-9])[A-Za-z0-9@$!%*#?&]{8,}$/,
+                                        pattern: /^(?=.*[a-zA-Z])(?=.*[@$!%*#?&])(?=.*[0-9])[A-Za-z0-9@$!%*#?&]{8,}$/,
                                         minLength: 8,
                                     })}
                                 />
-                                {errors2.new_password?.type === "required" && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập vào mật khẩu mới
-                                    </span>
-                                )}
-                                {errors2.new_password?.type === "pattern" && (
-                                    <span className='form-message'>
-                                        Mật khẩu phải bao gồm chữ cái, chữ số và
-                                        ký tự đặc biệt
-                                    </span>
-                                )}
-                                {errors2.new_password?.type === "minLength" && (
-                                    <span className='form-message'>
-                                        Mật khẩu phải có tối thiểu 8 ký tự
-                                    </span>
-                                )}
+                                {errors2.new_password?.type === "required" && <span className='form-message'>Vui lòng nhập vào mật khẩu mới</span>}
+                                {errors2.new_password?.type === "pattern" && <span className='form-message'>Mật khẩu phải bao gồm chữ cái, chữ số và ký tự đặc biệt</span>}
+                                {errors2.new_password?.type === "minLength" && <span className='form-message'>Mật khẩu phải có tối thiểu 8 ký tự</span>}
                             </div>
                         </div>
                     </DialogContent>
@@ -331,9 +289,7 @@ const Profile = () => {
                         }}
                     >
                         <StyledButton type='submit'>Lưu</StyledButton>
-                        <StyledButton onClick={handleCloseChangePassForm}>
-                            Hủy
-                        </StyledButton>
+                        <StyledButton onClick={handleCloseChangePassForm}>Hủy</StyledButton>
                     </DialogActions>
                 </Box>
             </Dialog>
@@ -394,11 +350,7 @@ const Profile = () => {
                             },
                         }}
                     >
-                        <div
-                            className={`form-group ${
-                                errors.username ? "error" : ""
-                            }`}
-                        >
+                        <div className={`form-group ${errors.username ? "error" : ""}`}>
                             <label className='form-label'>Tên đăng nhập</label>
                             {user.username ? (
                                 <Typography
@@ -425,40 +377,21 @@ const Profile = () => {
                                         placeholder='Tên đăng nhập'
                                         defaultValue=''
                                         {...register("username", {
-                                            pattern:
-                                                /^[a-zA-Z0-9]([a-zA-Z0-9]){1,14}[a-zA-Z0-9]$/,
+                                            pattern: /^[a-zA-Z0-9]([a-zA-Z0-9]){1,14}[a-zA-Z0-9]$/,
                                             minLength: 3,
                                             maxLength: 16,
                                         })}
                                     />
 
-                                    {errors?.username?.type === "pattern" && (
-                                        <span className='form-message'>
-                                            Tên đăng nhập viết thường không dấu
-                                            bao gồm chữ cái thường hoặc số
-                                        </span>
-                                    )}
-                                    {errors?.username?.type === "validate" && (
-                                        <span className='form-message'>
-                                            Tên đăng nhập đã tồn tại
-                                        </span>
-                                    )}
-                                    {(errors?.username?.type === "minLength" ||
-                                        errors?.username?.type ===
-                                            "maxLength") && (
-                                        <span className='form-message'>
-                                            Tên đăng nhập có độ dài từ 3 đến 16
-                                            ký tự
-                                        </span>
+                                    {errors?.username?.type === "pattern" && <span className='form-message'>Tên đăng nhập viết thường không dấu bao gồm chữ cái thường hoặc số</span>}
+                                    {errors?.username?.type === "validate" && <span className='form-message'>Tên đăng nhập đã tồn tại</span>}
+                                    {(errors?.username?.type === "minLength" || errors?.username?.type === "maxLength") && (
+                                        <span className='form-message'>Tên đăng nhập có độ dài từ 3 đến 16 ký tự</span>
                                     )}
                                 </div>
                             )}
                         </div>
-                        <div
-                            className={`form-group ${
-                                errors.full_name ? "error" : ""
-                            }`}
-                        >
+                        <div className={`form-group ${errors.full_name ? "error" : ""}`}>
                             <label className='form-label'>Họ tên</label>
                             <div
                                 style={{
@@ -474,18 +407,10 @@ const Profile = () => {
                                         required: true,
                                     })}
                                 />
-                                {errors?.full_name?.type === "required" && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập vào họ tên của bạn
-                                    </span>
-                                )}
+                                {errors?.full_name?.type === "required" && <span className='form-message'>Vui lòng nhập vào họ tên của bạn</span>}
                             </div>
                         </div>
-                        <div
-                            className={`form-group ${
-                                errors.email ? "error" : ""
-                            }`}
-                        >
+                        <div className={`form-group ${errors.email ? "error" : ""}`}>
                             <label className='form-label'>Email</label>
                             <div
                                 style={{
@@ -499,27 +424,14 @@ const Profile = () => {
                                     placeholder='Email'
                                     {...register("email", {
                                         required: true,
-                                        pattern:
-                                            /^([a-z0-9_.-]+)@([\da-z.-]+).([a-z.]{2,6})$/,
+                                        pattern: /^([a-z0-9_.-]+)@([\da-z.-]+).([a-z.]{2,6})$/,
                                     })}
                                 />
-                                {errors?.email?.type === "required" && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập vào email của bạn
-                                    </span>
-                                )}
-                                {errors?.email?.type === "pattern" && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập đúng định dạng email
-                                    </span>
-                                )}
+                                {errors?.email?.type === "required" && <span className='form-message'>Vui lòng nhập vào email của bạn</span>}
+                                {errors?.email?.type === "pattern" && <span className='form-message'>Vui lòng nhập đúng định dạng email</span>}
                             </div>
                         </div>
-                        <div
-                            className={`form-group ${
-                                errors.phone ? "error" : ""
-                            }`}
-                        >
+                        <div className={`form-group ${errors.phone ? "error" : ""}`}>
                             <label className='form-label'>Số điện thoại</label>
                             <div
                                 style={{
@@ -538,27 +450,13 @@ const Profile = () => {
                                         maxLength: 10,
                                     })}
                                 />
-                                {errors?.phone?.type === "required" && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập vào số điện thoại của bạn
-                                    </span>
-                                )}
-                                {(errors?.phone?.type === "pattern" ||
-                                    errors?.phone?.type === "maxLength" ||
-                                    errors?.phone?.type === "minLength") && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập đúng số điện thoại của bạn
-                                        để chúng tôi có thể liên hệ khi nhận
-                                        hàng
-                                    </span>
+                                {errors?.phone?.type === "required" && <span className='form-message'>Vui lòng nhập vào số điện thoại của bạn</span>}
+                                {(errors?.phone?.type === "pattern" || errors?.phone?.type === "maxLength" || errors?.phone?.type === "minLength") && (
+                                    <span className='form-message'>Vui lòng nhập đúng số điện thoại của bạn để chúng tôi có thể liên hệ khi nhận hàng</span>
                                 )}
                             </div>
                         </div>
-                        <div
-                            className={`form-group ${
-                                errors.address ? "error" : ""
-                            }`}
-                        >
+                        <div className={`form-group ${errors.address ? "error" : ""}`}>
                             <label className='form-label'>Địa chỉ</label>
                             <div
                                 style={{
@@ -574,12 +472,7 @@ const Profile = () => {
                                         required: true,
                                     })}
                                 />
-                                {errors?.address?.type === "required" && (
-                                    <span className='form-message'>
-                                        Vui lòng nhập vào địa chỉ của bạn để
-                                        chúng tôi có thể giao đến cho bạn
-                                    </span>
-                                )}
+                                {errors?.address?.type === "required" && <span className='form-message'>Vui lòng nhập vào địa chỉ của bạn để chúng tôi có thể giao đến cho bạn</span>}
                             </div>
                         </div>
                         <div className='form-group'>
@@ -593,28 +486,13 @@ const Profile = () => {
                             >
                                 <div>
                                     <label className='form-label'>
-                                        <input
-                                            {...register("gender")}
-                                            type='radio'
-                                            value='Nam'
-                                        />{" "}
-                                        Nam
+                                        <input {...register("gender")} type='radio' value='Nam' /> Nam
                                     </label>
                                     <label className='form-label'>
-                                        <input
-                                            {...register("gender")}
-                                            type='radio'
-                                            value='Nữ'
-                                        />{" "}
-                                        Nữ
+                                        <input {...register("gender")} type='radio' value='Nữ' /> Nữ
                                     </label>
                                     <label className='form-label'>
-                                        <input
-                                            {...register("gender")}
-                                            type='radio'
-                                            value='Khác'
-                                        />{" "}
-                                        Khác
+                                        <input {...register("gender")} type='radio' value='Khác' /> Khác
                                     </label>
                                 </div>
                             </div>
@@ -628,13 +506,7 @@ const Profile = () => {
                                     flexDirection: "column",
                                 }}
                             >
-                                <input
-                                    className='form-input'
-                                    type='date'
-                                    placeholder='Ngày sinh'
-                                    defaultValue={user.date_of_birth}
-                                    {...register("date_of_birth")}
-                                />
+                                <input className='form-input' type='date' placeholder='Ngày sinh' defaultValue={user.date_of_birth} {...register("date_of_birth")} />
                             </div>
                         </div>
                     </StyledBox>
@@ -701,11 +573,7 @@ const Profile = () => {
                     Lưu
                 </Button>
             </Box>
-            <Snackbar
-                open={snackbar.isOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnackbar}
-            >
+            <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}

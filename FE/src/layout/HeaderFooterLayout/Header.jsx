@@ -1,18 +1,13 @@
 import React from "react";
 import { useSelector, useDispatch } from "react-redux";
-import {
-    useLocation,
-    Link,
-    createSearchParams,
-    useNavigate,
-} from "react-router-dom";
+import { useLocation, Link, createSearchParams, useNavigate } from "react-router-dom";
 import { FaShoppingCart } from "react-icons/fa";
 import { BsSearch } from "react-icons/bs";
 import { styled } from "@mui/material/styles";
 import { Box, IconButton, Menu, MenuItem, Badge } from "@mui/material";
 import { clearToken } from "../../redux/store/tokenSlice";
 import { userLogout } from "../../redux/store/userSlice";
-import logo from "../../assets/img/logo.png";
+import logo from "../../assets/img/logo.jpg";
 import "./header.scss";
 import { clearCart } from "../../pages/Cart/cartSlice";
 const StyledLink = styled(Link)({
@@ -46,8 +41,7 @@ const Header = () => {
                 setChecked(false);
             }
         };
-        if (checked && search !== "")
-            window.addEventListener("keypress", handleListenKeyPress);
+        if (checked && search !== "") window.addEventListener("keypress", handleListenKeyPress);
 
         return () => {
             window.removeEventListener("keypress", handleListenKeyPress);
@@ -118,25 +112,12 @@ const Header = () => {
                     alignItems: "center",
                 }}
             >
-                <input
-                    type='checkbox'
-                    id='checkbox'
-                    checked={checked}
-                    readOnly
-                />
+                <input type='checkbox' id='checkbox' checked={checked} readOnly />
                 <Box className='search-box search'>
-                    <label
-                        className='search-label'
-                        onClick={() => setChecked((prevState) => !prevState)}
-                    >
+                    <label className='search-label' onClick={() => setChecked((prevState) => !prevState)}>
                         <BsSearch />
                     </label>
-                    <input
-                        className='search-input'
-                        placeholder='Tìm kiếm...'
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                    />
+                    <input className='search-input' placeholder='Tìm kiếm...' value={search} onChange={(e) => setSearch(e.target.value)} />
                 </Box>
                 <StyledLink
                     to='/user/cart'
@@ -177,7 +158,7 @@ const Header = () => {
                     }}
                 >
                     <img
-                        src={`http://13.228.71.235/${user.avatar}`}
+                        src={`http://localhost:8000/${user.avatar}`}
                         alt='user'
                         style={{
                             width: "3.2rem",
@@ -221,31 +202,17 @@ const Header = () => {
                         }}
                     >
                         <MenuItem>
-                            <StyledLink
-                                to='/user/profile'
-                                onClick={handleCloseMenuUser}
-                            >
+                            <StyledLink to='/user/profile' onClick={handleCloseMenuUser}>
                                 Tài khoản của tôi
                             </StyledLink>
                         </MenuItem>
                         <MenuItem>
-                            <StyledLink
-                                to='/user/purchase'
-                                onClick={handleCloseMenuUser}
-                            >
+                            <StyledLink to='/user/purchase' onClick={handleCloseMenuUser}>
                                 Đơn mua
                             </StyledLink>
                         </MenuItem>
                         <MenuItem>
-                            <StyledLink
-                                to={
-                                    reactLocation.pathname.includes("user") ||
-                                    reactLocation.pathname.includes("manager")
-                                        ? "/login"
-                                        : reactLocation.pathname
-                                }
-                                onClick={handleLogout}
-                            >
+                            <StyledLink to={reactLocation.pathname.includes("user") || reactLocation.pathname.includes("manager") ? "/login" : reactLocation.pathname} onClick={handleLogout}>
                                 Đăng xuất
                             </StyledLink>
                         </MenuItem>

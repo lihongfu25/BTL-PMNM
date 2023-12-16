@@ -19,7 +19,7 @@ const StyledTextField = styled(TextField)({
     margin: "1rem 0",
 });
 const Login = () => {
-    document.title = "Đăng nhập | 360 Store";
+    document.title = "Đăng nhập | Hoàn Mỹ Store";
     const isLogin = useSelector((state) => state.token.isLogin);
     const userRole = useSelector((state) => state.user.role_id);
     const [isLoading, setIsLoading] = React.useState(false);
@@ -50,10 +50,7 @@ const Login = () => {
                 const res = await axiosClient.post(`/members/login`, {
                     ...data,
                 });
-                localStorage.setItem(
-                    "authTokens",
-                    JSON.stringify(res.data.access_token),
-                );
+                localStorage.setItem("authTokens", JSON.stringify(res.data.access_token));
                 dispatch(setCart(res.data.cart));
                 dispatch(
                     setToken({
@@ -97,16 +94,7 @@ const Login = () => {
                 rules={{
                     required: "Vui lòng nhập tên đăng nhâp/Email/SĐT",
                 }}
-                render={({ field }) => (
-                    <StyledTextField
-                        label='Tên đăng nhập/Email/SĐT'
-                        error={Boolean(errors.username)}
-                        helperText={
-                            errors?.username ? errors.username.message : ""
-                        }
-                        {...field}
-                    />
-                )}
+                render={({ field }) => <StyledTextField label='Tên đăng nhập/Email/SĐT' error={Boolean(errors.username)} helperText={errors?.username ? errors.username.message : ""} {...field} />}
             />
             <Controller
                 name='password'
@@ -115,17 +103,7 @@ const Login = () => {
                 rules={{
                     required: "Vui lòng nhập mật khẩu",
                 }}
-                render={({ field }) => (
-                    <StyledTextField
-                        label='Mật khẩu'
-                        type='password'
-                        error={Boolean(errors.password)}
-                        helperText={
-                            errors?.password ? errors.password.message : ""
-                        }
-                        {...field}
-                    />
-                )}
+                render={({ field }) => <StyledTextField label='Mật khẩu' type='password' error={Boolean(errors.password)} helperText={errors?.password ? errors.password.message : ""} {...field} />}
             />
             <Typography
                 sx={{

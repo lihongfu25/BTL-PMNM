@@ -1,18 +1,7 @@
 import React from "react";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Typography,
-    Link,
-    Pagination,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Snackbar,
-    LinearProgress,
-} from "@mui/material";
+import { Box, Typography, Link, Pagination, Dialog, DialogTitle, DialogContent, DialogActions, Snackbar, LinearProgress } from "@mui/material";
 
 import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
@@ -44,7 +33,7 @@ const StyledDialog = styled(Dialog)({
 });
 
 const CategoryManager = () => {
-    document.title = "Danh mục | 360 Store";
+    document.title = "Danh mục | Hoàn Mỹ Store";
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
@@ -82,9 +71,7 @@ const CategoryManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axiosClient.get(
-                `/categories?keyword=${debounceSearch}&page=${page}`,
-            );
+            const res = await axiosClient.get(`/categories?keyword=${debounceSearch}&page=${page}`);
             setData(res.data.data.data);
             setPage(res.data.data.current_page);
             setTotalPage(res.data.data.last_page);
@@ -282,60 +269,33 @@ const CategoryManager = () => {
                         <tbody className='table-body'>
                             {isLoading ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         <LinearProgress color='inherit' />
                                     </td>
                                 </tr>
                             ) : data.length === 0 ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         Không tìm thấy dữ liệu phù hợp!
                                     </td>
                                 </tr>
                             ) : (
                                 data.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
-                                        }
-                                    >
-                                        {Object.values(row).map(
-                                            (value, index) => (
-                                                <td key={index}>{value}</td>
-                                            ),
-                                        )}
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
-                                        >
+                                    <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
+                                        {Object.values(row).map((value, index) => (
+                                            <td key={index}>{value}</td>
+                                        ))}
+                                        <td className='go-to-detail' align='center'>
                                             <Link
                                                 underline='hover'
                                                 sx={{
                                                     mr: "1rem",
                                                 }}
-                                                onClick={() =>
-                                                    handleOpenUpdateForm(row)
-                                                }
+                                                onClick={() => handleOpenUpdateForm(row)}
                                             >
                                                 Sửa
                                             </Link>
-                                            <Link
-                                                underline='hover'
-                                                onClick={() =>
-                                                    handleOpenDelForm(row.id)
-                                                }
-                                            >
+                                            <Link underline='hover' onClick={() => handleOpenDelForm(row.id)}>
                                                 Xóa
                                             </Link>
                                         </td>
@@ -346,13 +306,7 @@ const CategoryManager = () => {
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
-                                    <Pagination
-                                        count={totalPage}
-                                        variant='outlined'
-                                        shape='rounded'
-                                        page={page}
-                                        onChange={handleChangePage}
-                                    />
+                                    <Pagination count={totalPage} variant='outlined' shape='rounded' page={page} onChange={handleChangePage} />
                                 </td>
                             </tr>
                         </tfoot>
@@ -375,33 +329,19 @@ const CategoryManager = () => {
                 >
                     <DialogTitle>Xóa danh mục</DialogTitle>
                     <DialogContent>
-                        <p className='mess'>
-                            Hành động này không thể hoàn tác, vẫn tiếp tục xóa
-                            danh mục {delId} ?
-                        </p>
+                        <p className='mess'>Hành động này không thể hoàn tác, vẫn tiếp tục xóa danh mục {delId} ?</p>
                     </DialogContent>
                     <DialogActions>
                         <StyledButton variant='text' onClick={onDel}>
                             Đồng ý
                         </StyledButton>
-                        <StyledButton
-                            variant='text'
-                            onClick={() => setOpenDelForm(false)}
-                        >
+                        <StyledButton variant='text' onClick={() => setOpenDelForm(false)}>
                             Hủy
                         </StyledButton>
                     </DialogActions>
                 </StyledDialog>
-                <StyledDialog
-                    className='update-form'
-                    open={openUpdateForm}
-                    onClose={handleCloseUpdateForm}
-                >
-                    <Box
-                        component='form'
-                        onSubmit={handleSubmit2(onUpdate)}
-                        noValidate
-                    >
+                <StyledDialog className='update-form' open={openUpdateForm} onClose={handleCloseUpdateForm}>
+                    <Box component='form' onSubmit={handleSubmit2(onUpdate)} noValidate>
                         <DialogTitle>Cập nhật danh mục</DialogTitle>
                         <DialogContent
                             sx={{
@@ -415,18 +355,7 @@ const CategoryManager = () => {
                                 rules={{
                                     required: "Vui lòng nhập trường này!",
                                 }}
-                                render={({ field }) => (
-                                    <TextFieldFull
-                                        label='Tên danh mục'
-                                        error={Boolean(errors2.name)}
-                                        helperText={
-                                            errors2?.name
-                                                ? errors2.name.message
-                                                : ""
-                                        }
-                                        {...field}
-                                    />
-                                )}
+                                render={({ field }) => <TextFieldFull label='Tên danh mục' error={Boolean(errors2.name)} helperText={errors2?.name ? errors2.name.message : ""} {...field} />}
                             />
                             <Controller
                                 name='slug'
@@ -435,8 +364,7 @@ const CategoryManager = () => {
                                     required: "Vui lòng nhập trường này!",
                                     pattern: {
                                         value: /^[a-z-]+$/u,
-                                        message:
-                                            "Slug chỉ chứa chữ cái thường và dấu (-)",
+                                        message: "Slug chỉ chứa chữ cái thường và dấu (-)",
                                     },
                                 }}
                                 render={({ field }) => {
@@ -447,11 +375,7 @@ const CategoryManager = () => {
                                                 mt: "1.5rem",
                                             }}
                                             error={Boolean(errors2.slug)}
-                                            helperText={
-                                                errors2?.slug
-                                                    ? errors2.slug.message
-                                                    : ""
-                                            }
+                                            helperText={errors2?.slug ? errors2.slug.message : ""}
                                             {...field}
                                         />
                                     );
@@ -466,25 +390,14 @@ const CategoryManager = () => {
                             <StyledButton variant='text' type='submit'>
                                 Cập nhật
                             </StyledButton>
-                            <StyledButton
-                                variant='text'
-                                onClick={handleCloseUpdateForm}
-                            >
+                            <StyledButton variant='text' onClick={handleCloseUpdateForm}>
                                 Hủy
                             </StyledButton>
                         </DialogActions>
                     </Box>
                 </StyledDialog>
-                <StyledDialog
-                    className='add-form'
-                    open={openAddForm}
-                    onClose={handleCloseAddForm}
-                >
-                    <Box
-                        component='form'
-                        onSubmit={handleSubmit(onAdd)}
-                        noValidate
-                    >
+                <StyledDialog className='add-form' open={openAddForm} onClose={handleCloseAddForm}>
+                    <Box component='form' onSubmit={handleSubmit(onAdd)} noValidate>
                         <DialogTitle>Thêm danh mục</DialogTitle>
                         <DialogContent
                             sx={{
@@ -498,18 +411,7 @@ const CategoryManager = () => {
                                 rules={{
                                     required: "Vui lòng nhập trường này!",
                                 }}
-                                render={({ field }) => (
-                                    <TextFieldFull
-                                        label='Tên danh mục'
-                                        error={Boolean(errors.name)}
-                                        helperText={
-                                            errors?.name
-                                                ? errors.name.message
-                                                : ""
-                                        }
-                                        {...field}
-                                    />
-                                )}
+                                render={({ field }) => <TextFieldFull label='Tên danh mục' error={Boolean(errors.name)} helperText={errors?.name ? errors.name.message : ""} {...field} />}
                             />
                             <Controller
                                 name='slug'
@@ -518,8 +420,7 @@ const CategoryManager = () => {
                                     required: "Vui lòng nhập trường này!",
                                     pattern: {
                                         value: /^[a-z-]+$/u,
-                                        message:
-                                            "Slug chỉ chứa chữ cái viết thường không dấu và dấu (-)",
+                                        message: "Slug chỉ chứa chữ cái viết thường không dấu và dấu (-)",
                                     },
                                 }}
                                 render={({ field }) => {
@@ -530,11 +431,7 @@ const CategoryManager = () => {
                                                 mt: "1.5rem",
                                             }}
                                             error={Boolean(errors.slug)}
-                                            helperText={
-                                                errors?.slug
-                                                    ? errors.slug.message
-                                                    : ""
-                                            }
+                                            helperText={errors?.slug ? errors.slug.message : ""}
                                             {...field}
                                         />
                                     );
@@ -549,21 +446,14 @@ const CategoryManager = () => {
                             <StyledButton variant='text' type='submit'>
                                 Thêm
                             </StyledButton>
-                            <StyledButton
-                                variant='text'
-                                onClick={handleCloseAddForm}
-                            >
+                            <StyledButton variant='text' onClick={handleCloseAddForm}>
                                 Hủy
                             </StyledButton>
                         </DialogActions>
                     </Box>
                 </StyledDialog>
             </Box>
-            <Snackbar
-                open={snackbar.isOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnackbar}
-            >
+            <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}

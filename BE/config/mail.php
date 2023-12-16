@@ -93,7 +93,7 @@ return [
 
     'from' => [
         'address' => 'service.360store@gmail.com',
-        'name' => '360 Store',
+        'name' => 'Hoàn Mỹ Store',
     ],
 
     /*

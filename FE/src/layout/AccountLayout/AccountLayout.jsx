@@ -42,10 +42,8 @@ const AccountLayout = ({ children }) => {
                         },
                     }}
                 >
-                    <img src={`http://13.228.71.235/${user.avatar}`} alt='' />
-                    <Typography className='useFont-Nunito'>
-                        {user.name}
-                    </Typography>
+                    <img src={`http://localhost:8000/${user.avatar}`} alt='' />
+                    <Typography className='useFont-Nunito'>{user.name}</Typography>
                 </Box>
                 <Divider
                     sx={{
@@ -71,24 +69,10 @@ const AccountLayout = ({ children }) => {
                         },
                     }}
                 >
-                    <Link
-                        to='/user/profile'
-                        className={
-                            location.pathname === "/user/profile"
-                                ? "active"
-                                : ""
-                        }
-                    >
+                    <Link to='/user/profile' className={location.pathname === "/user/profile" ? "active" : ""}>
                         Tài Khoản Của Tôi
                     </Link>
-                    <Link
-                        to='/user/purchase'
-                        className={
-                            location.pathname === "/user/purchase"
-                                ? "active"
-                                : ""
-                        }
-                    >
+                    <Link to='/user/purchase' className={location.pathname === "/user/purchase" ? "active" : ""}>
                         Đơn Mua
                     </Link>
                 </Box>

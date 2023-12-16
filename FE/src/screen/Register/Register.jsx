@@ -18,7 +18,7 @@ const StyledTextField = styled(TextField)({
     margin: "1rem 0",
 });
 const Register = () => {
-    document.title = "Đăng ký | 360 Store";
+    document.title = "Đăng ký | Hoàn Mỹ Store";
     const [searchParams] = useSearchParams();
     const [isLoading, setIsLoading] = React.useState(false);
 
@@ -41,10 +41,7 @@ const Register = () => {
                 const res = await axiosClient.post("/members", {
                     ...data,
                 });
-                localStorage.setItem(
-                    "authTokens",
-                    JSON.stringify(res.data.access_token),
-                );
+                localStorage.setItem("authTokens", JSON.stringify(res.data.access_token));
                 dispatch(
                     setToken({
                         isLogin: true,
@@ -73,9 +70,7 @@ const Register = () => {
             onSubmit={handleSubmit(onSubmit)}
             noValidate
         >
-            <h6 className='heading textColor useFont-Nunito'>
-                Thông tin thành viên
-            </h6>
+            <h6 className='heading textColor useFont-Nunito'>Thông tin thành viên</h6>
 
             <Controller
                 name='full_name'
@@ -88,16 +83,7 @@ const Register = () => {
                         message: "Họ tên chỉ chứa chữa cái",
                     },
                 }}
-                render={({ field }) => (
-                    <StyledTextField
-                        label='Họ tên'
-                        error={Boolean(errors.full_name)}
-                        helperText={
-                            errors?.full_name ? errors.full_name.message : ""
-                        }
-                        {...field}
-                    />
-                )}
+                render={({ field }) => <StyledTextField label='Họ tên' error={Boolean(errors.full_name)} helperText={errors?.full_name ? errors.full_name.message : ""} {...field} />}
             />
 
             <Controller
@@ -107,16 +93,7 @@ const Register = () => {
                 rules={{
                     required: "Vui lòng nhập trường này",
                 }}
-                render={({ field }) => (
-                    <StyledTextField
-                        label='Địa chỉ'
-                        error={Boolean(errors.address)}
-                        helperText={
-                            errors?.address ? errors.address.message : ""
-                        }
-                        {...field}
-                    />
-                )}
+                render={({ field }) => <StyledTextField label='Địa chỉ' error={Boolean(errors.address)} helperText={errors?.address ? errors.address.message : ""} {...field} />}
             />
             <Controller
                 name='phone'
@@ -137,14 +114,7 @@ const Register = () => {
                         message: "Có vẻ bạn đã nhập sai số điện thoại",
                     },
                 }}
-                render={({ field }) => (
-                    <StyledTextField
-                        label='Số điện thoại'
-                        error={Boolean(errors.phone)}
-                        helperText={errors?.phone ? errors.phone.message : ""}
-                        {...field}
-                    />
-                )}
+                render={({ field }) => <StyledTextField label='Số điện thoại' error={Boolean(errors.phone)} helperText={errors?.phone ? errors.phone.message : ""} {...field} />}
             />
             <Controller
                 name='password'
@@ -154,24 +124,14 @@ const Register = () => {
                     required: "Vui lòng nhập trường này",
                     pattern: {
                         value: /^(?=.*[a-zA-Z])(?=.*[@$!%*#?&])(?=.*[0-9])[A-Za-z0-9@$!%*#?&]{8,}$/,
-                        message:
-                            "Mật khẩu phải bao gồm chữ cái, chữ số và ký tự đặc biệt",
+                        message: "Mật khẩu phải bao gồm chữ cái, chữ số và ký tự đặc biệt",
                     },
                     minLength: {
                         value: 8,
                         message: "Mật khẩu phải có tối thiểu 8 ký tự",
                     },
                 }}
-                render={({ field }) => (
-                    <StyledTextField
-                        label='Mật khẩu'
-                        error={Boolean(errors.password)}
-                        helperText={
-                            errors?.password ? errors.password.message : ""
-                        }
-                        {...field}
-                    />
-                )}
+                render={({ field }) => <StyledTextField label='Mật khẩu' error={Boolean(errors.password)} helperText={errors?.password ? errors.password.message : ""} {...field} />}
             />
 
             <FormControlLabel

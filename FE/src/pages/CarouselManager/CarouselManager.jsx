@@ -1,18 +1,7 @@
 import React from "react";
 import { Controller, useForm } from "react-hook-form";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Link,
-    Pagination,
-    Snackbar,
-    LinearProgress,
-} from "@mui/material";
+import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Link, Pagination, Snackbar, LinearProgress } from "@mui/material";
 import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
 import { Button } from "../../components/Button";
@@ -51,7 +40,7 @@ const StyledDialog = styled(Dialog)({
     },
 });
 const ContactManager = () => {
-    document.title = "Carousel | 360 Store";
+    document.title = "Carousel | Hoàn Mỹ Store";
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
@@ -95,12 +84,7 @@ const ContactManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await Promise.all([
-                axiosClient.get(`/categories/all`),
-                axiosClient.get(
-                    `/carousels?keyword=${debounceSearch}&page=${page}`,
-                ),
-            ]);
+            const res = await Promise.all([axiosClient.get(`/categories/all`), axiosClient.get(`/carousels?keyword=${debounceSearch}&page=${page}`)]);
             setCategories(res[0].data.data);
             setData(res[1].data.data.data);
             setPage(res[1].data.data.current_page);
@@ -145,10 +129,7 @@ const ContactManager = () => {
         setValue2("title", row.title);
         setValue2("category_id", row.category_id);
         setValue2("status", row.status);
-        setPreview(
-            "http://13.228.71.235/" +
-                data.filter((carousel) => carousel.id === row.id)[0].image,
-        );
+        setPreview("http://localhost:8000/" + data.filter((carousel) => carousel.id === row.id)[0].image);
     };
     const handleOpenDelForm = (value) => {
         setOpenDelForm(true);
@@ -202,7 +183,11 @@ const ContactManager = () => {
                     formData.append(item, data[item]);
                 });
                 if (data.image) formData.append("image", data.image);
-                const res = await axiosClient.post(`/carousels`, formData);
+                const res = await axiosClient.post(`/carousels`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -220,15 +205,16 @@ const ContactManager = () => {
         async function updateCarousel() {
             try {
                 const formData = new FormData();
-
                 Object.keys(data).forEach((item) => {
                     formData.append(item, data[item]);
                 });
                 if (data.image) formData.append("image", data.image);
-                const res = await axiosClient.post(
-                    `/carousels/${updateId}`,
-                    formData,
-                );
+                const res = await axiosClient.post(`/carousels/${updateId}`, formData, {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                });
+                console.log(res);
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -328,68 +314,35 @@ const ContactManager = () => {
                         <tbody className='table-body'>
                             {isLoading ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         <LinearProgress color='inherit' />
                                     </td>
                                 </tr>
                             ) : data.length === 0 ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         Không tìm thấy dữ liệu phù hợp!
                                     </td>
                                 </tr>
                             ) : (
                                 data.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
-                                        }
-                                    >
+                                    <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
                                         <td>{row.id}</td>
                                         <td>{row.title}</td>
                                         <td>{row.category.name}</td>
-                                        <td
-                                            className={
-                                                row.status === "Đang tắt"
-                                                    ? "error"
-                                                    : "success"
-                                            }
-                                        >
-                                            {row.status}
-                                        </td>
+                                        <td className={row.status === "Đang tắt" ? "error" : "success"}>{row.status}</td>
                                         <td>{formatDate(row.created_at)}</td>
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
-                                        >
+                                        <td className='go-to-detail' align='center'>
                                             <Link
                                                 underline='hover'
                                                 sx={{
                                                     mr: "1rem",
                                                 }}
-                                                onClick={() =>
-                                                    handleOpenUpdateForm(row)
-                                                }
+                                                onClick={() => handleOpenUpdateForm(row)}
                                             >
                                                 Sửa
                                             </Link>
-                                            <Link
-                                                underline='hover'
-                                                onClick={() =>
-                                                    handleOpenDelForm(row.id)
-                                                }
-                                            >
+                                            <Link underline='hover' onClick={() => handleOpenDelForm(row.id)}>
                                                 Xóa
                                             </Link>
                                         </td>
@@ -400,13 +353,7 @@ const ContactManager = () => {
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
-                                    <Pagination
-                                        count={totalPage}
-                                        variant='outlined'
-                                        shape='rounded'
-                                        page={page}
-                                        onChange={handleChangePage}
-                                    />
+                                    <Pagination count={totalPage} variant='outlined' shape='rounded' page={page} onChange={handleChangePage} />
                                 </td>
                             </tr>
                         </tfoot>
@@ -430,19 +377,13 @@ const ContactManager = () => {
             >
                 <DialogTitle>Xóa slide</DialogTitle>
                 <DialogContent>
-                    <p className='mess'>
-                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa slide{" "}
-                        {delId} ?
-                    </p>
+                    <p className='mess'>Hành động này không thể hoàn tác, vẫn tiếp tục xóa slide {delId} ?</p>
                 </DialogContent>
                 <DialogActions>
                     <StyledButton variant='text' onClick={onDel}>
                         Đồng ý
                     </StyledButton>
-                    <StyledButton
-                        variant='text'
-                        onClick={() => setOpenDelForm(false)}
-                    >
+                    <StyledButton variant='text' onClick={() => setOpenDelForm(false)}>
                         Hủy
                     </StyledButton>
                 </DialogActions>
@@ -480,11 +421,7 @@ const ContactManager = () => {
                                             width: "100%",
                                         }}
                                         error={Boolean(errors.title)}
-                                        helperText={
-                                            errors?.title
-                                                ? errors.title.message
-                                                : ""
-                                        }
+                                        helperText={errors?.title ? errors.title.message : ""}
                                         {...field}
                                     />
                                 );
@@ -496,15 +433,7 @@ const ContactManager = () => {
                             rules={{
                                 required: "Vui lòng chọn danh mục",
                             }}
-                            render={({ field }) => (
-                                <Select
-                                    label='Danh mục'
-                                    options={categories}
-                                    isError={Boolean(errors.category_id)}
-                                    errorMessage={errors.category_id?.message}
-                                    field={field}
-                                />
-                            )}
+                            render={({ field }) => <Select label='Danh mục' options={categories} isError={Boolean(errors.category_id)} errorMessage={errors.category_id?.message} field={field} />}
                         />
                         <Box
                             sx={{
@@ -523,11 +452,7 @@ const ContactManager = () => {
                             }}
                         >
                             <p>Hình ảnh</p>
-                            {errors.image && (
-                                <span className='error-message'>
-                                    {errors.image.message}
-                                </span>
-                            )}
+                            {errors.image && <span className='error-message'>{errors.image.message}</span>}
                             <Box
                                 sx={{
                                     display: "flex",
@@ -594,10 +519,7 @@ const ContactManager = () => {
                         >
                             Thêm
                         </StyledButton>
-                        <StyledButton
-                            variant='text'
-                            onClick={handleCloseAddForm}
-                        >
+                        <StyledButton variant='text' onClick={handleCloseAddForm}>
                             Hủy
                         </StyledButton>
                     </DialogActions>
@@ -613,11 +535,7 @@ const ContactManager = () => {
                     },
                 }}
             >
-                <Box
-                    component='form'
-                    noValidate
-                    onSubmit={handleSubmit2(onUpdate)}
-                >
+                <Box component='form' noValidate onSubmit={handleSubmit2(onUpdate)}>
                     <DialogTitle>Cập nhật slide</DialogTitle>
                     <DialogContent
                         sx={{
@@ -640,11 +558,7 @@ const ContactManager = () => {
                                             width: "100%",
                                         }}
                                         error={Boolean(errors2.title)}
-                                        helperText={
-                                            errors2?.title
-                                                ? errors2.title.message
-                                                : ""
-                                        }
+                                        helperText={errors2?.title ? errors2.title.message : ""}
                                         {...field}
                                     />
                                 );
@@ -656,15 +570,7 @@ const ContactManager = () => {
                             rules={{
                                 required: "Vui lòng chọn danh mục",
                             }}
-                            render={({ field }) => (
-                                <Select
-                                    label='Danh mục'
-                                    options={categories}
-                                    isError={Boolean(errors2.category_id)}
-                                    errorMessage={errors2.category_id?.message}
-                                    field={field}
-                                />
-                            )}
+                            render={({ field }) => <Select label='Danh mục' options={categories} isError={Boolean(errors2.category_id)} errorMessage={errors2.category_id?.message} field={field} />}
                         />
                         <Controller
                             name='status'
@@ -754,20 +660,13 @@ const ContactManager = () => {
                         <StyledButton variant='text' type='submit'>
                             Cập nhật
                         </StyledButton>
-                        <StyledButton
-                            variant='text'
-                            onClick={handleCloseUpdateForm}
-                        >
+                        <StyledButton variant='text' onClick={handleCloseUpdateForm}>
                             Hủy
                         </StyledButton>
                     </DialogActions>
                 </Box>
             </StyledDialog>
-            <Snackbar
-                open={snackbar.isOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnackbar}
-            >
+            <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}

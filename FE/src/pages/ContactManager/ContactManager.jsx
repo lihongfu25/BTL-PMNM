@@ -1,17 +1,6 @@
 import React from "react";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Link,
-    Pagination,
-    Snackbar,
-    LinearProgress,
-} from "@mui/material";
+import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Link, Pagination, Snackbar, LinearProgress } from "@mui/material";
 
 import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
@@ -41,7 +30,7 @@ const StyledDialog = styled(Dialog)({
     },
 });
 const CarouselManager = () => {
-    document.title = "Liên hệ | 360 Store";
+    document.title = "Liên hệ | Hoàn Mỹ Store";
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
     const [search, setSearch] = React.useState("");
@@ -61,9 +50,7 @@ const CarouselManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await axiosClient.get(
-                `/contacts?keyword=${debounceSearch}&page=${page}`,
-            );
+            const res = await axiosClient.get(`/contacts?keyword=${debounceSearch}&page=${page}`);
             setData(res.data.data.data);
             setPage(res.data.data.current_page);
             setTotalPage(res.data.data.last_page);
@@ -185,54 +172,32 @@ const CarouselManager = () => {
                         <tbody className='table-body'>
                             {isLoading ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         <LinearProgress color='inherit' />
                                     </td>
                                 </tr>
                             ) : data.length === 0 ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         Chưa có liên hệ nào
                                     </td>
                                 </tr>
                             ) : (
                                 data.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
-                                        }
-                                    >
+                                    <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
                                         <td>{row.id}</td>
                                         <td>{row.full_name}</td>
                                         <td>{row.email}</td>
                                         <td>{row.phone}</td>
                                         <td>{row.content}</td>
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
-                                        >
+                                        <td className='go-to-detail' align='center'>
                                             {!row.is_feedback && (
                                                 <Link
                                                     underline='hover'
                                                     sx={{
                                                         mr: "1rem",
                                                     }}
-                                                    onClick={() =>
-                                                        handleOpenFeedbackForm(
-                                                            row,
-                                                        )
-                                                    }
+                                                    onClick={() => handleOpenFeedbackForm(row)}
                                                 >
                                                     Phản hồi
                                                 </Link>
@@ -245,13 +210,7 @@ const CarouselManager = () => {
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
-                                    <Pagination
-                                        count={totalPage}
-                                        variant='outlined'
-                                        shape='rounded'
-                                        page={page}
-                                        onChange={handleChangePage}
-                                    />
+                                    <Pagination count={totalPage} variant='outlined' shape='rounded' page={page} onChange={handleChangePage} />
                                 </td>
                             </tr>
                         </tfoot>
@@ -275,9 +234,7 @@ const CarouselManager = () => {
             >
                 <DialogTitle>Phản hồi khách hàng</DialogTitle>
                 <DialogContent>
-                    <p className='mess'>
-                        Xác nhận gửi phản hồi đến khách hàng này ?
-                    </p>
+                    <p className='mess'>Xác nhận gửi phản hồi đến khách hàng này ?</p>
                 </DialogContent>
 
                 <DialogActions
@@ -300,19 +257,12 @@ const CarouselManager = () => {
                             "Gửi"
                         )}
                     </StyledButton>
-                    <StyledButton
-                        variant='text'
-                        onClick={handleCloseFeedbackForm}
-                    >
+                    <StyledButton variant='text' onClick={handleCloseFeedbackForm}>
                         Hủy
                     </StyledButton>
                 </DialogActions>
             </StyledDialog>
-            <Snackbar
-                open={snackbar.isOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnackbar}
-            >
+            <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}

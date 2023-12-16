@@ -1,18 +1,7 @@
 import React from "react";
 import { useSelector } from "react-redux";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Typography,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogActions,
-    Link,
-    Pagination,
-    Snackbar,
-    LinearProgress,
-} from "@mui/material";
+import { Box, Typography, Dialog, DialogTitle, DialogContent, DialogActions, Link, Pagination, Snackbar, LinearProgress } from "@mui/material";
 
 import axiosClient from "../../api/axiosClient";
 import { useDebounce } from "../../hook";
@@ -39,7 +28,7 @@ const StyledTextField = styled(TextField)({
     margin: "0.8rem 0",
 });
 const MemberManager = () => {
-    document.title = "Thành viên | 360 Store";
+    document.title = "Thành viên | Hoàn Mỹ Store";
     const user = useSelector((state) => state.user);
     const [totalPage, setTotalPage] = React.useState();
     const [page, setPage] = React.useState(1);
@@ -61,12 +50,7 @@ const MemberManager = () => {
     React.useEffect(() => {
         async function getData() {
             setIsLoading(true);
-            const res = await Promise.all([
-                axiosClient.get(
-                    `/members?keyword=${debounceSearch}&page=${page}`,
-                ),
-                axiosClient.get(`/roles`),
-            ]);
+            const res = await Promise.all([axiosClient.get(`/members?keyword=${debounceSearch}&page=${page}`), axiosClient.get(`/roles`)]);
             setRoles(res[1].data.data);
             setData(res[0].data.data.data);
             setPage(res[0].data.data.current_page);
@@ -95,12 +79,9 @@ const MemberManager = () => {
     const handleUpdateRole = () => {
         async function updateRole() {
             try {
-                const res = await axiosClient.post(
-                    `/members/role/${memberInfor.id}`,
-                    {
-                        role_id: memberInfor.role_id,
-                    },
-                );
+                const res = await axiosClient.post(`/members/role/${memberInfor.id}`, {
+                    role_id: memberInfor.role_id,
+                });
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -122,9 +103,7 @@ const MemberManager = () => {
     const handleDeleteMember = () => {
         async function deleteMember() {
             try {
-                const res = await axiosClient.delete(
-                    `/members/${memberInfor.id}?user_role=${user.role_id}`,
-                );
+                const res = await axiosClient.delete(`/members/${memberInfor.id}?user_role=${user.role_id}`);
                 setSnackbar({
                     isOpen: true,
                     type: "success",
@@ -157,9 +136,7 @@ const MemberManager = () => {
                 },
             }}
         >
-            <Typography className='heading useFont-Nunito'>
-                Thành viên
-            </Typography>
+            <Typography className='heading useFont-Nunito'>Thành viên</Typography>
             <Box
                 sx={{
                     p: "2rem",
@@ -218,51 +195,31 @@ const MemberManager = () => {
                         <tbody className='table-body'>
                             {isLoading ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         <LinearProgress color='inherit' />
                                     </td>
                                 </tr>
                             ) : data.length === 0 ? (
                                 <tr>
-                                    <td
-                                        colSpan={
-                                            Object.keys(columns).length + 1
-                                        }
-                                        align='center'
-                                    >
+                                    <td colSpan={Object.keys(columns).length + 1} align='center'>
                                         Chưa có thành viên nào
                                     </td>
                                 </tr>
                             ) : (
                                 data.map((row, index) => (
-                                    <tr
-                                        key={index}
-                                        className={
-                                            index % 2 === 0 ? "even" : "odd"
-                                        }
-                                    >
+                                    <tr key={index} className={index % 2 === 0 ? "even" : "odd"}>
                                         <td>{row.id}</td>
                                         <td>{row.full_name}</td>
                                         <td>{row.email}</td>
                                         <td>{row.phone}</td>
                                         <td>{row.address}</td>
-                                        <td
-                                            className='go-to-detail'
-                                            align='center'
-                                        >
+                                        <td className='go-to-detail' align='center'>
                                             <Link
                                                 underline='hover'
                                                 sx={{
                                                     mr: "1rem",
                                                 }}
-                                                onClick={() =>
-                                                    handleOpenDetail(row)
-                                                }
+                                                onClick={() => handleOpenDetail(row)}
                                             >
                                                 Xem
                                             </Link>
@@ -274,13 +231,7 @@ const MemberManager = () => {
                         <tfoot>
                             <tr>
                                 <td colSpan={Object.keys(columns).length + 1}>
-                                    <Pagination
-                                        count={totalPage}
-                                        variant='outlined'
-                                        shape='rounded'
-                                        page={page}
-                                        onChange={handleChangePage}
-                                    />
+                                    <Pagination count={totalPage} variant='outlined' shape='rounded' page={page} onChange={handleChangePage} />
                                 </td>
                             </tr>
                         </tfoot>
@@ -374,10 +325,7 @@ const MemberManager = () => {
                             Cập nhật
                         </StyledButton>
                     )}
-                    <StyledButton
-                        variant='text'
-                        onClick={() => setOpenDelForm(true)}
-                    >
+                    <StyledButton variant='text' onClick={() => setOpenDelForm(true)}>
                         Xóa
                     </StyledButton>
                     <StyledButton variant='text' onClick={handleCloseDetail}>
@@ -402,28 +350,18 @@ const MemberManager = () => {
             >
                 <DialogTitle>Xóa thành viên</DialogTitle>
                 <DialogContent>
-                    <p className='mess'>
-                        Hành động này không thể hoàn tác, vẫn tiếp tục xóa thành
-                        viên {memberInfor.id} ?
-                    </p>
+                    <p className='mess'>Hành động này không thể hoàn tác, vẫn tiếp tục xóa thành viên {memberInfor.id} ?</p>
                 </DialogContent>
                 <DialogActions>
                     <StyledButton variant='text' onClick={handleDeleteMember}>
                         Đồng ý
                     </StyledButton>
-                    <StyledButton
-                        variant='text'
-                        onClick={() => setOpenDelForm(false)}
-                    >
+                    <StyledButton variant='text' onClick={() => setOpenDelForm(false)}>
                         Hủy
                     </StyledButton>
                 </DialogActions>
             </Dialog>
-            <Snackbar
-                open={snackbar.isOpen}
-                autoHideDuration={5000}
-                onClose={handleCloseSnackbar}
-            >
+            <Snackbar open={snackbar.isOpen} autoHideDuration={5000} onClose={handleCloseSnackbar}>
                 <Alert
                     onClose={handleCloseSnackbar}
                     severity={snackbar.type}

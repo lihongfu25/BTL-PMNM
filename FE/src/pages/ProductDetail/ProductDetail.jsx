@@ -4,14 +4,7 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { FreeMode, Navigation, Thumbs } from "swiper";
 import { useParams, useNavigate } from "react-router-dom";
 import { styled } from "@mui/material/styles";
-import {
-    Box,
-    Button as MuiButton,
-    Grid,
-    Rating,
-    Skeleton,
-    Typography,
-} from "@mui/material";
+import { Box, Button as MuiButton, Grid, Rating, Skeleton, Typography } from "@mui/material";
 import { BsDash, BsPlus, BsCheck2 } from "react-icons/bs";
 import { FaCartPlus } from "react-icons/fa";
 
@@ -77,10 +70,7 @@ const ProductDetail = () => {
     React.useEffect(() => {
         async function getProduct() {
             try {
-                const res = await Promise.all([
-                    axiosClient.get(`/products/get-limit/rating`),
-                    axiosClient.get(`/products/${productId}`),
-                ]);
+                const res = await Promise.all([axiosClient.get(`/products/get-limit/rating`), axiosClient.get(`/products/${productId}`)]);
                 setRelateds(res[0].data.data);
                 setProduct(res[1].data.data);
             } catch (err) {
@@ -94,12 +84,7 @@ const ProductDetail = () => {
 
     React.useEffect(() => {
         setAvgRating((prevState) => {
-            return product?.rating && product?.rating.length !== 0
-                ? product.rating.reduce(
-                      (total, rating) => total + rating.star,
-                      0,
-                  ) / product.rating.length
-                : prevState;
+            return product?.rating && product?.rating.length !== 0 ? product.rating.reduce((total, rating) => total + rating.star, 0) / product.rating.length : prevState;
         });
     }, [product]);
 
@@ -114,18 +99,9 @@ const ProductDetail = () => {
 
     const handleSubmitOrder = () => {
         if (!user.id) navigate("/login");
-        else if (
-            Object.keys(colorSelected).length === 0 ||
-            (product?.size.length !== 0 &&
-                Object.keys(sizeSelected).length === 0)
-        ) {
-            if (Object.keys(colorSelected).length === 0)
-                setErrors((prevState) => ({ ...prevState, color: true }));
-            if (
-                product?.size.length !== 0 &&
-                Object.keys(sizeSelected).length === 0
-            )
-                setErrors((prevState) => ({ ...prevState, size: true }));
+        else if (Object.keys(colorSelected).length === 0 || (product?.size.length !== 0 && Object.keys(sizeSelected).length === 0)) {
+            if (Object.keys(colorSelected).length === 0) setErrors((prevState) => ({ ...prevState, color: true }));
+            if (product?.size.length !== 0 && Object.keys(sizeSelected).length === 0) setErrors((prevState) => ({ ...prevState, size: true }));
         } else {
             setOpenCreateOrder({
                 isOpen: true,
@@ -136,11 +112,7 @@ const ProductDetail = () => {
                         color: colorSelected.url,
                         size: sizeSelected,
                         quantity: quantity,
-                        total_price: Math.ceil(
-                            quantity *
-                                (1 - product.discount / 100) *
-                                product.price,
-                        ),
+                        total_price: Math.ceil(quantity * (1 - product.discount / 100) * product.price),
                         product,
                     },
                 ],
@@ -150,18 +122,9 @@ const ProductDetail = () => {
 
     const handleSubmitCart = () => {
         if (!user.id) navigate("/login");
-        else if (
-            Object.keys(colorSelected).length === 0 ||
-            (product?.size.length !== 0 &&
-                Object.keys(sizeSelected).length === 0)
-        ) {
-            if (Object.keys(colorSelected).length === 0)
-                setErrors((prevState) => ({ ...prevState, color: true }));
-            if (
-                product?.size.length !== 0 &&
-                Object.keys(sizeSelected).length === 0
-            )
-                setErrors((prevState) => ({ ...prevState, size: true }));
+        else if (Object.keys(colorSelected).length === 0 || (product?.size.length !== 0 && Object.keys(sizeSelected).length === 0)) {
+            if (Object.keys(colorSelected).length === 0) setErrors((prevState) => ({ ...prevState, color: true }));
+            if (product?.size.length !== 0 && Object.keys(sizeSelected).length === 0) setErrors((prevState) => ({ ...prevState, size: true }));
         } else {
             const data = sizeSelected
                 ? {
@@ -195,18 +158,9 @@ const ProductDetail = () => {
                 flexGrow: 1,
             }}
         >
-            <CreateOrderModal
-                products={openCreateOrder.data}
-                isOpen={openCreateOrder.isOpen}
-                onClose={() => setOpenCreateOrder({ isOpen: false })}
-            />
+            <CreateOrderModal products={openCreateOrder.data} isOpen={openCreateOrder.isOpen} onClose={() => setOpenCreateOrder({ isOpen: false })} />
 
-            <Grid
-                className='product-Info'
-                container
-                spacing={{ xs: 4, md: 6 }}
-                columns={{ xs: 4, sm: 8, md: 12 }}
-            >
+            <Grid className='product-Info' container spacing={{ xs: 4, md: 6 }} columns={{ xs: 4, sm: 8, md: 12 }}>
                 <Grid item xs={2} sm={6}>
                     {product ? (
                         <Swiper
@@ -224,7 +178,7 @@ const ProductDetail = () => {
                                 <SwiperSlide key={img.id}>
                                     <img
                                         alt=''
-                                        src={"http://13.228.71.235/" + img.url}
+                                        src={"http://localhost:8000/" + img.url}
                                         style={{
                                             width: "100%",
                                         }}
@@ -255,12 +209,7 @@ const ProductDetail = () => {
                         {product
                             ? product.image.map((img) => (
                                   <SwiperSlide key={img.id}>
-                                      <img
-                                          alt=''
-                                          src={
-                                              "http://13.228.71.235/" + img.url
-                                          }
-                                      />
+                                      <img alt='' src={"http://localhost:8000/" + img.url} />
                                   </SwiperSlide>
                               ))
                             : Array.from([1, 2, 3, 4, 5, 6]).map((i) => (
@@ -316,22 +265,9 @@ const ProductDetail = () => {
                     <Box className='product-Price useFont-Nunito'>
                         {product ? (
                             <>
-                                {product.discount !== 0 && (
-                                    <span className='old-price'>
-                                        {currencyFormat(product.price)}
-                                    </span>
-                                )}
+                                {product.discount !== 0 && <span className='old-price'>{currencyFormat(product.price)}</span>}
                                 <span className='new-price'>
-                                    {product.discount !== 0
-                                        ? currencyFormat(
-                                              Math.ceil(
-                                                  (product.price *
-                                                      (100 -
-                                                          product.discount)) /
-                                                      100,
-                                              ),
-                                          )
-                                        : currencyFormat(product.price)}
+                                    {product.discount !== 0 ? currencyFormat(Math.ceil((product.price * (100 - product.discount)) / 100)) : currencyFormat(product.price)}
                                 </span>
                             </>
                         ) : (
@@ -345,12 +281,7 @@ const ProductDetail = () => {
                         )}
                     </Box>
                     {product ? (
-                        <PickColor
-                            colors={product.color}
-                            value={colorSelected}
-                            setValue={handleChooseColor}
-                            isError={errors.color}
-                        />
+                        <PickColor colors={product.color} value={colorSelected} setValue={handleChooseColor} isError={errors.color} />
                     ) : (
                         <Skeleton
                             variant='rounded'
@@ -359,14 +290,7 @@ const ProductDetail = () => {
                             }}
                         />
                     )}
-                    {product && product.size.length !== 0 && (
-                        <PickSize
-                            sizes={product.size}
-                            value={sizeSelected}
-                            setValue={handleChooseSize}
-                            isError={errors.size}
-                        />
-                    )}
+                    {product && product.size.length !== 0 && <PickSize sizes={product.size} value={sizeSelected} setValue={handleChooseSize} isError={errors.size} />}
                     {product ? (
                         <Box className='product-Quantity useFont-Nunito'>
                             <span>Số lượng:</span>
@@ -383,15 +307,7 @@ const ProductDetail = () => {
                                     },
                                 }}
                             >
-                                <StyledButton
-                                    variant='outlined'
-                                    disabled={quantity === 1}
-                                    onClick={() =>
-                                        setQuantity(
-                                            (prevState) => prevState - 1,
-                                        )
-                                    }
-                                >
+                                <StyledButton variant='outlined' disabled={quantity === 1} onClick={() => setQuantity((prevState) => prevState - 1)}>
                                     <BsDash />
                                 </StyledButton>
                                 <Typography
@@ -404,15 +320,7 @@ const ProductDetail = () => {
                                 >
                                     {quantity}
                                 </Typography>
-                                <StyledButton
-                                    variant='outlined'
-                                    disabled={quantity === product.quantity}
-                                    onClick={() =>
-                                        setQuantity(
-                                            (prevState) => prevState + 1,
-                                        )
-                                    }
-                                >
+                                <StyledButton variant='outlined' disabled={quantity === product.quantity} onClick={() => setQuantity((prevState) => prevState + 1)}>
                                     <BsPlus />
                                 </StyledButton>
                             </Box>
@@ -483,9 +391,7 @@ const ProductDetail = () => {
                                         </>
                                     )}
                                 </Button>
-                                <Button onClick={handleSubmitOrder}>
-                                    Mua ngay
-                                </Button>
+                                <Button onClick={handleSubmitOrder}>Mua ngay</Button>
                             </>
                         ) : (
                             <>
@@ -534,9 +440,7 @@ const ProductDetail = () => {
                                     Chưa có đánh giá nào
                                 </Typography>
                             ) : (
-                                product.rating.map((rating) => (
-                                    <RatingItem key={rating.id} data={rating} />
-                                ))
+                                product.rating.map((rating) => <RatingItem key={rating.id} data={rating} />)
                             )}
                         </div>
                     </>

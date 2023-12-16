@@ -7,11 +7,7 @@ import { Box, Button as MuiButton, Typography } from "@mui/material";
 import axiosClient from "../../../api/axiosClient";
 import { Button } from "../../../components/Button";
 import { currencyFormat } from "../../../styles/GlobalStyles";
-import {
-    setCart as setCartStore,
-    cartIncreaseQuantity,
-    cartReducedQuantity,
-} from "../cartSlice";
+import { setCart as setCartStore, cartIncreaseQuantity, cartReducedQuantity } from "../cartSlice";
 const StyledBox = styled(Box)({
     minWidth: "21rem",
     textAlign: "center",
@@ -41,9 +37,7 @@ const CartItem = ({ value }) => {
 
     const handleDelete = () => {
         async function delCart() {
-            const res = await axiosClient.delete(
-                `/carts/${cart.id}?member_id=${userId}`,
-            );
+            const res = await axiosClient.delete(`/carts/${cart.id}?member_id=${userId}`);
             dispatch(setCartStore(res.data.data));
         }
         delCart();
@@ -96,12 +90,7 @@ const CartItem = ({ value }) => {
                         },
                     }}
                 >
-                    <img
-                        alt=''
-                        src={
-                            "http://13.228.71.235/" + cart.product.image[0].url
-                        }
-                    />
+                    <img alt='' src={"http://localhost:8000/" + cart.product.image[0].url} />
                 </Box>
                 <Box
                     sx={{
@@ -135,7 +124,7 @@ const CartItem = ({ value }) => {
                                 border: "1px solid #fff",
                                 backgroundPosition: "center",
                                 boxShadow: "#333f48 0 0 0 1px",
-                                backgroundImage: `url(http://13.228.71.235/${cart.color})`,
+                                backgroundImage: `url(http://localhost:8000/${cart.color})`,
                             },
                         },
                     }}
@@ -145,10 +134,7 @@ const CartItem = ({ value }) => {
                         {cart.size && (
                             <>
                                 Size:
-                                <span className='product-size'>
-                                    {cart.size}
-                                </span>{" "}
-                                /
+                                <span className='product-size'>{cart.size}</span> /
                             </>
                         )}
                         Màu:<span className='product-color'></span>
@@ -165,21 +151,9 @@ const CartItem = ({ value }) => {
                         },
                     }}
                 >
-                    {cart.product.discount !== 0 && (
-                        <span className='old-price'>
-                            {currencyFormat(cart.product.price)}
-                        </span>
-                    )}
+                    {cart.product.discount !== 0 && <span className='old-price'>{currencyFormat(cart.product.price)}</span>}
                     <span className='new-price'>
-                        {cart.product.discount !== 0
-                            ? currencyFormat(
-                                  Math.ceil(
-                                      (cart.product.price *
-                                          (100 - cart.product.discount)) /
-                                          100,
-                                  ),
-                              )
-                            : currencyFormat(cart.product.price)}
+                        {cart.product.discount !== 0 ? currencyFormat(Math.ceil((cart.product.price * (100 - cart.product.discount)) / 100)) : currencyFormat(cart.product.price)}
                     </span>
                 </StyledTypography>
             </StyledBox>
@@ -209,11 +183,7 @@ const CartItem = ({ value }) => {
                         },
                     }}
                 >
-                    <StyledButton
-                        variant='outlined'
-                        disabled={quantity === 1}
-                        onClick={handleReduced}
-                    >
+                    <StyledButton variant='outlined' disabled={quantity === 1} onClick={handleReduced}>
                         <BsDash />
                     </StyledButton>
                     <StyledTypography
@@ -226,30 +196,14 @@ const CartItem = ({ value }) => {
                     >
                         {quantity}
                     </StyledTypography>
-                    <StyledButton
-                        variant='outlined'
-                        disabled={quantity === cart.product.quantity}
-                        onClick={handleIncrease}
-                    >
+                    <StyledButton variant='outlined' disabled={quantity === cart.product.quantity} onClick={handleIncrease}>
                         <BsPlus />
                     </StyledButton>
                 </Box>
-                {quantity === cart.product.quantity && (
-                    <span className='quantityError'>
-                        Đã đạt đến giới hạn số lượng hàng có sẵn!
-                    </span>
-                )}
+                {quantity === cart.product.quantity && <span className='quantityError'>Đã đạt đến giới hạn số lượng hàng có sẵn!</span>}
             </StyledBox>
             <StyledBox>
-                <StyledTypography>
-                    {currencyFormat(
-                        Math.ceil(
-                            (cart.product.price *
-                                (100 - cart.product.discount)) /
-                                100,
-                        ) * quantity,
-                    )}
-                </StyledTypography>
+                <StyledTypography>{currencyFormat(Math.ceil((cart.product.price * (100 - cart.product.discount)) / 100) * quantity)}</StyledTypography>
             </StyledBox>
             <Box
                 sx={{

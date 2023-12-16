@@ -27,10 +27,7 @@ const PurchaseItem = ({ value }) => {
                     },
                 }}
             >
-                <img
-                    alt=''
-                    src={"http://13.228.71.235/" + value.product.image[0].url}
-                />
+                <img alt='' src={"http://localhost:8000/" + value.product.image[0].url} />
                 <Box
                     sx={{
                         ml: "1.2rem",
@@ -55,15 +52,14 @@ const PurchaseItem = ({ value }) => {
                                 height: "1.4rem",
                                 border: "1px solid #ccc",
                                 borderRadius: "50%",
-                                backgroundImage: `url(http://13.228.71.235/${value.color})`,
+                                backgroundImage: `url(http://localhost:8000/${value.color})`,
                             },
                         },
                     }}
                 >
                     <h3>{value.product.name}</h3>
                     <p>
-                        {value.size && <>Size {value.size} /</>} Màu{" "}
-                        <span></span>
+                        {value.size && <>Size {value.size} /</>} Màu <span></span>
                     </p>
                     <p>x{value.quantity}</p>
                 </Box>

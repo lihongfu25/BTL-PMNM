@@ -13,7 +13,7 @@ import "../../styles/LoginLogoutStyles/LoginLogoutStyles.scss";
 import { managerChangeTab } from "../../layout/ManagerLayout/managerSlice";
 
 const ForgotPassword = () => {
-    document.title = "Quên mật khẩu | 360 Store";
+    document.title = "Quên mật khẩu | Hoàn Mỹ Store";
     const isLogin = useSelector((state) => state.token.isLogin);
     const userRole = useSelector((state) => state.user.role_id);
     const [sended, setSended] = React.useState(false);
@@ -43,8 +43,7 @@ const ForgotPassword = () => {
     }, [isLogin, navigate]);
 
     const randomPass = () => {
-        let chars =
-            "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        let chars = "0123456789abcdefghijklmnopqrstuvwxyz!@#$%^&*()ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         let passwordLength = 12;
         let password = "";
         for (var i = 0; i <= passwordLength; i++) {
@@ -90,16 +89,10 @@ const ForgotPassword = () => {
             noValidate
             onSubmit={handleSubmit(onSubmit)}
         >
-            <Link
-                to='/login'
-                className='navLink-Icon navLink textColor linkNoneUnderline'
-                onClick={handleBackLoginForm}
-            >
+            <Link to='/login' className='navLink-Icon navLink textColor linkNoneUnderline' onClick={handleBackLoginForm}>
                 <BsArrowLeftShort />
             </Link>
-            <h6 className='heading textColor useFont-Nunito'>
-                Đặt lại mật khẩu
-            </h6>
+            <h6 className='heading textColor useFont-Nunito'>Đặt lại mật khẩu</h6>
             <Box
                 sx={{
                     width: "100%",
