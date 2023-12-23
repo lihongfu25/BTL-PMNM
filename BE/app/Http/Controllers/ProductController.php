@@ -237,9 +237,9 @@ class ProductController extends Controller
                 break;
             case 'rating': 
                 $product = DB::table('products')->leftJoin('images', 'products.id', '=', 'images.product_id')
-                ->leftJoin('ratings', 'products.id', '=', 'ratings.product_id')
-                ->selectRaw('products.id, products.name, products.price, products.discount, avg(star) as rating, images.url as image')
-                ->groupByRaw('products.id')->orderBy('rating', 'desc')->limit(8)->get();
+                ->leftJoin('order_details', 'products.id', '=', 'order_details.product_id')
+                ->selectRaw('products.id, products.name, products.price, products.discount, sum(order_details.quantity) as count, images.url as image')
+                ->groupByRaw('products.id')->orderBy('count', 'desc')->limit(8)->get();
                 break;
             case 'discount':
                 $product = DB::table('products')->leftJoin('images', 'products.id', '=', 'images.product_id')

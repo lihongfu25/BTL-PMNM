@@ -2,7 +2,7 @@ import React from "react";
 import { Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 
-import logo from "../../assets/img/logo.png";
+import logo from "../../assets/img/logo.jpg";
 import bg from "../../assets/img/bg-loginlogout.jpg";
 const LoginLogoutLayout = ({ children }) => {
     const navigate = useNavigate();
@@ -45,7 +45,7 @@ const LoginLogoutLayout = ({ children }) => {
                     alt=''
                     src={logo}
                     style={{
-                        width: "10rem",
+                        width: "16rem",
                         cursor: "pointer",
                     }}
                     onClick={handleGoHome}

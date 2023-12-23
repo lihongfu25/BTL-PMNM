@@ -195,7 +195,7 @@ const ManagerLayout = ({ children }) => {
                         backgroundColor: "#fff",
                     }}
                 >
-                    Copyright © 2022 Designed by <strong>Nhóm 9</strong>. All rights reserved.
+                    Copyright © 2022 Designed by <strong>Hoàn Mỹ</strong>. All rights reserved.
                 </Typography>
             </Box>
         </Box>

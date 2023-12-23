@@ -213,7 +213,7 @@ const Home = () => {
                     </Stack>
                 </Box>
             ) : (
-                <Recommend title='Sản phẩm hot' products={ratings} />
+                <Recommend title='Sản phẩm bán chạy' products={ratings} />
             )}
             {isLoading ? (
                 <Box

@@ -149,6 +149,11 @@ class OrderController extends Controller
             
                 foreach($products as $product) {
                     $productFind = Product::where('id', $product->id)->first();
+                    if ($productFind->quantity < $product->dash) {
+                        return response()->json([
+                            'message' => $productFind->name . " không còn đủ số lượng!",
+                        ], 400);
+                    }
                     $productFind->quantity = $productFind->quantity - $product->dash;
                     $productFind->save();
                 }

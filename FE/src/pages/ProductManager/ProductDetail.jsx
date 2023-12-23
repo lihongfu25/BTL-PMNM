@@ -250,12 +250,13 @@ const ProductDetail = () => {
                 const res = await axiosClient.put(`/products/${product.id}`, {
                     ...data,
                 });
-                setIsEdit(false);
+                setCallApi(Math.random());
                 setSnackbar({
                     isOpen: true,
                     type: "success",
                     message: res.data.message,
                 });
+                setIsEdit(false);
             } catch (err) {
                 setIsEdit(false);
                 setSnackbar({

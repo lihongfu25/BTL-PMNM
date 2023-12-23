@@ -1,6 +1,6 @@
 import React from "react";
 import { useDispatch } from "react-redux";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { useForm, Controller } from "react-hook-form";
 import { styled } from "@mui/material/styles";
 import { Box, FormControlLabel, Checkbox } from "@mui/material";
@@ -33,6 +33,7 @@ const Register = () => {
     });
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
 
     const onSubmit = (data) => {
         async function register() {
@@ -49,6 +50,7 @@ const Register = () => {
                     }),
                 );
                 dispatch(userUpdateProfile(res.data.data));
+                navigate("/");
             } catch (err) {
                 console.log(err);
             }

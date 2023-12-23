@@ -79,7 +79,7 @@ const Footer = () => {
                         </StyledTypography>
                         <StyledTypography className='useFont-Nunito'>
                             <BsEnvelopeFill />
-                            <span className='text'>360.store@gmail.com</span>
+                            <span className='text'>hoanmy.store@gmail.com</span>
                         </StyledTypography>
                         <Box>
                             <Typography
@@ -187,7 +187,7 @@ const Footer = () => {
                     p: "2rem 0",
                 }}
             >
-                © All rights reserved. <strong>Nhóm 9</strong>
+                © All rights reserved. <strong>Hoàn Mỹ</strong>
             </Typography>
         </>
     );
